@@ -5,7 +5,7 @@ import NextDynamic from 'next/dynamic';
 export const dynamic = "force-dynamic";
 
 // Import SearchResultsContent with SSR disabled to completely bypass prerendering issues
-const SearchResultsContent = NextDynamic(() => import('@/app/components/SearchResults'), { 
+const SearchResultsContent = NextDynamic(() => import('../../components/SearchResults'), { 
   ssr: false,
   loading: () => <div className="min-h-screen flex items-center justify-center text-[#9AD872] font-black uppercase tracking-widest">Finding Matches...</div>
 });

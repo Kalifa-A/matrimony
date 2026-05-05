@@ -5,7 +5,7 @@ import NextDynamic from 'next/dynamic';
 export const dynamic = "force-dynamic";
 
 // Import RegisterForm with SSR disabled to completely bypass prerendering issues
-const RegisterForm = NextDynamic(() => import('@/app/components/RegisterForm'), { 
+const RegisterForm = NextDynamic(() => import('../../components/RegisterForm'), { 
   ssr: false,
   loading: () => <div className="min-h-screen flex items-center justify-center font-bold text-gray-400 uppercase tracking-widest">Loading...</div>
 });

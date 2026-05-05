@@ -1,24 +1,24 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { useRouter,} from 'next/navigation';
+import { useRouter, } from 'next/navigation';
 import { useToast } from '@/app/components/ToastProvider';
 
 export default function RegisterForm() {
   const { showToast } = useToast();
   const router = useRouter();
-  
+
   // UI States
   const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [plan, setPlan] = useState<string | null>(null);
 
-useEffect(() => {
-  if (typeof window !== "undefined") {
-    const params = new URLSearchParams(window.location.search);
-    setPlan(params.get("plan"));
-  }
-}, []);  
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      setPlan(params.get("plan"));
+    }
+  }, []);
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   // Form State Object
@@ -111,7 +111,7 @@ useEffect(() => {
   return (
     <div className="min-h-screen bg-gray-50 py-6 sm:py-12 px-3 sm:px-4">
       <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-        
+
         {/* Header */}
         <div className="bg-[#9AD872] p-5 sm:p-8 text-center text-white">
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Create Your Profile</h1>
@@ -119,7 +119,7 @@ useEffect(() => {
         </div>
 
         <form onSubmit={handleRegister} className="p-4 sm:p-8 space-y-6 sm:space-y-8">
-          
+
           {/* Photo Section */}
           <div className="flex flex-col items-center">
             <div className="relative group">
@@ -134,9 +134,9 @@ useEffect(() => {
               </div>
               <input type="file" accept="image/*" onChange={handleImageChange} className="absolute inset-0 opacity-0 cursor-pointer" />
               {selectedImage && (
-                <button 
-                  type="button" 
-                  onClick={() => {setSelectedImage(null); setSelectedFile(null);}}
+                <button
+                  type="button"
+                  onClick={() => { setSelectedImage(null); setSelectedFile(null); }}
                   className="absolute -top-3 -right-3 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 shadow-lg"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -219,13 +219,13 @@ useEffect(() => {
               <input name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleChange} required className="input-field" placeholder="Confirm Password" />
             </div>
           </div>
-          
-          <button 
-            type="submit" 
+
+          <button
+            type="submit"
             disabled={loading}
             className={`w-full py-3 sm:py-4 rounded-xl text-white font-bold text-base sm:text-lg shadow-lg transition-all transform active:scale-95 ${loading ? 'bg-gray-400' : 'bg-[#9AD872] hover:bg-[#8bc764] hover:shadow-[#9AD872]/40'}`}
           >
-           {loading ? "Registering..." : "Register"}
+            {loading ? "Registering..." : "Register"}
           </button>
         </form>
       </div>

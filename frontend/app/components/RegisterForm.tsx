@@ -7,7 +7,7 @@ export default function RegisterForm() {
   const { showToast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const plan = searchParams.get('plan');
+  const plan = searchParams ? searchParams.get('plan') : null;
   
   // UI States
   const [loading, setLoading] = useState(false);

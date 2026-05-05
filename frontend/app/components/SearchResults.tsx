@@ -20,6 +20,7 @@ export default function SearchResultsContent() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
+  if (!searchParams) return null; // Safety check for prerendering
 
   const [ageMin, setAgeMin] = useState('');
   const [ageMax, setAgeMax] = useState('');

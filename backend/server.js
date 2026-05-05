@@ -35,7 +35,7 @@ const authLimiter = rateLimit({
 
 app.use(cookieParser());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: 'https://matrimony-sage.vercel.app'|| 'http://localhost:3000',
   credentials: true
 }));
 app.use(express.json());

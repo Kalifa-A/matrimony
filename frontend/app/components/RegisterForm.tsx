@@ -81,7 +81,10 @@ export default function RegisterForm() {
     try {
       const dataToSend = new FormData();
       Object.entries(formData).forEach(([key, value]) => {
-        dataToSend.append(key, value);
+        // Don't send confirmPassword to backend - only password is needed
+        if (key !== 'confirmPassword') {
+          dataToSend.append(key, value);
+        }
       });
       if (selectedFile) {
         dataToSend.append('profilePhoto', selectedFile);

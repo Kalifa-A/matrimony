@@ -19,7 +19,9 @@ export default function RegisterForm() {
       setPlan(params.get("plan"));
     }
   }, []);
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+  // Safely get API URL with fallback for build time
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
   // Form State Object
   const [formData, setFormData] = useState({

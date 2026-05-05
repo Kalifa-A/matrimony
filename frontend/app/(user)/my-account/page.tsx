@@ -35,7 +35,7 @@ export default function MyAccount() {
   const [discoverProfiles, setDiscoverProfiles] = useState([]);
   const [sentInterests, setSentInterests] = useState([]);
   const [hasSentInterests, setHasSentInterests] = useState(false);
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
   const [profile, setProfile] = useState<UserProfile>({
     name: "",

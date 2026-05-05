@@ -10,7 +10,9 @@ export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const [user, setUser] = useState<{ name: string; _id?: string } | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  
+  // Safely get API URL with fallback for build time
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
   if (pathname?.startsWith("/admin")) return null;
 

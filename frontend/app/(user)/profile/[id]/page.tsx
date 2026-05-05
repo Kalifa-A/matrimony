@@ -37,7 +37,7 @@ export default function ProfileDetails() {
   const [interestSent, setInterestSent] = useState(false);
   const [sending, setSending] = useState(false);
   const [hasPaid, setHasPaid] = useState(false);
-  const API_URL= process.env.NEXT_PUBLIC_API_URL;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
     const fetchProfileData = async () => {

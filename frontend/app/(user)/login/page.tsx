@@ -14,7 +14,7 @@ export default function Login() {
   const [email, setEmail] = useState(''); // Using email as it's more standard than username
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const API_URL= process.env.NEXT_PUBLIC_API_URL;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

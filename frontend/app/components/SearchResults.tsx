@@ -32,7 +32,7 @@ export default function SearchResultsContent() {
   const [job, setJob] = useState('');
 
   const [hasPaid, setHasPaid] = useState(false);
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
   const fetchProfiles = async () => {
     setLoading(true);

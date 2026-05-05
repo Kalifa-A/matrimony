@@ -32,7 +32,8 @@ export default function AdminLogin() {
         // Token is now set automatically by the backend via HttpOnly Set-Cookie header
         // BUT for cross-domain middleware (Vercel + Render), we also set a local cookie
         if (data.token) {
-          document.cookie = `admin_token=${data.token}; path=/; max-age=${60 * 60 * 1}; SameSite=Lax`;
+          document.cookie = `admin_token=${data.token}; path=/; max-age=${60 * 60 * 1}; SameSite=Lax; Secure`;
+          console.log("Cookie set attempt:", document.cookie);
         }
 
         showToast('Access Granted. Welcome, Admin.');

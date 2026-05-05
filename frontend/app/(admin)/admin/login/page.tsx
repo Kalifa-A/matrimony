@@ -26,6 +26,7 @@ export default function AdminLogin() {
       });
 
       const data = await res.json();
+      console.log("Admin login response:", data);
       
       if (res.ok) {
         // Token is now set automatically by the backend via HttpOnly Set-Cookie header

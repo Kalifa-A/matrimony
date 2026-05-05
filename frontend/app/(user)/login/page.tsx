@@ -31,7 +31,8 @@ export default function Login() {
       });
 
       const data = await response.json();
-
+      console.log("User login response:", data);
+      
       if (response.ok) {
         // Token is now set automatically by the backend via HttpOnly Set-Cookie header
         // BUT for cross-domain middleware (Vercel + Render), we also set a local cookie

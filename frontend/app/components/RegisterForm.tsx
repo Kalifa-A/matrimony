@@ -1,12 +1,11 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter,} from 'next/navigation';
 import { useToast } from '@/app/components/ToastProvider';
 
 export default function RegisterForm() {
   const { showToast } = useToast();
   const router = useRouter();
-  const searchParams = useSearchParams();
   
   // UI States
   const [loading, setLoading] = useState(false);
@@ -14,11 +13,12 @@ export default function RegisterForm() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [plan, setPlan] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (searchParams) {
-      setPlan(searchParams.get('plan'));
-    }
-  }, [searchParams]);
+useEffect(() => {
+  if (typeof window !== "undefined") {
+    const params = new URLSearchParams(window.location.search);
+    setPlan(params.get("plan"));
+  }
+}, []);  
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   // Form State Object

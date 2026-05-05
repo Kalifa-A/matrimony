@@ -7,13 +7,18 @@ export default function RegisterForm() {
   const { showToast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const plan = searchParams ? searchParams.get('plan') : null;
   
   // UI States
   const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [plan, setPlan] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (searchParams) {
+      setPlan(searchParams.get('plan'));
+    }
+  }, [searchParams]);
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   // Form State Object

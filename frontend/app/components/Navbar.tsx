@@ -3,6 +3,8 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { Flower2, Heart, Sparkles } from "lucide-react"; // Floral/Love icons
+import { clearUserSession } from "@/app/actions/userAuthActions";
+import { clearAdminSession } from "@/app/actions/adminAuthActions";
 
 export default function Navbar() {
   const router = useRouter();
@@ -42,9 +44,9 @@ export default function Navbar() {
   const handleLogout = async () => {
     try {
       await fetch(`${API_URL}/api/auth/logout`, { method: 'POST', credentials: 'include' });
-      // Also clear local cookies for middleware
-      document.cookie = "user_token=; path=/; max-age=0; SameSite=Lax";
-      document.cookie = "admin_token=; path=/; max-age=0; SameSite=Lax";
+      // Clear local cookies via Server Actions for middleware
+      await clearUserSession();
+      await clearAdminSession();
     } catch (e) { console.error(e); }
     setIsLoggedIn(false);
     setUser(null);

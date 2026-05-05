@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useTransition } from 'react';
-import { getAllUsers, approveUser, revokeUser, togglePaymentStatus, AdminUser } from '@/app/actions/adminActions';
+import { getAllUsers, approveUser, revokeUser, togglePaymentStatus, deleteUser, AdminUser } from '@/app/actions/adminActions';
 import { useToast } from '@/app/components/ToastProvider';
 
 export default function UserVerification() {
@@ -63,6 +63,25 @@ export default function UserVerification() {
     });
   };
 
+  const handleDeleteUser = (user: AdminUser) => {
+    if (!window.confirm(`Are you sure you want to PERMANENTLY delete ${user.name}? This action cannot be undone.`)) {
+      return;
+    }
+    
+    setActionInProgress(user._id + '-delete');
+    startTransition(async () => {
+      try {
+        await deleteUser(user._id);
+        showToast(`User ${user.name} deleted successfully`, 'success');
+        setUsers(prev => prev.filter(u => u._id !== user._id));
+      } catch (err: any) {
+        showToast(err.message || "Failed to delete user.", 'error');
+      } finally {
+        setActionInProgress(null);
+      }
+    });
+  };
+
   const filteredUsers = showAll ? users : users.filter(u => !u.isAdminApproved || !u.hasPaid);
 
   return (
@@ -109,8 +128,10 @@ export default function UserVerification() {
               user={user}
               onApprove={() => handleApproveToggle(user)}
               onPayment={() => handlePaymentToggle(user)}
+              onDelete={() => handleDeleteUser(user)}
               isApproving={actionInProgress === user._id + '-approve'}
               isPaying={actionInProgress === user._id + '-payment'}
+              isDeleting={actionInProgress === user._id + '-delete'}
             />
           ))}
         </div>
@@ -119,7 +140,7 @@ export default function UserVerification() {
   );
 }
 
-function VerificationCard({ user, onApprove, onPayment, isApproving, isPaying }: any) {
+function VerificationCard({ user, onApprove, onPayment, onDelete, isApproving, isPaying, isDeleting }: any) {
   return (
     <div className="bg-white rounded-2xl sm:rounded-[2.5rem] border border-gray-100 p-5 sm:p-8 shadow-sm hover:shadow-md transition-all relative overflow-hidden">
       {user.isAdminApproved && user.hasPaid && (
@@ -189,10 +210,25 @@ function VerificationCard({ user, onApprove, onPayment, isApproving, isPaying }:
           </button>
           <button 
             onClick={onPayment}
-            disabled={isPaying}
+            disabled={isPaying || isDeleting}
             className={`flex-1 sm:flex-none px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-bold transition-all text-xs sm:text-sm disabled:opacity-50 ${user.hasPaid ? 'bg-gray-100 text-gray-600 hover:bg-gray-200' : 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-600/20'}`}
           >
             {isPaying ? 'Updating...' : user.hasPaid ? 'Revoke Payment' : 'Verify Payment'}
+          </button>
+          
+          <button 
+            onClick={onDelete}
+            disabled={isDeleting || isApproving || isPaying}
+            className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all disabled:opacity-50 flex items-center justify-center"
+            title="Delete User"
+          >
+            {isDeleting ? (
+              <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+            ) : (
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+            )}
           </button>
         </div>
       </div>

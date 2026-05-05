@@ -5,7 +5,8 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Admin = require('../models/Admin');
 const Interest = require('../models/Interest');
-const { setAuthCookie } = require('../utils/auth-cookies');
+const SuccessStory = require('../models/SuccessStory');
+const { setAuthCookie, removeAuthCookie } = require('../utils/auth-cookies');
 
 // ── Simple admin-secret guard for setup only ──────────────────────────────────────────────
 function adminOnly(req, res, next) {
@@ -176,9 +177,23 @@ router.patch('/payment/:id', authenticateAdmin, async (req, res) => {
 // ── DELETE /api/admin/user/:id ────────────────────────────────────────────
 router.delete('/user/:id', authenticateAdmin, async (req, res) => {
   try {
-    const user = await User.findByIdAndDelete(req.params.id);
+    const userId = req.params.id;
+    
+    // 1. Delete the User
+    const user = await User.findByIdAndDelete(userId);
     if (!user) return res.status(404).json({ message: 'User not found' });
-    res.json({ message: 'User deleted successfully' });
+
+    // 2. Cascade delete: Remove all interests sent or received by this user
+    await Interest.deleteMany({
+      $or: [{ sender: userId }, { receiver: userId }]
+    });
+
+    // 3. Cascade delete: Remove any success stories involving this user
+    await SuccessStory.deleteMany({
+      $or: [{ husband: userId }, { wife: userId }]
+    });
+
+    res.json({ message: 'User and all associated data deleted successfully' });
   } catch (err) {
     console.error('Admin /delete error:', err.message);
     res.status(500).json({ message: 'Server Error' });
@@ -267,8 +282,8 @@ router.get('/stats', authenticateAdmin, async (req, res) => {
       successStories
     });
   } catch (err) {
-    console.error('Admin /stats error:', err.message);
-    res.status(500).json({ message: 'Server Error' });
+    console.error('Admin /stats error details:', err);
+    res.status(500).json({ message: 'Server Error', error: err.message });
   }
 });
 
@@ -305,7 +320,7 @@ router.patch('/profile', authenticateAdmin, async (req, res) => {
   }
 });
 
-const SuccessStory = require('../models/SuccessStory');
+
 
 // ── PATCH /api/admin/marry ───────────────────────────────────────────────
 router.patch('/marry', authenticateAdmin, async (req, res) => {
@@ -368,7 +383,7 @@ router.delete('/unmarry', authenticateAdmin, async (req, res) => {
   }
 });
 
-const { removeAuthCookie } = require('../utils/auth-cookies');
+
 
 // ── POST /api/admin/logout ────────────────────────────────────────────────
 router.post('/logout', (req, res) => {

@@ -95,7 +95,10 @@ export async function getAllUsers(phone?: string): Promise<AdminUser[]> {
     cache: 'no-store',
   });
 
-  if (!res.ok) throw new Error('Failed to fetch users');
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || errorData.error || 'Failed to fetch users');
+  }
   return res.json();
 }
 
@@ -111,7 +114,10 @@ export async function approveUser(userId: string): Promise<AdminUser> {
     headers: await getAdminHeaders(),
   });
 
-  if (!res.ok) throw new Error('Failed to approve user');
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || errorData.error || 'Failed to approve user');
+  }
   const data = await res.json();
   return data.user;
 }
@@ -127,7 +133,10 @@ export async function revokeUser(userId: string): Promise<AdminUser> {
     headers: await getAdminHeaders(),
   });
 
-  if (!res.ok) throw new Error('Failed to revoke user');
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || errorData.error || 'Failed to revoke user');
+  }
   const data = await res.json();
   return data.user;
 }
@@ -144,7 +153,10 @@ export async function togglePaymentStatus(userId: string): Promise<AdminUser> {
     headers: await getAdminHeaders(),
   });
 
-  if (!res.ok) throw new Error('Failed to toggle payment status');
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || errorData.error || 'Failed to toggle payment status');
+  }
   const data = await res.json();
   return data.user;
 }
@@ -160,7 +172,10 @@ export async function deleteUser(userId: string): Promise<void> {
     headers: await getAdminHeaders(),
   });
 
-  if (!res.ok) throw new Error('Failed to delete user');
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || errorData.error || 'Failed to delete user');
+  }
 }
 
 // ── getAllInterests ────────────────────────────────────────────────────────
@@ -173,7 +188,10 @@ export async function getAllInterests(): Promise<AdminInterest[]> {
     cache: 'no-store',
   });
 
-  if (!res.ok) throw new Error('Failed to fetch interests');
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || errorData.error || 'Failed to fetch interests');
+  }
   return res.json();
 }
 
@@ -187,7 +205,10 @@ export async function getAdminDashboardStats(): Promise<AdminStats> {
     cache: 'no-store',
   });
 
-  if (!res.ok) throw new Error('Failed to fetch dashboard stats');
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || errorData.error || 'Failed to fetch dashboard stats');
+  }
   return res.json();
 }
 
@@ -201,7 +222,10 @@ export async function getAdminProfile(): Promise<AdminProfile> {
     cache: 'no-store',
   });
 
-  if (!res.ok) throw new Error('Failed to fetch admin profile');
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || errorData.error || 'Failed to fetch admin profile');
+  }
   return res.json();
 }
 
@@ -216,7 +240,10 @@ export async function updateAdminProfile(data: { username?: string; email?: stri
     body: JSON.stringify(data),
   });
 
-  if (!res.ok) throw new Error('Failed to update admin profile');
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || errorData.error || 'Failed to update admin profile');
+  }
   return res.json();
 }
 
@@ -239,7 +266,10 @@ export async function markAsMarried(husbandId: string, wifeId: string): Promise<
     body: JSON.stringify({ husbandId, wifeId }),
   });
 
-  if (!res.ok) throw new Error('Failed to mark as married');
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || errorData.error || 'Failed to mark as married');
+  }
   return res.json();
 }
 
@@ -254,6 +284,9 @@ export async function unmarkAsMarried(husbandId: string, wifeId: string): Promis
     body: JSON.stringify({ husbandId, wifeId }),
   });
 
-  if (!res.ok) throw new Error('Failed to undo marriage status');
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || errorData.error || 'Failed to undo marriage status');
+  }
   return res.json();
 }

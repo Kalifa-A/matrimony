@@ -5,28 +5,26 @@
 
 function setAuthCookie(res, name, token) {
   const isProd = process.env.NODE_ENV === 'production';
-  const secure = isProd ? 'Secure;' : '';
-  const sameSite = isProd ? 'None' : 'Lax';
   
-  const cookieString = `${name}=${token}; HttpOnly; ${secure} SameSite=${sameSite}; Max-Age=${60 * 60 * 24 * 7}; Path=/`;
-  
-  let existingCookies = res.getHeader('Set-Cookie') || [];
-  if (!Array.isArray(existingCookies)) existingCookies = [existingCookies];
-  
-  res.setHeader('Set-Cookie', [...existingCookies, cookieString]);
+  res.cookie(name, token, {
+    httpOnly: true,
+    secure: isProd, // Must be true for SameSite: 'None'
+    sameSite: isProd ? 'none' : 'lax',
+    maxAge: 60 * 60 * 24 * 7 * 1000, // 7 days in ms
+    path: '/',
+  });
 }
 
 function removeAuthCookie(res, name) {
   const isProd = process.env.NODE_ENV === 'production';
-  const secure = isProd ? 'Secure;' : '';
-  const sameSite = isProd ? 'None' : 'Lax';
-
-  const cookieString = `${name}=; HttpOnly; ${secure} SameSite=${sameSite}; Max-Age=0; Path=/`;
   
-  let existingCookies = res.getHeader('Set-Cookie') || [];
-  if (!Array.isArray(existingCookies)) existingCookies = [existingCookies];
-  
-  res.setHeader('Set-Cookie', [...existingCookies, cookieString]);
+  res.cookie(name, '', {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'lax',
+    maxAge: 0,
+    path: '/',
+  });
 }
 
 module.exports = { setAuthCookie, removeAuthCookie };

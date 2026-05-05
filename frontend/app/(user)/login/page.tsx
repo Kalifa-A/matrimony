@@ -45,7 +45,8 @@ export default function Login() {
         }
 
         showToast("Welcome back!");
-        router.push('/'); // Or your home page
+        // Use window.location.href for full reload to ensure middleware sees the cookie
+        window.location.href = '/'; 
       } else {
         showToast(data.message || "Invalid credentials", 'error');
       }

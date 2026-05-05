@@ -103,9 +103,9 @@ export default function RegisterForm() {
         
         showToast("Success! Bismillah, your profile is created.");
         if (plan === 'premium') {
-          router.push('/payment');
+          window.location.href = '/payment';
         } else {
-          router.push('/login');
+          window.location.href = '/login';
         }
       } else {
         showToast(result.message || "Registration failed", 'error');

@@ -35,7 +35,7 @@ export default function AdminLogin() {
         }
 
         showToast('Access Granted. Welcome, Admin.');
-        router.push('/admin');
+        window.location.href = '/admin';
       } else {
         showToast(data.message || 'Login failed', 'error');
       }

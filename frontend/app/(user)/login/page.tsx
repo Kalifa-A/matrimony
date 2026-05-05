@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 
 
 import { useToast } from '@/app/components/ToastProvider';
-import { setUserSession } from '@/app/actions/userAuthActions';
 
 export default function Login() {
   const { showToast } = useToast();
@@ -38,7 +37,12 @@ export default function Login() {
         // Token is now set automatically by the backend via HttpOnly Set-Cookie header
         // BUT for cross-domain middleware (Vercel + Render), we also set a local cookie
         if (data.token) {
-          await setUserSession(data.token);
+          // Call our Next.js API route to set a proper server-side cookie
+          await fetch('/api/auth/set-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: data.token, type: 'user' }),
+          });
         }
         
         // Save user basic info to localStorage for UI profile display

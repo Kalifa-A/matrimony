@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter, } from 'next/navigation';
 import { useToast } from '@/app/components/ToastProvider';
-import { setUserSession } from '@/app/actions/userAuthActions';
 
 export default function RegisterForm() {
   const { showToast } = useToast();
@@ -99,7 +98,11 @@ export default function RegisterForm() {
       if (response.ok) {
         // Set local cookie for middleware support
         if (result.token) {
-          await setUserSession(result.token);
+          await fetch('/api/auth/set-session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: result.token, type: 'user' }),
+          });
         }
         
         showToast("Success! Bismillah, your profile is created.");

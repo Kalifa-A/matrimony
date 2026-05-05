@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   User, Mail, Phone, MapPin, GraduationCap, 
   Briefcase, Banknote, Heart, Sparkles, 
@@ -29,6 +30,7 @@ import { useToast } from '@/app/components/ToastProvider';
 
 export default function MyAccount() {
   const { showToast } = useToast();
+  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [interests, setInterests] = useState([]);
@@ -57,23 +59,37 @@ export default function MyAccount() {
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
-    if (userData) {
-      const loggedInUser = JSON.parse(userData);
-      const userId = loggedInUser._id || loggedInUser.id;
+    if (!userData) {
+      // No local session - redirect to login
+      router.replace('/login');
+      return;
+    }
 
-      fetch(`${API_URL}/api/auth/me/${userId}`, { credentials: 'include' })
-        .then(res => res.json())
-        .then(data => {
+    const loggedInUser = JSON.parse(userData);
+    const userId = loggedInUser._id || loggedInUser.id;
+
+    fetch(`${API_URL}/api/auth/me/${userId}`, { credentials: 'include' })
+      .then(res => {
+        if (!res.ok) {
+          // Session expired on backend
+          localStorage.removeItem('user');
+          router.replace('/login');
+          return null;
+        }
+        return res.json();
+      })
+      .then(data => {
+        if (data) {
           setProfile(data);
           setLoading(false);
-        })
-        .catch(err => console.error("Error fetching profile:", err));
+        }
+      })
+      .catch(err => console.error("Error fetching profile:", err));
 
-      fetch(`${API_URL}/api/interests/received/${userId}`, { credentials: 'include' })
-        .then(res => res.json())
-        .then(data => setInterests(data))
-        .catch(err => console.error("Error fetching interests:", err));
-    }
+    fetch(`${API_URL}/api/interests/received/${userId}`, { credentials: 'include' })
+      .then(res => res.json())
+      .then(data => setInterests(data))
+      .catch(err => console.error("Error fetching interests:", err));
   }, []);
 
   useEffect(() => {

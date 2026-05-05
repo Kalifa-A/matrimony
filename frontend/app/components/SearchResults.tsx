@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Heart, MapPin, GraduationCap, Lock, Flower2, Search, Briefcase, IndianRupee, Users } from 'lucide-react';
 
 interface Profile {
@@ -19,6 +19,7 @@ interface Profile {
 export default function SearchResultsContent() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
   const searchParams = useSearchParams();
   if (!searchParams) return null; // Safety check for prerendering
 
@@ -71,18 +72,28 @@ export default function SearchResultsContent() {
   };
 
   useEffect(() => {
-    fetchProfiles();
-    if (typeof window !== 'undefined') {
-      const userData = localStorage.getItem('user');
-      if (userData) {
-        const loggedInUser = JSON.parse(userData);
-        const userId = loggedInUser._id || loggedInUser.id;
-        fetch(`${API_URL}/api/auth/me/${userId}`, { credentials: 'include' })
-          .then(res => res.json())
-          .then(data => setHasPaid(data.hasPaid))
-          .catch(err => console.error("Error checking payment status:", err));
-      }
+    // Client-side auth guard (replaces middleware for cross-domain deployments)
+    const userData = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+    if (!userData) {
+      router.replace('/login');
+      return;
     }
+
+    fetchProfiles();
+
+    const loggedInUser = JSON.parse(userData);
+    const userId = loggedInUser._id || loggedInUser.id;
+    fetch(`${API_URL}/api/auth/me/${userId}`, { credentials: 'include' })
+      .then(res => {
+        if (!res.ok) {
+          localStorage.removeItem('user');
+          router.replace('/login');
+          return null;
+        }
+        return res.json();
+      })
+      .then(data => { if (data) setHasPaid(data.hasPaid); })
+      .catch(err => console.error("Error checking payment status:", err));
   }, []);
 
 return (

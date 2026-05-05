@@ -34,6 +34,10 @@ export default function Login() {
 
       if (response.ok) {
         // Token is now set automatically by the backend via HttpOnly Set-Cookie header
+        // BUT for cross-domain middleware (Vercel + Render), we also set a local cookie
+        if (data.token) {
+          document.cookie = `user_token=${data.token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+        }
         
         // Save user basic info to localStorage for UI profile display
         if (data.user) {

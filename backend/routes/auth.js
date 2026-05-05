@@ -62,7 +62,12 @@ router.post('/register', upload.single('profilePhoto'), async (req, res) => {
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
     setAuthCookie(res, 'user_token', token);
 
-    res.status(201).json({ message: "Registration Successful!", user: { _id: user._id, name: user.name, email: user.email }, profilePhoto: user.profilePhoto });
+    res.status(201).json({ 
+      message: "Registration Successful!", 
+      user: { _id: user._id, name: user.name, email: user.email }, 
+      profilePhoto: user.profilePhoto,
+      token // Return token for frontend middleware support
+    });
 
   } catch (err) {
     console.error(err);
@@ -88,7 +93,11 @@ router.post('/login', async (req, res) => {
     // Set the secure HttpOnly cookie
     setAuthCookie(res, 'user_token', token);
 
-    res.json({ message: "Login successful", user: { _id: user._id, name: user.name, email: user.email } });
+    res.json({ 
+      message: "Login successful", 
+      user: { _id: user._id, name: user.name, email: user.email },
+      token // Return token for frontend middleware support
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

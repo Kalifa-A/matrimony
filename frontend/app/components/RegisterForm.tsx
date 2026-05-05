@@ -96,6 +96,11 @@ export default function RegisterForm() {
       });
       const result = await response.json();
       if (response.ok) {
+        // Set local cookie for middleware support
+        if (result.token) {
+          document.cookie = `user_token=${result.token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+        }
+        
         showToast("Success! Bismillah, your profile is created.");
         if (plan === 'premium') {
           router.push('/payment');

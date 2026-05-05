@@ -102,7 +102,11 @@ router.post('/login', async (req, res) => {
     // Set the secure HttpOnly cookie
     setAuthCookie(res, 'admin_token', token);
 
-    res.json({ message: 'Admin login successful.', admin: { username: admin.username, role: admin.role } });
+    res.json({ 
+      message: 'Admin login successful.', 
+      admin: { username: admin.username, role: admin.role },
+      token // Return token for frontend middleware support
+    });
   } catch (err) {
     console.error('Admin login error:', err.message);
     res.status(500).json({ message: 'Server error.' });

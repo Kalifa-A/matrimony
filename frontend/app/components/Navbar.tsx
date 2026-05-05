@@ -42,6 +42,9 @@ export default function Navbar() {
   const handleLogout = async () => {
     try {
       await fetch(`${API_URL}/api/auth/logout`, { method: 'POST', credentials: 'include' });
+      // Also clear local cookies for middleware
+      document.cookie = "user_token=; path=/; max-age=0; SameSite=Lax";
+      document.cookie = "admin_token=; path=/; max-age=0; SameSite=Lax";
     } catch (e) { console.error(e); }
     setIsLoggedIn(false);
     setUser(null);

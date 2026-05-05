@@ -28,7 +28,12 @@ export default function AdminLogin() {
       const data = await res.json();
       
       if (res.ok) {
-        // Cookie is now set automatically by the backend via HttpOnly Set-Cookie header
+        // Token is now set automatically by the backend via HttpOnly Set-Cookie header
+        // BUT for cross-domain middleware (Vercel + Render), we also set a local cookie
+        if (data.token) {
+          document.cookie = `admin_token=${data.token}; path=/; max-age=${60 * 60 * 1}; SameSite=Lax`;
+        }
+
         showToast('Access Granted. Welcome, Admin.');
         router.push('/admin');
       } else {

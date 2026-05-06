@@ -50,8 +50,9 @@ export default function SearchResultsContent() {
         job: job,
       }).toString();
 
+      const fetchHeaders: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
       const response = await fetch(`${API_URL}/api/auth/profiles?${query}`, {
-        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        headers: fetchHeaders
       });
       const data = await response.json();
       

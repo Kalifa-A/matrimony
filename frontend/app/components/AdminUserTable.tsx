@@ -83,7 +83,7 @@ export default function AdminUserTable() {
     setActionInProgress(user._id + '-approve');
     startTransition(async () => {
       try {
-        if (user.isAdminApproved) {
+        if (user.isApproved) {
           await revokeUser(user._id);
           showToast(`Approval revoked for ${user.name}`);
         } else {
@@ -94,7 +94,7 @@ export default function AdminUserTable() {
         setUsers((prev) =>
           prev.map((u) =>
             u._id === user._id
-              ? { ...u, isAdminApproved: !u.isAdminApproved }
+              ? { ...u, isApproved: !u.isApproved }
               : u
           )
         );
@@ -157,7 +157,7 @@ export default function AdminUserTable() {
 
   // ── Stats ──────────────────────────────────────────────
   const totalUsers = users.length;
-  const pendingApproval = users.filter((u) => !u.isAdminApproved).length;
+  const pendingApproval = users.filter((u) => !u.isApproved).length;
   const paidUsers = users.filter((u) => u.hasPaid).length;
 
   return (
@@ -281,13 +281,13 @@ export default function AdminUserTable() {
 
                     {/* Date */}
                     <td className="p-4 text-sm text-gray-500">
-                      {formatDate(user.registrationDate || user.createdAt)}
+                      {formatDate(user.createdAt)}
                     </td>
 
                     {/* Status Badge */}
                     <td className="p-4">
                       <div className="flex items-center gap-2">
-                        {user.isAdminApproved ? (
+                        {user.isApproved ? (
                           <span className="bg-emerald-50 text-emerald-600 px-2 py-1 rounded-lg text-[10px] font-bold uppercase">Verified</span>
                         ) : (
                           <span className="bg-orange-50 text-orange-600 px-2 py-1 rounded-lg text-[10px] font-bold uppercase">Pending Call</span>

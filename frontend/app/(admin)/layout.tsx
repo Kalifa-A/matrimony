@@ -2,20 +2,15 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { adminSignOut } from '@/app/actions/adminActions';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const handleSignOut = async () => {
-    try {
-      await adminSignOut();
-      router.push('/admin/login');
-    } catch (err) {
-      console.error("Sign out failed:", err);
-    }
+  const handleSignOut = () => {
+    localStorage.removeItem('admin_token');
+    router.push('/admin/login');
   };
 
   // Define your navigation links here

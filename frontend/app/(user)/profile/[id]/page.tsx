@@ -42,7 +42,7 @@ export default function ProfileDetails() {
   useEffect(() => {
     const fetchProfileData = async () => {
       const token = localStorage.getItem('user_token');
-      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+      const headers: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
 
       try {
         if (id === 'my-account') {

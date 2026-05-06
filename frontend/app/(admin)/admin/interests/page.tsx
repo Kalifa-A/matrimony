@@ -1,8 +1,32 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { getAllInterests, AdminInterest, markAsMarried, unmarkAsMarried } from '@/app/actions/adminActions';
+import { getAllInterests, marryUsers, unmarryUsers, getDashboardStats } from '@/app/actions/adminActions';
 import Image from 'next/image';
 import { useToast } from '@/app/components/ToastProvider';
+
+export interface AdminInterest {
+  _id: string;
+  sender: {
+    _id: string;
+    name: string;
+    phone: string;
+    email: string;
+    gender: string;
+    profilePhoto?: string;
+    isMarried: boolean;
+  };
+  receiver: {
+    _id: string;
+    name: string;
+    phone: string;
+    email: string;
+    gender: string;
+    profilePhoto?: string;
+    isMarried: boolean;
+  };
+  isMutual: boolean;
+  createdAt: string;
+}
 
 export default function AdminInterests() {
   const { showToast } = useToast();
@@ -17,9 +41,7 @@ export default function AdminInterests() {
       const data = await getAllInterests();
       setInterests(data);
       
-      // Also fetch stats to get marriage count
-      const { getAdminDashboardStats } = await import('@/app/actions/adminActions');
-      const statsData = await getAdminDashboardStats();
+      const statsData = await getDashboardStats();
       setStats(statsData);
     } catch (err) {
       console.error("Failed to load interests:", err);
@@ -34,7 +56,7 @@ export default function AdminInterests() {
 
   const handleMarry = async (husbandId: string, wifeId: string) => {
     try {
-      await markAsMarried(husbandId, wifeId);
+      await marryUsers(husbandId, wifeId);
       showToast("Congratulations! Couple marked as married.");
       fetchInterests();
     } catch (err) {
@@ -44,7 +66,7 @@ export default function AdminInterests() {
 
   const handleUnmarry = async (husbandId: string, wifeId: string) => {
     try {
-      await unmarkAsMarried(husbandId, wifeId);
+      await unmarryUsers(husbandId, wifeId);
       showToast("Marriage status undone.");
       fetchInterests();
     } catch (err) {

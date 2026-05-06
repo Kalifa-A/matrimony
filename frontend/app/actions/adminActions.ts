@@ -5,9 +5,44 @@
  * Uses localStorage for JWT token persistence.
  */
 
+export interface AdminStats {
+  totalUsers: number;
+  pendingUsers: number;
+  activeUsers: number;
+  paidUsers: number;
+  totalInterests: number;
+  successStories: number;
+  pendingVerifications: number;
+  mutualMatches: number;
+}
+
+export interface AdminProfile {
+  _id: string;
+  username: string;
+  email: string;
+  role?: string;
+  createdAt?: string;
+}
+
+export interface AdminUser {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  gender: string;
+  age: number;
+  profession: string;
+  location: string;
+  isApproved: boolean;
+  hasPaid: boolean;
+  profilePhoto?: string;
+  isMarried?: boolean;
+  createdAt?: string;
+}
+
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000';
 
-function getAuthHeader() {
+function getAuthHeader(): HeadersInit {
   if (typeof window === 'undefined') return {};
   const token = localStorage.getItem('admin_token');
   return token ? { 'Authorization': `Bearer ${token}` } : {};

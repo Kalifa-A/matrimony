@@ -68,7 +68,7 @@ export default function MyAccount() {
 
     const loggedInUser = JSON.parse(userData);
     const userId = loggedInUser._id;
-    const headers = { 'Authorization': `Bearer ${token}` };
+    const headers: HeadersInit = { 'Authorization': `Bearer ${token}` };
 
     fetch(`${API_URL}/api/auth/me`, { headers })
       .then(res => {

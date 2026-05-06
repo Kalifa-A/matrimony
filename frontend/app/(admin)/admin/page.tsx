@@ -1,10 +1,12 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import AdminUserTable from '@/app/components/AdminUserTable';
-import { getAdminDashboardStats, AdminStats } from '@/app/actions/adminActions';
+import { getDashboardStats, AdminStats } from '@/app/actions/adminActions';
 
 export default function AdminDashboard() {
+  const router = useRouter();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
 

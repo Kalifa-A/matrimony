@@ -62,6 +62,7 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
       status: backendRes.status,
       headers: {
         'Content-Type': responseContentType || 'application/json',
+        'X-Proxy-Auth-Status': token ? 'Token-Found' : 'No-Token',
       },
     });
   } catch (err) {

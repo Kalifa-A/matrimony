@@ -34,17 +34,14 @@ const authLimiter = rateLimit({
 });
 
 app.use(cookieParser());
-const allowedOrigins = [
-  process.env.FRONTEND_URL?.replace(/\/$/, ''), // Remove trailing slash if present
-
 app.use(cors({
   origin: function (origin, callback) {
-    const allowedOrigins = [
-      process.env.FRONTEND_URL,
+    const allowed = [
+      process.env.FRONTEND_URL?.replace(/\/$/, ''),
       'http://localhost:3000',
       'https://matrimony-sage.vercel.app'
-    ];
-    if (!origin || allowedOrigins.includes(origin)) {
+    ].filter(Boolean);
+    if (!origin || allowed.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));

@@ -44,7 +44,10 @@ export default function AdminLogin() {
         }
 
         showToast('Access Granted. Welcome, Admin.');
-        window.location.href = '/admin';
+        console.log("Redirecting in 2 seconds...");
+        setTimeout(() => {
+          window.location.href = '/admin';
+        }, 2000);
       } else {
         showToast(data.message || 'Login failed', 'error');
       }

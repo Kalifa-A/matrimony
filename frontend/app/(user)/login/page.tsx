@@ -57,9 +57,11 @@ export default function Login() {
         }
 
         showToast("Welcome back!");
-        // Use window.location.href for full reload to ensure middleware sees the cookie
-        window.location.href = '/'; 
-      } else {
+        console.log("Redirecting in 2 seconds...");
+        setTimeout(() => {
+          // Use window.location.href for full reload to ensure middleware sees the cookie
+          window.location.href = '/'; 
+        }, 2000);      } else {
         showToast(data.message || "Invalid credentials", 'error');
       }
     } catch (err) {

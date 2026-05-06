@@ -281,6 +281,50 @@ export default function MyAccount() {
                   <EditableField label="Profession" value={profile.job} icon={<Briefcase size={16}/>} isEditing={isEditing} onChange={(val) => setProfile({...profile, job: val})} />
                   <EditableField label="Annual Salary" value={profile.salary} icon={<Banknote size={16}/>} isEditing={isEditing} onChange={(val) => setProfile({...profile, salary: val})} />
                   
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 ml-1">
+                       <Heart size={16} className="text-pink-400"/>
+                       <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Marital Status</label>
+                    </div>
+                    {isEditing ? (
+                      <select 
+                        value={profile.maritalStatus}
+                        onChange={(e) => setProfile({...profile, maritalStatus: e.target.value})}
+                        className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm font-bold focus:ring-4 focus:ring-[#9AD872]/10 transition-all outline-none cursor-pointer"
+                      >
+                        <option>Single</option>
+                        <option>Divorced</option>
+                        <option>Widowed</option>
+                      </select>
+                    ) : (
+                      <div className="p-4 rounded-2xl border border-gray-50 bg-gray-50/20 font-black text-gray-800 text-sm">
+                         {profile.maritalStatus || "Single"}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 ml-1">
+                       <User size={16} className="text-blue-400"/>
+                       <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Gender</label>
+                    </div>
+                    {isEditing ? (
+                      <select 
+                        value={profile.gender}
+                        onChange={(e) => setProfile({...profile, gender: e.target.value})}
+                        className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm font-bold focus:ring-4 focus:ring-[#9AD872]/10 transition-all outline-none cursor-pointer"
+                      >
+                        <option>Male</option>
+                        <option>Female</option>
+                        <option>Other</option>
+                      </select>
+                    ) : (
+                      <div className="p-4 rounded-2xl border border-gray-50 bg-gray-50/20 font-black text-gray-800 text-sm">
+                         {profile.gender || "Not Specified"}
+                      </div>
+                    )}
+                  </div>
+                  
                   <div className="md:col-span-2">
                     <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest ml-1 mb-2">Short Bio</p>
                     {isEditing ? (

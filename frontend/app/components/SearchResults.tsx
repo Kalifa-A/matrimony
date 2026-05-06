@@ -14,6 +14,8 @@ interface Profile {
   maritalStatus: string;
   job: string;
   salary: string;
+  gender: string;
+  assets?: string;
 }
 
 export default function SearchResultsContent() {
@@ -31,6 +33,8 @@ export default function SearchResultsContent() {
   const [education, setEducation] = useState('All Education');
   const [salary, setSalary] = useState('Any Salary');
   const [job, setJob] = useState('');
+  const [assets, setAssets] = useState('');
+  const [showMoreFilters, setShowMoreFilters] = useState(false);
 
   const [hasPaid, setHasPaid] = useState(false);
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
@@ -48,6 +52,7 @@ export default function SearchResultsContent() {
         education: education !== 'All Education' ? education : '',
         salary: salary !== 'Any Salary' ? salary : '',
         job: job,
+        assets: assets,
       }).toString();
 
       const fetchHeaders: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
@@ -133,11 +138,24 @@ return (
               </div>
 
               <div className="bg-gray-50/50 rounded-2xl px-4 py-2 border border-transparent focus-within:bg-white focus-within:border-[#9AD872]/30 transition-all">
+                <label className="block text-[9px] font-black uppercase text-gray-400 mb-1">Looking For</label>
+                <select value={gender} onChange={(e) => setGender(e.target.value)} className="w-full bg-transparent border-none p-0 focus:ring-0 text-sm font-bold cursor-pointer">
+                  <option>All Genders</option>
+                  <option>Male</option>
+                  <option>Female</option>
+                  <option>Other</option>
+                </select>
+              </div>
+
+              <div className="bg-gray-50/50 rounded-2xl px-4 py-2 border border-transparent focus-within:bg-white focus-within:border-[#9AD872]/30 transition-all">
                 <label className="block text-[9px] font-black uppercase text-gray-400 mb-1">Location</label>
                 <select value={city} onChange={(e) => setCity(e.target.value)} className="w-full bg-transparent border-none p-0 focus:ring-0 text-sm font-bold cursor-pointer">
                   <option>All Cities</option>
                   <option>Chennai</option>
                   <option>Madurai</option>
+                  <option>Coimbatore</option>
+                  <option>Trichy</option>
+                  <option>Salem</option>
                 </select>
               </div>
 
@@ -147,25 +165,74 @@ return (
                   <option>Any Status</option>
                   <option>Single</option>
                   <option>Divorced</option>
+                  <option>Widowed</option>
                 </select>
               </div>
 
-              <div className="bg-gray-50/50 rounded-2xl px-4 py-2 border border-transparent focus-within:bg-white focus-within:border-[#9AD872]/30 transition-all">
-                <label className="block text-[9px] font-black uppercase text-gray-400 mb-1">Education</label>
-                <select value={education} onChange={(e) => setEducation(e.target.value)} className="w-full bg-transparent border-none p-0 focus:ring-0 text-sm font-bold cursor-pointer">
-                  <option>All Education</option>
-                  <option>Master's</option>
-                  <option>Bachelor's</option>
-                </select>
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => setShowMoreFilters(!showMoreFilters)}
+                  className={`flex-1 rounded-2xl font-black text-[10px] uppercase tracking-tighter transition-all border ${showMoreFilters ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-900 border-gray-100 hover:border-gray-200'}`}
+                >
+                  {showMoreFilters ? "Less" : "More"} Filters
+                </button>
+                <button 
+                  onClick={fetchProfiles}
+                  className="flex-[1.5] bg-[#9AD872] hover:bg-[#8bc963] text-white rounded-2xl font-black text-xs uppercase tracking-tighter shadow-lg shadow-[#9AD872]/30 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2"
+                >
+                  {loading ? "..." : "Search"}
+                </button>
               </div>
-
-              <button 
-                onClick={fetchProfiles}
-                className="bg-[#9AD872] hover:bg-[#8bc963] text-white rounded-2xl font-black text-xs uppercase tracking-tighter shadow-lg shadow-[#9AD872]/30 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2 px-6 py-4 lg:py-0"
-              >
-                {loading ? "..." : "Search Matches"}
-              </button>
             </div>
+
+            {showMoreFilters && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-3 pt-3 border-t border-gray-50 animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="bg-gray-50/50 rounded-2xl px-4 py-2 border border-transparent focus-within:bg-white focus-within:border-[#9AD872]/30 transition-all">
+                  <label className="block text-[9px] font-black uppercase text-gray-400 mb-1">Education</label>
+                  <select value={education} onChange={(e) => setEducation(e.target.value)} className="w-full bg-transparent border-none p-0 focus:ring-0 text-sm font-bold cursor-pointer">
+                    <option>All Education</option>
+                    <option>Master's</option>
+                    <option>Bachelor's</option>
+                    <option>Doctorate</option>
+                    <option>Diploma</option>
+                    <option>High School</option>
+                  </select>
+                </div>
+
+                <div className="bg-gray-50/50 rounded-2xl px-4 py-2 border border-transparent focus-within:bg-white focus-within:border-[#9AD872]/30 transition-all">
+                  <label className="block text-[9px] font-black uppercase text-gray-400 mb-1">Profession / Job</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. Engineer" 
+                    value={job} 
+                    onChange={(e) => setJob(e.target.value)} 
+                    className="w-full bg-transparent border-none p-0 focus:ring-0 text-sm font-bold" 
+                  />
+                </div>
+
+                <div className="bg-gray-50/50 rounded-2xl px-4 py-2 border border-transparent focus-within:bg-white focus-within:border-[#9AD872]/30 transition-all">
+                  <label className="block text-[9px] font-black uppercase text-gray-400 mb-1">Monthly Salary</label>
+                  <select value={salary} onChange={(e) => setSalary(e.target.value)} className="w-full bg-transparent border-none p-0 focus:ring-0 text-sm font-bold cursor-pointer">
+                    <option>Any Salary</option>
+                    <option>Below ₹20,000</option>
+                    <option>₹20,000 - ₹50,000</option>
+                    <option>₹50,000 - ₹1,00,000</option>
+                    <option>Above ₹1,00,000</option>
+                  </select>
+                </div>
+
+                <div className="bg-gray-50/50 rounded-2xl px-4 py-2 border border-transparent focus-within:bg-white focus-within:border-[#9AD872]/30 transition-all">
+                  <label className="block text-[9px] font-black uppercase text-gray-400 mb-1">Assets / Property</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. House, Land" 
+                    value={assets} 
+                    onChange={(e) => setAssets(e.target.value)} 
+                    className="w-full bg-transparent border-none p-0 focus:ring-0 text-sm font-bold" 
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>

@@ -184,6 +184,7 @@ export default function RegisterForm() {
                   <select name="gender" value={formData.gender} onChange={handleChange} className="input-field">
                     <option>Male</option>
                     <option>Female</option>
+                    <option>Other</option>
                   </select>
                 </div>
               </div>

@@ -55,7 +55,7 @@ export default function Home() {
             <div className="absolute inset-0 bg-[#9AD872] rounded-[2rem] sm:rounded-[4rem] rotate-3 opacity-20 animate-pulse"></div>
             <div className="absolute inset-0 bg-white border-2 border-gray-50 rounded-[2rem] sm:rounded-[4rem] overflow-hidden shadow-2xl">
               <video autoPlay loop muted playsInline className="w-full h-full object-cover">
-                <source src="/wedding2.mp4" type="video/mp4" />
+                <source src="" type="video/mp4" />
               </video>
             </div>
             <div className="absolute -bottom-4 sm:-bottom-6 left-2 sm:-left-10 bg-white p-3 sm:p-6 rounded-2xl sm:rounded-3xl shadow-xl border border-gray-50 flex items-center gap-3 sm:gap-4">
@@ -111,7 +111,7 @@ export default function Home() {
           <div className="lg:col-span-3 relative h-[300px] sm:h-[450px] lg:h-[600px]">
             <div className="absolute inset-0 z-0 bg-[#9AD872] rounded-[2rem] sm:rounded-[4rem] rotate-3 opacity-15 blur-2xl scale-110"></div>
             <div className="absolute inset-0 z-10 bg-white border border-gray-100 rounded-[2rem] sm:rounded-[4rem] overflow-hidden shadow-2xl">
-              <img src="/chatgpt.png" alt="Couple walking" className="w-full h-full object-cover" />
+              <img src="" alt="Couple walking" className="w-full h-full object-cover" />
               <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-gray-900/50 to-transparent"></div>
             </div>
           </div>
@@ -124,7 +124,7 @@ export default function Home() {
           <div className="relative h-[300px] sm:h-[450px] md:h-[550px] order-2 md:order-1">
             <div className="absolute inset-0 z-0 bg-gray-100 rounded-[2rem] sm:rounded-[4rem] -rotate-3 opacity-80 blur-xl scale-105"></div>
             <div className="absolute inset-0 z-10 bg-white border border-gray-100 rounded-[2rem] sm:rounded-[4rem] overflow-hidden shadow-2xl">
-              <img src="/gemini.png" alt="Intimate couple" className="w-full h-full object-cover" />
+              <img src="" alt="Intimate couple" className="w-full h-full object-cover" />
             </div>
             <div className="absolute top-4 sm:top-10 right-2 sm:-right-8 z-30 bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl shadow-xl border border-gray-100 flex items-center gap-2 sm:gap-4">
               <div className="bg-emerald-50/50 p-2 sm:p-3 rounded-full text-base sm:text-lg">❤️</div>

@@ -9,9 +9,15 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const token = localStorage.getItem('admin_token');
+    if (!token) {
+      router.push('/admin/login');
+      return;
+    }
+
     async function loadStats() {
       try {
-        const data = await getAdminDashboardStats();
+        const data = await getDashboardStats();
         setStats(data);
       } catch (err) {
         console.error("Failed to load admin stats:", err);
@@ -20,7 +26,7 @@ export default function AdminDashboard() {
       }
     }
     loadStats();
-  }, []);
+  }, [router]);
 
   return (
     <div className="flex min-h-screen bg-gray-50">

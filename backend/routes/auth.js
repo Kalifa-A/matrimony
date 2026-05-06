@@ -4,7 +4,6 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const upload = require('../config/cloudinary');
 const jwt = require('jsonwebtoken');
-const { setAuthCookie, removeAuthCookie } = require('../utils/auth-cookies');
 const { authenticateUser } = require('../utils/auth-middleware');
 const Joi = require('joi');
 
@@ -58,9 +57,8 @@ router.post('/register', upload.single('profilePhoto'), async (req, res) => {
 
     await user.save();
 
-    // Create JWT Token and set cookie so they are logged in immediately
+    // Create JWT Token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    setAuthCookie(res, 'user_token', token);
 
     res.status(201).json({ 
       message: "Registration Successful!", 
@@ -89,9 +87,6 @@ router.post('/login', async (req, res) => {
 
     // Create JWT Token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    
-    // Set the secure HttpOnly cookie
-    setAuthCookie(res, 'user_token', token);
 
     res.json({ 
       message: "Login successful", 
@@ -256,9 +251,8 @@ router.get('/me', authenticateUser, async (req, res) => {
   }
 });
 
-// POST /api/auth/logout - Clear session cookie
+// POST /api/auth/logout - Inform client to clear localStorage
 router.post('/logout', (req, res) => {
-  removeAuthCookie(res, 'user_token');
   res.json({ message: "Logged out successfully" });
 });
 

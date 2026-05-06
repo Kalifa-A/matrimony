@@ -41,6 +41,9 @@ export default function ProfileDetails() {
 
   useEffect(() => {
     const fetchProfileData = async () => {
+      const token = localStorage.getItem('user_token');
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+
       try {
         if (id === 'my-account') {
           setProfile(null);
@@ -49,7 +52,7 @@ export default function ProfileDetails() {
         }
 
         // 1. Fetch Profile Details
-        const profileRes = await fetch(`/api/proxy/auth/profile/${id}`, { credentials: 'include' });
+        const profileRes = await fetch(`${API_URL}/api/auth/profile/${id}`, { headers });
         const profileData = await profileRes.json();
         if (profileRes.ok) {
           setProfile(profileData);
@@ -57,16 +60,16 @@ export default function ProfileDetails() {
 
         // 2. Check current user's payment status and if interest already sent
         const userData = localStorage.getItem('user');
-        if (userData) {
+        if (userData && token) {
           const loggedInUser = JSON.parse(userData);
           
           // Check payment status
-          const meRes = await fetch(`/api/proxy/auth/me/${loggedInUser._id}`, { credentials: 'include' });
+          const meRes = await fetch(`${API_URL}/api/auth/me/${loggedInUser._id}`, { headers });
           const meData = await meRes.json();
           if (meRes.ok) setHasPaid(meData.hasPaid);
 
           // Check interest status
-          const interestRes = await fetch(`/api/proxy/interests/check/${loggedInUser._id}/${id}`, { credentials: 'include' });
+          const interestRes = await fetch(`${API_URL}/api/interests/check/${loggedInUser._id}/${id}`, { headers });
           const interestData = await interestRes.json();
           if (interestData.sent) setInterestSent(true);
         }
@@ -82,8 +85,9 @@ export default function ProfileDetails() {
   }, [id]);
 
   const handleSendInterest = async () => {
+    const token = localStorage.getItem('user_token');
     const userData = localStorage.getItem('user');
-    if (!userData) {
+    if (!token || !userData) {
       showToast("Please login to send interest", 'error');
       window.location.href = '/login';
       return;
@@ -93,14 +97,16 @@ export default function ProfileDetails() {
     setSending(true);
 
     try {
-      const res = await fetch('/api/proxy/interests/send', {
+      const res = await fetch(`${API_URL}/api/interests/send`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({
           senderId: loggedInUser._id,
           receiverId: id
         }),
-        credentials: 'include'
       });
 
       const data = await res.json();
@@ -119,20 +125,17 @@ export default function ProfileDetails() {
   };
 
   const handleUndoInterest = async () => {
+    const token = localStorage.getItem('user_token');
     const userData = localStorage.getItem('user');
-    if (!userData) {
-      showToast("Please login to undo interest", 'error');
-      window.location.href = '/login';
-      return;
-    }
+    if (!token || !userData) return;
 
     const loggedInUser = JSON.parse(userData);
     setSending(true);
 
     try {
-      const res = await fetch(`/api/proxy/interests/undo/${loggedInUser._id}/${id}`, {
+      const res = await fetch(`${API_URL}/api/interests/undo/${loggedInUser._id}/${id}`, {
         method: 'DELETE',
-        credentials: 'include'
+        headers: { 'Authorization': `Bearer ${token}` }
       });
 
       const data = await res.json();

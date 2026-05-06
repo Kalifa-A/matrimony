@@ -21,47 +21,30 @@ export default function Login() {
     setLoading(true);
 
     try {
-      // Use the Next.js proxy route to avoid cross-domain cookie issues on Vercel
-      const response = await fetch('/api/proxy/auth/login', {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
-        credentials: 'include',
       });
 
       const data = await response.json();
-      console.log("User login response:", data);
       
       if (response.ok) {
-        // Token is now set automatically by the backend via HttpOnly Set-Cookie header
-        // BUT for cross-domain middleware (Vercel + Render), we also set a local cookie
+        // Save token to localStorage
         if (data.token) {
-          console.log("Setting user session with token...");
-          // Call our Next.js API route to set a proper server-side cookie
-          const setRes = await fetch('/api/auth/set-session', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token: data.token, type: 'user' }),
-          });
-          const setResData = await setRes.json();
-          console.log("Set-session response:", setResData);
-        } else {
-          console.warn("No token received from backend!");
+          localStorage.setItem('user_token', data.token);
         }
         
-        // Save user basic info to localStorage for UI profile display
+        // Save user basic info to localStorage
         if (data.user) {
           localStorage.setItem('user', JSON.stringify(data.user));
         }
 
         showToast("Welcome back!");
-        console.log("Redirecting in 2 seconds...");
-        setTimeout(() => {
-          // Use window.location.href for full reload to ensure middleware sees the cookie
-          window.location.href = '/'; 
-        }, 2000);      } else {
+        router.push("/");
+      } else {
         showToast(data.message || "Invalid credentials", 'error');
       }
     } catch (err) {

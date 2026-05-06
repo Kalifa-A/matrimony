@@ -6,8 +6,6 @@ const User = require('../models/User');
 const Admin = require('../models/Admin');
 const Interest = require('../models/Interest');
 const SuccessStory = require('../models/SuccessStory');
-const { setAuthCookie, removeAuthCookie } = require('../utils/auth-cookies');
-
 // ── Simple admin-secret guard for setup only ──────────────────────────────────────────────
 function adminOnly(req, res, next) {
   const secret = req.headers['x-admin-secret'];
@@ -16,26 +14,17 @@ function adminOnly(req, res, next) {
   }
   next();
 }
-
-// ── Admin Authentication Middleware ──────────────────────────────────────────
-// Accepts JWT from Bearer header (cross-domain proxy) OR HttpOnly cookie (localhost)
+// Accepts JWT ONLY from Bearer header for cross-domain stability
 function authenticateAdmin(req, res, next) {
   const authHeader = req.headers['authorization'];
-  let token = null;
-
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    token = authHeader.substring(7);
-  }
-
-  if (!token) {
-    token = req.cookies.admin_token;
-  }
+  const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
 
   if (!token) return res.status(401).json({ message: 'Admin access denied. Please log in.' });
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (decoded.role !== 'superadmin') {
+    // Note: The role check should match your JWT payload (superadmin or admin)
+    if (decoded.role !== 'superadmin' && decoded.role !== 'admin') {
       return res.status(403).json({ message: 'Insufficient permissions.' });
     }
     req.admin = decoded;

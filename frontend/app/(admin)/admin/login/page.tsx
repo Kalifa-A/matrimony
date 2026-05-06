@@ -17,37 +17,24 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      // Use the proxy route to avoid cross-domain cookie issues
-      const res = await fetch('/api/proxy/admin/login', {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+    try {
+      const res = await fetch(`${API_URL}/api/admin/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
-        credentials: 'include',
       });
 
       const data = await res.json();
-      console.log("Admin login response:", data);
       
       if (res.ok) {
-        // Set the admin token as a Vercel-domain cookie so middleware can read it
         if (data.token) {
-          console.log("Setting admin session with token...");
-          const setRes = await fetch('/api/auth/set-session', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token: data.token, type: 'admin' }),
-          });
-          const setResData = await setRes.json();
-          console.log("Set-session response:", setResData);
-        } else {
-          console.warn("No token received from backend!");
+          localStorage.setItem('admin_token', data.token);
         }
 
         showToast('Access Granted. Welcome, Admin.');
-        console.log("Redirecting in 2 seconds...");
-        setTimeout(() => {
-          window.location.href = '/admin';
-        }, 2000);
+        router.push('/admin');
       } else {
         showToast(data.message || 'Login failed', 'error');
       }

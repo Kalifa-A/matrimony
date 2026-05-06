@@ -11,19 +11,29 @@ export default function Navbar() {
   const [user, setUser] = useState<{ name: string; _id?: string } | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   
-  // Use /api/proxy/ for all backend calls to avoid cross-domain cookie issues
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
   if (pathname?.startsWith("/admin")) return null;
 
   useEffect(() => {
     const checkAuth = async () => {
+      const token = localStorage.getItem('user_token');
+      if (!token) {
+        setIsLoggedIn(false);
+        setUser(null);
+        return;
+      }
+
       try {
-        const res = await fetch('/api/proxy/auth/me', { credentials: 'include' });
+        const res = await fetch(`${API_URL}/api/auth/me`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
         if (res.ok) {
           const data = await res.json();
           setIsLoggedIn(true);
           setUser(data);
         } else {
+          localStorage.removeItem('user_token');
           setIsLoggedIn(false);
           setUser(null);
         }
@@ -31,28 +41,18 @@ export default function Navbar() {
         setIsLoggedIn(false);
       }
     };
+
     checkAuth();
+    // Listen for changes in other tabs
     window.addEventListener('storage', checkAuth);
     return () => window.removeEventListener('storage', checkAuth);
   }, [pathname]);
 
   useEffect(() => { setMenuOpen(false); }, [pathname]);
 
-  const handleLogout = async () => {
-    try {
-      await fetch('/api/proxy/auth/logout', { method: 'POST', credentials: 'include' });
-      // Clear local (Vercel-domain) cookies
-      await fetch('/api/auth/set-session', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'user' }),
-      });
-      await fetch('/api/auth/set-session', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'admin' }),
-      });
-    } catch (e) { console.error(e); }
+  const handleLogout = () => {
+    localStorage.removeItem('user_token');
+    localStorage.removeItem('user');
     setIsLoggedIn(false);
     setUser(null);
     setMenuOpen(false);

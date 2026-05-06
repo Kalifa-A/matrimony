@@ -37,6 +37,7 @@ export default function SearchResultsContent() {
 
   const fetchProfiles = async () => {
     setLoading(true);
+    const token = localStorage.getItem('user_token');
     try {
       const query = new URLSearchParams({
         minAge: ageMin,
@@ -49,8 +50,8 @@ export default function SearchResultsContent() {
         job: job,
       }).toString();
 
-      const response = await fetch(`/api/proxy/auth/profiles?${query}`, {
-        credentials: 'include'
+      const response = await fetch(`${API_URL}/api/auth/profiles?${query}`, {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
       });
       const data = await response.json();
       
@@ -72,9 +73,9 @@ export default function SearchResultsContent() {
   };
 
   useEffect(() => {
-    // Client-side auth guard
+    const token = localStorage.getItem('user_token');
     const userData = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
-    if (!userData) {
+    if (!token || !userData) {
       router.replace('/login');
       return;
     }
@@ -82,11 +83,13 @@ export default function SearchResultsContent() {
     fetchProfiles();
 
     const loggedInUser = JSON.parse(userData);
-    const userId = loggedInUser._id || loggedInUser.id;
-    // Use proxy route to avoid cross-domain cookie issue
-    fetch(`/api/proxy/auth/me/${userId}`, { credentials: 'include' })
+    const userId = loggedInUser._id;
+    fetch(`${API_URL}/api/auth/me/${userId}`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
       .then(res => {
         if (!res.ok) {
+          localStorage.removeItem('user_token');
           localStorage.removeItem('user');
           router.replace('/login');
           return null;

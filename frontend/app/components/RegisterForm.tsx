@@ -89,20 +89,17 @@ export default function RegisterForm() {
       if (selectedFile) {
         dataToSend.append('profilePhoto', selectedFile);
       }
-      const response = await fetch('/api/proxy/auth/register', {
+      const response = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
         body: dataToSend,
-        credentials: 'include',
       });
       const result = await response.json();
       if (response.ok) {
-        // Set local cookie for middleware support
         if (result.token) {
-          await fetch('/api/auth/set-session', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token: result.token, type: 'user' }),
-          });
+          localStorage.setItem('user_token', result.token);
+        }
+        if (result.user) {
+          localStorage.setItem('user', JSON.stringify(result.user));
         }
         
         showToast("Success! Bismillah, your profile is created.");

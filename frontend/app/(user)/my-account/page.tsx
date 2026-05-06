@@ -58,20 +58,22 @@ export default function MyAccount() {
   });
 
   useEffect(() => {
+    const token = localStorage.getItem('user_token');
     const userData = localStorage.getItem('user');
-    if (!userData) {
-      // No local session - redirect to login
+    
+    if (!token || !userData) {
       router.replace('/login');
       return;
     }
 
     const loggedInUser = JSON.parse(userData);
-    const userId = loggedInUser._id || loggedInUser.id;
+    const userId = loggedInUser._id;
+    const headers = { 'Authorization': `Bearer ${token}` };
 
-    fetch(`/api/proxy/auth/me/${userId}`, { credentials: 'include' })
+    fetch(`${API_URL}/api/auth/me/${userId}`, { headers })
       .then(res => {
         if (!res.ok) {
-          // Session expired on backend
+          localStorage.removeItem('user_token');
           localStorage.removeItem('user');
           router.replace('/login');
           return null;
@@ -86,7 +88,7 @@ export default function MyAccount() {
       })
       .catch(err => console.error("Error fetching profile:", err));
 
-    fetch(`/api/proxy/interests/received/${userId}`, { credentials: 'include' })
+    fetch(`${API_URL}/api/interests/received/${userId}`, { headers })
       .then(res => res.json())
       .then(data => setInterests(data))
       .catch(err => console.error("Error fetching interests:", err));
@@ -95,14 +97,18 @@ export default function MyAccount() {
   useEffect(() => {
     if (profile._id) {
       const fetchDiscover = async () => {
+        const token = localStorage.getItem('user_token');
+        if (!token) return;
+        const headers = { 'Authorization': `Bearer ${token}` };
+
         try {
           let query = '';
           if (profile.gender) {
             query = `?gender=${profile.gender === 'Male' ? 'Female' : 'Male'}`;
           }
-          const res = await fetch(`/api/proxy/auth/profiles${query}`, { credentials: 'include' });
+          const res = await fetch(`${API_URL}/api/auth/profiles${query}`, { headers });
           const data = await res.json();
-          const sentRes = await fetch(`/api/proxy/interests/sent/${profile._id}`, { credentials: 'include' });
+          const sentRes = await fetch(`${API_URL}/api/interests/sent/${profile._id}`, { headers });
           const sentInterestData = await sentRes.json();
           setSentInterests(sentInterestData);
           setHasSentInterests(sentInterestData.length > 0);
@@ -118,12 +124,15 @@ export default function MyAccount() {
   }, [profile._id, profile.gender]);
 
   const handleSave = async () => {
+    const token = localStorage.getItem('user_token');
     try {
-      const response = await fetch(`/api/proxy/auth/update/${profile._id}`, {
+      const response = await fetch(`${API_URL}/api/auth/update/${profile._id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(profile),
-        credentials: 'include',
       });
       if (response.ok) {
         const updatedData = await response.json();
@@ -141,12 +150,13 @@ export default function MyAccount() {
     if (!e.target.files?.[0]) return;
     const formData = new FormData();
     formData.append('profilePhoto', e.target.files[0]);
+    const token = localStorage.getItem('user_token');
     try {
       setLoading(true);
-      const res = await fetch(`/api/proxy/auth/update-photo/${profile._id}`, {
+      const res = await fetch(`${API_URL}/api/auth/update-photo/${profile._id}`, {
         method: 'PUT',
+        headers: { 'Authorization': `Bearer ${token}` },
         body: formData,
-        credentials: 'include',
       });
       if (res.ok) {
         const updatedData = await res.json();

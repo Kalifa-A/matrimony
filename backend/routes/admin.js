@@ -93,18 +93,15 @@ router.post('/login', async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: admin._id, role: admin.role, username: admin.username },
+      { id: admin._id, role: admin.role || 'admin', username: admin.username },
       process.env.JWT_SECRET,
-      { expiresIn: '1h' } // Shorter expiration for admin
+      { expiresIn: '1d' }
     );
-
-    // Set the secure HttpOnly cookie
-    setAuthCookie(res, 'admin_token', token);
 
     res.json({ 
       message: 'Admin login successful.', 
-      admin: { username: admin.username, role: admin.role },
-      token // Return token for frontend middleware support
+      admin: { username: admin.username, role: admin.role || 'admin' },
+      token 
     });
   } catch (err) {
     console.error('Admin login error:', err.message);

@@ -7,7 +7,10 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
   const cookieStore = await cookies();
   const path = params.path.join('/');
   const searchParams = request.nextUrl.searchParams.toString();
-  const targetUrl = `${BACKEND_URL}/api/${path}${searchParams ? `?${searchParams}` : ''}`;
+  
+  // Strip trailing slash from BACKEND_URL if it exists to prevent double slashes
+  const baseUrl = BACKEND_URL.endsWith('/') ? BACKEND_URL.slice(0, -1) : BACKEND_URL;
+  const targetUrl = `${baseUrl}/api/${path}${searchParams ? `?${searchParams}` : ''}`;
 
   // Read the token from the Vercel-domain cookie
   const userToken = cookieStore.get('user_token')?.value;

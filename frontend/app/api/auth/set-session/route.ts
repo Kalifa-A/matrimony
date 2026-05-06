@@ -8,7 +8,8 @@ export async function POST(request: NextRequest) {
   }
 
   const cookieName = type === 'admin' ? 'admin_token' : 'user_token';
-  const maxAge = type === 'admin' ? 60 * 60 : 60 * 60 * 24 * 7; // 1hr for admin, 7 days for users
+  const maxAge = type === 'admin' ? 60 * 60 * 24 : 60 * 60 * 24 * 7; // 1 day for admin, 7 days for users
+  const expires = new Date(Date.now() + maxAge * 1000);
 
   const response = NextResponse.json({ success: true });
 
@@ -17,7 +18,8 @@ export async function POST(request: NextRequest) {
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
     path: '/',
-    maxAge,
+    maxAge: maxAge,
+    expires: expires,
   });
 
   return response;

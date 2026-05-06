@@ -11,7 +11,6 @@ export default function Navbar() {
   const [user, setUser] = useState<{ name: string; _id?: string } | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   
-  
   // Use /api/proxy/ for all backend calls to avoid cross-domain cookie issues
 
   if (pathname?.startsWith("/admin")) return null;

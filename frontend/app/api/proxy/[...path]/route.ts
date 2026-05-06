@@ -17,6 +17,8 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
   const adminToken = cookieStore.get('admin_token')?.value;
   const token = adminToken || userToken;
 
+  console.log(`[PROXY] Request: ${path} | HasToken: ${!!token} | Admin: ${!!adminToken} | User: ${!!userToken}`);
+
   const headers: HeadersInit = {};
 
   // Forward content-type if present (but not for FormData)

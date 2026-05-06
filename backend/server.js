@@ -39,7 +39,7 @@ app.use(cors({
     const allowed = [
       process.env.FRONTEND_URL?.replace(/\/$/, ''),
       'http://localhost:3000',
-      'https://matrimony-blush.vercel.app'
+      'https://matrimony-je9s.vercel.app'
     ].filter(Boolean);
     if (!origin || allowed.includes(origin)) {
       callback(null, true);

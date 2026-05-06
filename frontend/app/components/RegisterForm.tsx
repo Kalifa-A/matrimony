@@ -2,11 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter, } from 'next/navigation';
 import { useToast } from '@/app/components/ToastProvider';
+import { setUserSession } from '@/app/actions/userAuthActions';
 
 export default function RegisterForm() {
   const { showToast } = useToast();
   const router = useRouter();
-
+  
   // UI States
   const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -96,7 +97,8 @@ export default function RegisterForm() {
       const result = await response.json();
       if (response.ok) {
         if (result.token) {
-          localStorage.setItem('user_token', result.token);
+          // Set httpOnly cookie via Server Action
+          await setUserSession(result.token);
         }
         if (result.user) {
           localStorage.setItem('user', JSON.stringify(result.user));

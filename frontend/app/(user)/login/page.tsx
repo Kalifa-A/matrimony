@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 
 import { useToast } from '@/app/components/ToastProvider';
 
+import { setUserSession } from '@/app/actions/userAuthActions';
+
 export default function Login() {
   const { showToast } = useToast();
   const router = useRouter();
@@ -30,17 +32,14 @@ export default function Login() {
       });
 
       const data = await response.json();
-      console.log("DEBUG: Login Response Data:", data);
       
       if (response.ok) {
         if (data.token) {
-          console.log("DEBUG: Token found, saving to localStorage...");
-          localStorage.setItem('user_token', data.token);
-        } else {
-          console.error("DEBUG: NO TOKEN RECEIVED IN RESPONSE! Check backend version.");
+          // Set httpOnly cookie via Server Action
+          await setUserSession(data.token);
         }
         
-        // Save user basic info to localStorage
+        // Save user basic info to localStorage (Safe, non-sensitive)
         if (data.user) {
           localStorage.setItem('user', JSON.stringify(data.user));
         }

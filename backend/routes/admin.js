@@ -6,6 +6,7 @@ const User = require('../models/User');
 const Admin = require('../models/Admin');
 const Interest = require('../models/Interest');
 const SuccessStory = require('../models/SuccessStory');
+const { setAuthCookie, removeAuthCookie } = require('../utils/auth-cookies');
 // ── Simple admin-secret guard for setup only ──────────────────────────────────────────────
 function adminOnly(req, res, next) {
   const secret = req.headers['x-admin-secret'];
@@ -16,8 +17,14 @@ function adminOnly(req, res, next) {
 }
 // Accepts JWT ONLY from Bearer header for cross-domain stability
 function authenticateAdmin(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+  // 1. Try to get token from cookies first
+  let token = req.cookies?.admin_token;
+
+  // 2. Fallback to Authorization header
+  if (!token) {
+    const authHeader = req.headers['authorization'];
+    token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+  }
 
   if (!token) return res.status(401).json({ message: 'Admin access denied. Please log in.' });
 
@@ -98,10 +105,13 @@ router.post('/login', async (req, res) => {
       { expiresIn: '1d' }
     );
 
+    // Set httpOnly cookie
+    setAuthCookie(res, 'admin_token', token);
+
     res.json({ 
       message: 'Admin login successful.', 
       admin: { username: admin.username, role: admin.role || 'admin' },
-      token 
+      token // Still returning for legacy support
     });
   } catch (err) {
     console.error('Admin login error:', err.message);

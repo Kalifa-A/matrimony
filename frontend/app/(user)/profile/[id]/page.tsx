@@ -52,7 +52,7 @@ export default function ProfileDetails() {
         }
 
         // 1. Fetch Profile Details
-        const profileRes = await fetch(`${API_URL}/api/auth/profile/${id}`, { headers });
+        const profileRes = await fetch(`${API_URL}/api/auth/profile/${id}`, { headers, credentials: 'include' });
         const profileData = await profileRes.json();
         if (profileRes.ok) {
           setProfile(profileData);
@@ -64,12 +64,12 @@ export default function ProfileDetails() {
           const loggedInUser = JSON.parse(userData);
           
           // Check payment status
-          const meRes = await fetch(`${API_URL}/api/auth/me`, { headers });
+          const meRes = await fetch(`${API_URL}/api/auth/me`, { headers, credentials: 'include' });
           const meData = await meRes.json();
           if (meRes.ok) setHasPaid(meData.hasPaid);
 
           // Check interest status
-          const interestRes = await fetch(`${API_URL}/api/interests/check/${loggedInUser._id}/${id}`, { headers });
+          const interestRes = await fetch(`${API_URL}/api/interests/check/${loggedInUser._id}/${id}`, { headers, credentials: 'include' });
           const interestData = await interestRes.json();
           if (interestData.sent) setInterestSent(true);
         }
@@ -101,8 +101,9 @@ export default function ProfileDetails() {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
         },
+        credentials: 'include',
         body: JSON.stringify({
           senderId: loggedInUser._id,
           receiverId: id
@@ -135,7 +136,8 @@ export default function ProfileDetails() {
     try {
       const res = await fetch(`${API_URL}/api/interests/undo/${loggedInUser._id}/${id}`, {
         method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+        credentials: 'include'
       });
 
       const data = await res.json();

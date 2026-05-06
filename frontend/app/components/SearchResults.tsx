@@ -52,7 +52,8 @@ export default function SearchResultsContent() {
 
       const fetchHeaders: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
       const response = await fetch(`${API_URL}/api/auth/profiles?${query}`, {
-        headers: fetchHeaders
+        headers: fetchHeaders,
+        credentials: 'include'
       });
       const data = await response.json();
       
@@ -86,7 +87,8 @@ export default function SearchResultsContent() {
     const loggedInUser = JSON.parse(userData);
     const userId = loggedInUser._id;
     fetch(`${API_URL}/api/auth/me`, {
-      headers: { 'Authorization': `Bearer ${token}` }
+      headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+      credentials: 'include'
     })
       .then(res => {
         if (!res.ok) {

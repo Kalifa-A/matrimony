@@ -5,6 +5,7 @@ const User = require('../models/User');
 const upload = require('../config/cloudinary');
 const jwt = require('jsonwebtoken');
 const { authenticateUser } = require('../utils/auth-middleware');
+const { setAuthCookie, removeAuthCookie } = require('../utils/auth-cookies');
 const Joi = require('joi');
 
 // Validation schemas
@@ -60,11 +61,14 @@ router.post('/register', upload.single('profilePhoto'), async (req, res) => {
     // Create JWT Token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
+    // Set httpOnly cookie
+    setAuthCookie(res, 'user_token', token);
+
     res.status(201).json({ 
       message: "Registration Successful!", 
       user: { _id: user._id, name: user.name, email: user.email }, 
       profilePhoto: user.profilePhoto,
-      token // Return token for frontend middleware support
+      token // Still returning token for backward compatibility/legacy support
     });
 
   } catch (err) {
@@ -88,10 +92,13 @@ router.post('/login', async (req, res) => {
     // Create JWT Token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
+    // Set httpOnly cookie
+    setAuthCookie(res, 'user_token', token);
+
     res.json({ 
       message: "Login successful", 
       user: { _id: user._id, name: user.name, email: user.email },
-      token // Return token for frontend middleware support
+      token // Still returning token for backward compatibility/legacy support
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -251,8 +258,9 @@ router.get('/me', authenticateUser, async (req, res) => {
   }
 });
 
-// POST /api/auth/logout - Inform client to clear localStorage
+// POST /api/auth/logout - Clear cookie and Inform client
 router.post('/logout', (req, res) => {
+  removeAuthCookie(res, 'user_token');
   res.json({ message: "Logged out successfully" });
 });
 

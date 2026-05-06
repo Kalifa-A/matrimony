@@ -1,10 +1,3 @@
-/**
- * adminActions.ts
- *
- * Client-side API helpers for Al Fattah Admin Panel.
- * Uses localStorage for JWT token persistence.
- */
-
 export interface AdminStats {
   totalUsers: number;
   pendingUsers: number;
@@ -43,6 +36,7 @@ export interface AdminUser {
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000';
 
 function getAuthHeader(): HeadersInit {
+  // Authorization header is now secondary to httpOnly cookies
   if (typeof window === 'undefined') return {};
   const token = localStorage.getItem('admin_token');
   return token ? { 'Authorization': `Bearer ${token}` } : {};
@@ -55,7 +49,8 @@ export async function getAllUsers(phone?: string) {
   const res = await fetch(url.toString(), {
     headers: {
       ...getAuthHeader(),
-    }
+    },
+    credentials: 'include'
   });
 
   if (!res.ok) throw new Error('Failed to fetch users');
@@ -65,7 +60,8 @@ export async function getAllUsers(phone?: string) {
 export async function approveUser(userId: string) {
   const res = await fetch(`${API}/api/admin/approve/${userId}`, {
     method: 'POST',
-    headers: { ...getAuthHeader() }
+    headers: { ...getAuthHeader() },
+    credentials: 'include'
   });
   if (!res.ok) throw new Error('Failed to approve user');
   return res.json();
@@ -74,7 +70,8 @@ export async function approveUser(userId: string) {
 export async function revokeUser(userId: string) {
   const res = await fetch(`${API}/api/admin/revoke/${userId}`, {
     method: 'POST',
-    headers: { ...getAuthHeader() }
+    headers: { ...getAuthHeader() },
+    credentials: 'include'
   });
   if (!res.ok) throw new Error('Failed to revoke user');
   return res.json();
@@ -83,7 +80,8 @@ export async function revokeUser(userId: string) {
 export async function togglePaymentStatus(userId: string) {
   const res = await fetch(`${API}/api/admin/payment/${userId}`, {
     method: 'POST',
-    headers: { ...getAuthHeader() }
+    headers: { ...getAuthHeader() },
+    credentials: 'include'
   });
   if (!res.ok) throw new Error('Failed to update payment status');
   return res.json();
@@ -92,7 +90,8 @@ export async function togglePaymentStatus(userId: string) {
 export async function deleteUser(userId: string) {
   const res = await fetch(`${API}/api/admin/user/${userId}`, {
     method: 'DELETE',
-    headers: { ...getAuthHeader() }
+    headers: { ...getAuthHeader() },
+    credentials: 'include'
   });
   if (!res.ok) throw new Error('Failed to delete user');
   return res.json();
@@ -100,7 +99,8 @@ export async function deleteUser(userId: string) {
 
 export async function getAllInterests() {
   const res = await fetch(`${API}/api/admin/interests`, {
-    headers: { ...getAuthHeader() }
+    headers: { ...getAuthHeader() },
+    credentials: 'include'
   });
   if (!res.ok) throw new Error('Failed to fetch interests');
   return res.json();
@@ -108,7 +108,8 @@ export async function getAllInterests() {
 
 export async function getDashboardStats() {
   const res = await fetch(`${API}/api/admin/stats`, {
-    headers: { ...getAuthHeader() }
+    headers: { ...getAuthHeader() },
+    credentials: 'include'
   });
   if (!res.ok) throw new Error('Failed to fetch dashboard stats');
   return res.json();
@@ -116,7 +117,8 @@ export async function getDashboardStats() {
 
 export async function getAdminProfile() {
   const res = await fetch(`${API}/api/admin/profile`, {
-    headers: { ...getAuthHeader() }
+    headers: { ...getAuthHeader() },
+    credentials: 'include'
   });
   if (!res.ok) throw new Error('Failed to fetch admin profile');
   return res.json();
@@ -129,6 +131,7 @@ export async function updateAdminProfile(data: any) {
       'Content-Type': 'application/json',
       ...getAuthHeader() 
     },
+    credentials: 'include',
     body: JSON.stringify(data)
   });
   if (!res.ok) throw new Error('Failed to update profile');

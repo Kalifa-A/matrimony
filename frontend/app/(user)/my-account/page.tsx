@@ -68,9 +68,9 @@ export default function MyAccount() {
 
     const loggedInUser = JSON.parse(userData);
     const userId = loggedInUser._id;
-    const headers: HeadersInit = { 'Authorization': `Bearer ${token}` };
+    const headers: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
 
-    fetch(`${API_URL}/api/auth/me`, { headers })
+    fetch(`${API_URL}/api/auth/me`, { headers, credentials: 'include' })
       .then(res => {
         if (!res.ok) {
           localStorage.removeItem('user_token');
@@ -88,7 +88,7 @@ export default function MyAccount() {
       })
       .catch(err => console.error("Error fetching profile:", err));
 
-    fetch(`${API_URL}/api/interests/received/${userId}`, { headers })
+    fetch(`${API_URL}/api/interests/received/${userId}`, { headers, credentials: 'include' })
       .then(res => res.json())
       .then(data => setInterests(data))
       .catch(err => console.error("Error fetching interests:", err));
@@ -106,9 +106,9 @@ export default function MyAccount() {
           if (profile.gender) {
             query = `?gender=${profile.gender === 'Male' ? 'Female' : 'Male'}`;
           }
-          const res = await fetch(`${API_URL}/api/auth/profiles${query}`, { headers });
+          const res = await fetch(`${API_URL}/api/auth/profiles${query}`, { headers, credentials: 'include' });
           const data = await res.json();
-          const sentRes = await fetch(`${API_URL}/api/interests/sent/${profile._id}`, { headers });
+          const sentRes = await fetch(`${API_URL}/api/interests/sent/${profile._id}`, { headers, credentials: 'include' });
           const sentInterestData = await sentRes.json();
           setSentInterests(sentInterestData);
           setHasSentInterests(sentInterestData.length > 0);
@@ -130,8 +130,9 @@ export default function MyAccount() {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
         },
+        credentials: 'include',
         body: JSON.stringify(profile),
       });
       if (response.ok) {
@@ -155,7 +156,8 @@ export default function MyAccount() {
       setLoading(true);
       const res = await fetch(`${API_URL}/api/auth/update-photo/${profile._id}`, {
         method: 'PUT',
-        headers: { 'Authorization': `Bearer ${token}` },
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+        credentials: 'include',
         body: formData,
       });
       if (res.ok) {

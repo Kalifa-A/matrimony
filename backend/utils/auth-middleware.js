@@ -1,12 +1,18 @@
 const jwt = require('jsonwebtoken');
+const { setAuthCookie, removeAuthCookie } = require('../utils/auth-cookies');
 
 const authenticateUser = (req, res, next) => {
-  // 1. Get token from Authorization header
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+  // 1. Try to get token from cookies first
+  let token = req.cookies?.user_token;
+
+  // 2. Fallback to Authorization header
+  if (!token) {
+    const authHeader = req.headers['authorization'];
+    token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+  }
 
   if (!token) {
-    return res.status(401).json({ message: "No token, authorization denied" });
+    return res.status(401).json({ message: "Access denied. Please log in." });
   }
 
   try {

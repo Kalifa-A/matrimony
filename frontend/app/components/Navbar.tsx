@@ -18,7 +18,9 @@ export default function Navbar() {
   useEffect(() => {
     const checkAuth = async () => {
       const token = localStorage.getItem('user_token');
-      if (!token) {
+      
+      // Stronger check: ensure token exists and isn't a string "null"/"undefined"
+      if (!token || token === 'null' || token === 'undefined') {
         setIsLoggedIn(false);
         setUser(null);
         return;

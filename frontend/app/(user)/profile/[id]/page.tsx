@@ -64,7 +64,7 @@ export default function ProfileDetails() {
           const loggedInUser = JSON.parse(userData);
           
           // Check payment status
-          const meRes = await fetch(`${API_URL}/api/auth/me/${loggedInUser._id}`, { headers });
+          const meRes = await fetch(`${API_URL}/api/auth/me`, { headers });
           const meData = await meRes.json();
           if (meRes.ok) setHasPaid(meData.hasPaid);
 

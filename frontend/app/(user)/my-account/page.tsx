@@ -70,7 +70,7 @@ export default function MyAccount() {
     const userId = loggedInUser._id;
     const headers = { 'Authorization': `Bearer ${token}` };
 
-    fetch(`${API_URL}/api/auth/me/${userId}`, { headers })
+    fetch(`${API_URL}/api/auth/me`, { headers })
       .then(res => {
         if (!res.ok) {
           localStorage.removeItem('user_token');

@@ -84,7 +84,7 @@ export default function SearchResultsContent() {
 
     const loggedInUser = JSON.parse(userData);
     const userId = loggedInUser._id;
-    fetch(`${API_URL}/api/auth/me/${userId}`, {
+    fetch(`${API_URL}/api/auth/me`, {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => {

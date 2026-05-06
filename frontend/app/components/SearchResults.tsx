@@ -75,7 +75,6 @@ export default function SearchResultsContent() {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('user_token');
     const userData = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
     if (!userData) {
       router.replace('/login');
@@ -87,12 +86,10 @@ export default function SearchResultsContent() {
     const loggedInUser = JSON.parse(userData);
     const userId = loggedInUser._id;
     fetch(`${API_URL}/api/auth/me`, {
-      headers: token ? { 'Authorization': `Bearer ${token}` } : {},
       credentials: 'include'
     })
       .then(res => {
         if (!res.ok) {
-          localStorage.removeItem('user_token');
           localStorage.removeItem('user');
           router.replace('/login');
           return null;

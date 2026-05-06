@@ -20,9 +20,8 @@ export default function Navbar() {
     const checkAuth = async () => {
       // Use the 'user' object in localStorage as a quick client-side hint
       const userHint = localStorage.getItem('user');
-      const token = localStorage.getItem('user_token'); // Fallback for old sessions
       
-      if (!userHint && !token) {
+      if (!userHint) {
         setIsLoggedIn(false);
         setUser(null);
         return;
@@ -30,7 +29,6 @@ export default function Navbar() {
 
       try {
         const res = await fetch(`${API_URL}/api/auth/me`, {
-          headers: token && token !== 'null' ? { 'Authorization': `Bearer ${token}` } : {},
           credentials: 'include'
         });
         if (res.ok) {
@@ -57,7 +55,6 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     await clearUserSession();
-    localStorage.removeItem('user_token');
     localStorage.removeItem('user');
     setIsLoggedIn(false);
     setUser(null);

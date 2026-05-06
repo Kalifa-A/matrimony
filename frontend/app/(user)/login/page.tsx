@@ -28,19 +28,15 @@ export default function Login() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
       
       if (response.ok) {
-        if (data.token) {
-          // Set httpOnly cookie via Server Action
-          await setUserSession(data.token);
-          // Also store in localStorage as Authorization header fallback
-          // (needed for cross-port requests in development)
-          localStorage.setItem('user_token', data.token);
-        }
+        // Token is now handled by HttpOnly cookies set by the backend
+
         
         // Save user basic info to localStorage (Safe, non-sensitive)
         if (data.user) {

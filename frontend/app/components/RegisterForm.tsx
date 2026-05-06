@@ -92,16 +92,13 @@ export default function RegisterForm() {
       }
       const response = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
+        credentials: 'include',
         body: dataToSend,
       });
       const result = await response.json();
       if (response.ok) {
-        if (result.token) {
-          // Set httpOnly cookie via Server Action
-          await setUserSession(result.token);
-          // Also store in localStorage as Authorization header fallback
-          localStorage.setItem('user_token', result.token);
-        }
+        // Token is handled by cookies
+
         if (result.user) {
           localStorage.setItem('user', JSON.stringify(result.user));
         }

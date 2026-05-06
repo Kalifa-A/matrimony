@@ -23,19 +23,16 @@ export default function AdminLogin() {
       const res = await fetch(`${API_URL}/api/admin/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ username, password }),
       });
 
       const data = await res.json();
       
       if (res.ok) {
-        if (data.token) {
-          // Set httpOnly cookie via Server Action
-          await setAdminSession(data.token);
-          // Also store in localStorage as Authorization header fallback
-          // (needed for cross-port requests in development)
-          localStorage.setItem('admin_token', data.token);
-        }
+        // Token is now set via HttpOnly cookie by the backend
+        // We no longer store it in localStorage for security
+
 
         showToast('Access Granted. Welcome, Admin.');
         router.push('/admin');

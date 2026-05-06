@@ -36,10 +36,8 @@ export interface AdminUser {
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000';
 
 function getAuthHeader(): HeadersInit {
-  // Authorization header is now secondary to httpOnly cookies
-  if (typeof window === 'undefined') return {};
-  const token = localStorage.getItem('admin_token');
-  return token ? { 'Authorization': `Bearer ${token}` } : {};
+  // Authorization header is no longer used; using httpOnly cookies instead
+  return {};
 }
 
 export async function getAllUsers(phone?: string) {

@@ -21,13 +21,14 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${API_URL}/api/auth/login`, {
+      // Use the Next.js proxy route to avoid cross-domain cookie issues on Vercel
+      const response = await fetch('/api/proxy/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
-        credentials: 'include', // Automatically handle cookies
+        credentials: 'include',
       });
 
       const data = await response.json();

@@ -49,7 +49,7 @@ export default function ProfileDetails() {
         }
 
         // 1. Fetch Profile Details
-        const profileRes = await fetch(`${API_URL}/api/auth/profile/${id}`, { credentials: 'include' });
+        const profileRes = await fetch(`/api/proxy/auth/profile/${id}`, { credentials: 'include' });
         const profileData = await profileRes.json();
         if (profileRes.ok) {
           setProfile(profileData);
@@ -61,12 +61,12 @@ export default function ProfileDetails() {
           const loggedInUser = JSON.parse(userData);
           
           // Check payment status
-          const meRes = await fetch(`${API_URL}/api/auth/me/${loggedInUser._id}`, { credentials: 'include' });
+          const meRes = await fetch(`/api/proxy/auth/me/${loggedInUser._id}`, { credentials: 'include' });
           const meData = await meRes.json();
           if (meRes.ok) setHasPaid(meData.hasPaid);
 
           // Check interest status
-          const interestRes = await fetch(`${API_URL}/api/interests/check/${loggedInUser._id}/${id}`, { credentials: 'include' });
+          const interestRes = await fetch(`/api/proxy/interests/check/${loggedInUser._id}/${id}`, { credentials: 'include' });
           const interestData = await interestRes.json();
           if (interestData.sent) setInterestSent(true);
         }
@@ -93,7 +93,7 @@ export default function ProfileDetails() {
     setSending(true);
 
     try {
-      const res = await fetch(`${API_URL}/api/interests/send`, {
+      const res = await fetch('/api/proxy/interests/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -130,7 +130,7 @@ export default function ProfileDetails() {
     setSending(true);
 
     try {
-      const res = await fetch(`${API_URL}/api/interests/undo/${loggedInUser._id}/${id}`, {
+      const res = await fetch(`/api/proxy/interests/undo/${loggedInUser._id}/${id}`, {
         method: 'DELETE',
         credentials: 'include'
       });

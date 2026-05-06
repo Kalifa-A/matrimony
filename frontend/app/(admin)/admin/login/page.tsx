@@ -11,28 +11,26 @@ export default function AdminLogin() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const res = await fetch(`${API_URL}/api/admin/login`, {
+      // Use the proxy route to avoid cross-domain cookie issues
+      const res = await fetch('/api/proxy/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
-        credentials: 'include', // Automatically handle cookies
+        credentials: 'include',
       });
 
       const data = await res.json();
       console.log("Admin login response:", data);
       
       if (res.ok) {
-        // Token is now set automatically by the backend via HttpOnly Set-Cookie header
-        // BUT for cross-domain middleware (Vercel + Render), we also set a local cookie
+        // Set the admin token as a Vercel-domain cookie so middleware can read it
         if (data.token) {
-          // Call our Next.js API route to set a proper server-side cookie
           await fetch('/api/auth/set-session', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

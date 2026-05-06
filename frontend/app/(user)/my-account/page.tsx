@@ -68,7 +68,7 @@ export default function MyAccount() {
     const loggedInUser = JSON.parse(userData);
     const userId = loggedInUser._id || loggedInUser.id;
 
-    fetch(`${API_URL}/api/auth/me/${userId}`, { credentials: 'include' })
+    fetch(`/api/proxy/auth/me/${userId}`, { credentials: 'include' })
       .then(res => {
         if (!res.ok) {
           // Session expired on backend
@@ -86,7 +86,7 @@ export default function MyAccount() {
       })
       .catch(err => console.error("Error fetching profile:", err));
 
-    fetch(`${API_URL}/api/interests/received/${userId}`, { credentials: 'include' })
+    fetch(`/api/proxy/interests/received/${userId}`, { credentials: 'include' })
       .then(res => res.json())
       .then(data => setInterests(data))
       .catch(err => console.error("Error fetching interests:", err));
@@ -100,9 +100,9 @@ export default function MyAccount() {
           if (profile.gender) {
             query = `?gender=${profile.gender === 'Male' ? 'Female' : 'Male'}`;
           }
-          const res = await fetch(`${API_URL}/api/auth/profiles${query}`, { credentials: 'include' });
+          const res = await fetch(`/api/proxy/auth/profiles${query}`, { credentials: 'include' });
           const data = await res.json();
-          const sentRes = await fetch(`${API_URL}/api/interests/sent/${profile._id}`, { credentials: 'include' });
+          const sentRes = await fetch(`/api/proxy/interests/sent/${profile._id}`, { credentials: 'include' });
           const sentInterestData = await sentRes.json();
           setSentInterests(sentInterestData);
           setHasSentInterests(sentInterestData.length > 0);
@@ -119,7 +119,7 @@ export default function MyAccount() {
 
   const handleSave = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/auth/update/${profile._id}`, {
+      const response = await fetch(`/api/proxy/auth/update/${profile._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(profile),
@@ -143,7 +143,7 @@ export default function MyAccount() {
     formData.append('profilePhoto', e.target.files[0]);
     try {
       setLoading(true);
-      const res = await fetch(`${API_URL}/api/auth/update-photo/${profile._id}`, {
+      const res = await fetch(`/api/proxy/auth/update-photo/${profile._id}`, {
         method: 'PUT',
         body: formData,
         credentials: 'include',

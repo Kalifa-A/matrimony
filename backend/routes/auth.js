@@ -244,14 +244,10 @@ router.put('/update-photo/:id', authenticateUser, upload.single('profilePhoto'),
 
 
 
-// GET /api/auth/me - Verify session via cookie
-router.get('/me', async (req, res) => {
+// GET /api/auth/me - Verify session via cookie or Authorization header
+router.get('/me', authenticateUser, async (req, res) => {
   try {
-    const token = req.cookies.user_token;
-    if (!token) return res.status(401).json({ message: "No session found" });
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id).select('-password');
+    const user = await User.findById(req.user.id).select('-password');
     if (!user) return res.status(404).json({ message: "User not found" });
 
     res.json(user);

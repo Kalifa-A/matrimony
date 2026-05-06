@@ -49,7 +49,7 @@ export default function SearchResultsContent() {
         job: job,
       }).toString();
 
-      const response = await fetch(`${API_URL}/api/auth/profiles?${query}`, {
+      const response = await fetch(`/api/proxy/auth/profiles?${query}`, {
         credentials: 'include'
       });
       const data = await response.json();
@@ -72,7 +72,7 @@ export default function SearchResultsContent() {
   };
 
   useEffect(() => {
-    // Client-side auth guard (replaces middleware for cross-domain deployments)
+    // Client-side auth guard
     const userData = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
     if (!userData) {
       router.replace('/login');
@@ -83,7 +83,8 @@ export default function SearchResultsContent() {
 
     const loggedInUser = JSON.parse(userData);
     const userId = loggedInUser._id || loggedInUser.id;
-    fetch(`${API_URL}/api/auth/me/${userId}`, { credentials: 'include' })
+    // Use proxy route to avoid cross-domain cookie issue
+    fetch(`/api/proxy/auth/me/${userId}`, { credentials: 'include' })
       .then(res => {
         if (!res.ok) {
           localStorage.removeItem('user');
@@ -93,7 +94,7 @@ export default function SearchResultsContent() {
         return res.json();
       })
       .then(data => { if (data) setHasPaid(data.hasPaid); })
-      .catch(err => console.error("Error checking payment status:", err));
+      .catch(err => console.error('Error checking payment status:', err));
   }, []);
 
 return (

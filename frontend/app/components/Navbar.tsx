@@ -11,15 +11,15 @@ export default function Navbar() {
   const [user, setUser] = useState<{ name: string; _id?: string } | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   
-  // Safely get API URL with fallback for build time
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+  
+  // Use /api/proxy/ for all backend calls to avoid cross-domain cookie issues
 
   if (pathname?.startsWith("/admin")) return null;
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/auth/me`, { credentials: 'include' });
+        const res = await fetch('/api/proxy/auth/me', { credentials: 'include' });
         if (res.ok) {
           const data = await res.json();
           setIsLoggedIn(true);
@@ -35,14 +35,14 @@ export default function Navbar() {
     checkAuth();
     window.addEventListener('storage', checkAuth);
     return () => window.removeEventListener('storage', checkAuth);
-  }, [pathname, API_URL]);
+  }, [pathname]);
 
   useEffect(() => { setMenuOpen(false); }, [pathname]);
 
   const handleLogout = async () => {
     try {
-      await fetch(`${API_URL}/api/auth/logout`, { method: 'POST', credentials: 'include' });
-      // Clear local cookies via API route
+      await fetch('/api/proxy/auth/logout', { method: 'POST', credentials: 'include' });
+      // Clear local (Vercel-domain) cookies
       await fetch('/api/auth/set-session', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },

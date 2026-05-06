@@ -89,7 +89,7 @@ export default function RegisterForm() {
       if (selectedFile) {
         dataToSend.append('profilePhoto', selectedFile);
       }
-      const response = await fetch(`${API_URL}/api/auth/register`, {
+      const response = await fetch('/api/proxy/auth/register', {
         method: 'POST',
         body: dataToSend,
         credentials: 'include',

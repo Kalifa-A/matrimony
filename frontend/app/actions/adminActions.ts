@@ -17,7 +17,7 @@ async function getAdminHeaders() {
   const token = cookieStore.get('admin_token')?.value;
   return {
     'Content-Type': 'application/json',
-    ...(token ? { 'Cookie': `admin_token=${token}` } : {})
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
   };
 }
 

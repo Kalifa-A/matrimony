@@ -18,9 +18,19 @@ function adminOnly(req, res, next) {
 }
 
 // ── Admin Authentication Middleware ──────────────────────────────────────────
-// Checks if user is authenticated and has admin role
+// Accepts JWT from Bearer header (cross-domain proxy) OR HttpOnly cookie (localhost)
 function authenticateAdmin(req, res, next) {
-  const token = req.cookies.admin_token;
+  const authHeader = req.headers['authorization'];
+  let token = null;
+
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    token = authHeader.substring(7);
+  }
+
+  if (!token) {
+    token = req.cookies.admin_token;
+  }
+
   if (!token) return res.status(401).json({ message: 'Admin access denied. Please log in.' });
 
   try {

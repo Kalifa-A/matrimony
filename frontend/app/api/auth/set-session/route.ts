@@ -11,7 +11,12 @@ export async function POST(request: NextRequest) {
   const maxAge = type === 'admin' ? 60 * 60 * 24 : 60 * 60 * 24 * 7; // 1 day for admin, 7 days for users
   const expires = new Date(Date.now() + maxAge * 1000);
 
-  const response = NextResponse.json({ success: true });
+  const response = NextResponse.json({ 
+    success: true, 
+    cookieSet: cookieName,
+    expires: expires.toISOString(),
+    env: process.env.NODE_ENV
+  });
 
   response.cookies.set(cookieName, token, {
     httpOnly: true,

@@ -31,11 +31,16 @@ export default function AdminLogin() {
       if (res.ok) {
         // Set the admin token as a Vercel-domain cookie so middleware can read it
         if (data.token) {
-          await fetch('/api/auth/set-session', {
+          console.log("Setting admin session with token...");
+          const setRes = await fetch('/api/auth/set-session', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ token: data.token, type: 'admin' }),
           });
+          const setResData = await setRes.json();
+          console.log("Set-session response:", setResData);
+        } else {
+          console.warn("No token received from backend!");
         }
 
         showToast('Access Granted. Welcome, Admin.');

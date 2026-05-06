@@ -30,11 +30,14 @@ export default function Login() {
       });
 
       const data = await response.json();
+      console.log("DEBUG: Login Response Data:", data);
       
       if (response.ok) {
-        // Save token to localStorage
         if (data.token) {
+          console.log("DEBUG: Token found, saving to localStorage...");
           localStorage.setItem('user_token', data.token);
+        } else {
+          console.error("DEBUG: NO TOKEN RECEIVED IN RESPONSE! Check backend version.");
         }
         
         // Save user basic info to localStorage

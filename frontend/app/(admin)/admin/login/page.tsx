@@ -27,10 +27,14 @@ export default function AdminLogin() {
       });
 
       const data = await res.json();
+      console.log("DEBUG: Admin Login Response:", data);
       
       if (res.ok) {
         if (data.token) {
+          console.log("DEBUG: Admin token found, saving...");
           localStorage.setItem('admin_token', data.token);
+        } else {
+          console.error("DEBUG: NO ADMIN TOKEN RECEIVED!");
         }
 
         showToast('Access Granted. Welcome, Admin.');

@@ -61,11 +61,10 @@ export default function MyAccount() {
     const token = localStorage.getItem('user_token');
     const userData = localStorage.getItem('user');
     
-    if (!token || !userData) {
+    if (!userData) {
       router.replace('/login');
       return;
     }
-
     const loggedInUser = JSON.parse(userData);
     const userId = loggedInUser._id;
     const headers: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};

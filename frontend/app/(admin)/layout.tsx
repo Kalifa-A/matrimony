@@ -2,13 +2,15 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { clearAdminSession } from '@/app/actions/adminAuthActions';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    await clearAdminSession();
     localStorage.removeItem('admin_token');
     router.push('/admin/login');
   };

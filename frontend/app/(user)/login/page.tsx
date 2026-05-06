@@ -37,6 +37,9 @@ export default function Login() {
         if (data.token) {
           // Set httpOnly cookie via Server Action
           await setUserSession(data.token);
+          // Also store in localStorage as Authorization header fallback
+          // (needed for cross-port requests in development)
+          localStorage.setItem('user_token', data.token);
         }
         
         // Save user basic info to localStorage (Safe, non-sensitive)

@@ -32,6 +32,9 @@ export default function AdminLogin() {
         if (data.token) {
           // Set httpOnly cookie via Server Action
           await setAdminSession(data.token);
+          // Also store in localStorage as Authorization header fallback
+          // (needed for cross-port requests in development)
+          localStorage.setItem('admin_token', data.token);
         }
 
         showToast('Access Granted. Welcome, Admin.');

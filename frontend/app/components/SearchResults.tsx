@@ -77,7 +77,7 @@ export default function SearchResultsContent() {
   useEffect(() => {
     const token = localStorage.getItem('user_token');
     const userData = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
-    if (!token || !userData) {
+    if (!userData) {
       router.replace('/login');
       return;
     }

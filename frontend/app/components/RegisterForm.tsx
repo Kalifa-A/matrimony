@@ -99,6 +99,8 @@ export default function RegisterForm() {
         if (result.token) {
           // Set httpOnly cookie via Server Action
           await setUserSession(result.token);
+          // Also store in localStorage as Authorization header fallback
+          localStorage.setItem('user_token', result.token);
         }
         if (result.user) {
           localStorage.setItem('user', JSON.stringify(result.user));

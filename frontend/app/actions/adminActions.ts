@@ -59,7 +59,7 @@ export async function getAllUsers(phone?: string) {
 
 export async function approveUser(userId: string) {
   const res = await fetch(`${API}/api/admin/approve/${userId}`, {
-    method: 'POST',
+    method: 'PATCH',
     headers: { ...getAuthHeader() },
     credentials: 'include'
   });
@@ -69,7 +69,7 @@ export async function approveUser(userId: string) {
 
 export async function revokeUser(userId: string) {
   const res = await fetch(`${API}/api/admin/revoke/${userId}`, {
-    method: 'POST',
+    method: 'PATCH',
     headers: { ...getAuthHeader() },
     credentials: 'include'
   });
@@ -79,7 +79,7 @@ export async function revokeUser(userId: string) {
 
 export async function togglePaymentStatus(userId: string) {
   const res = await fetch(`${API}/api/admin/payment/${userId}`, {
-    method: 'POST',
+    method: 'PATCH',
     headers: { ...getAuthHeader() },
     credentials: 'include'
   });
@@ -126,7 +126,7 @@ export async function getAdminProfile() {
 
 export async function updateAdminProfile(data: any) {
   const res = await fetch(`${API}/api/admin/profile`, {
-    method: 'PUT',
+    method: 'PATCH',
     headers: { 
       'Content-Type': 'application/json',
       ...getAuthHeader() 
@@ -140,12 +140,13 @@ export async function updateAdminProfile(data: any) {
 
 export async function marryUsers(user1Id: string, user2Id: string) {
   const res = await fetch(`${API}/api/admin/marry`, {
-    method: 'POST',
+    method: 'PATCH',
     headers: { 
       'Content-Type': 'application/json',
       ...getAuthHeader() 
     },
-    body: JSON.stringify({ user1Id, user2Id })
+    credentials: 'include',
+    body: JSON.stringify({ husbandId: user1Id, wifeId: user2Id })
   });
   if (!res.ok) throw new Error('Failed to marry users');
   return res.json();
@@ -153,12 +154,13 @@ export async function marryUsers(user1Id: string, user2Id: string) {
 
 export async function unmarryUsers(user1Id: string, user2Id: string) {
   const res = await fetch(`${API}/api/admin/unmarry`, {
-    method: 'POST',
+    method: 'DELETE',
     headers: { 
       'Content-Type': 'application/json',
       ...getAuthHeader() 
     },
-    body: JSON.stringify({ user1Id, user2Id })
+    credentials: 'include',
+    body: JSON.stringify({ husbandId: user1Id, wifeId: user2Id })
   });
   if (!res.ok) throw new Error('Failed to unmarry users');
   return res.json();

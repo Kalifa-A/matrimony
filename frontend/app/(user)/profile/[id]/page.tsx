@@ -60,7 +60,7 @@ export default function ProfileDetails() {
 
         // 2. Check current user's payment status and if interest already sent
         const userData = localStorage.getItem('user');
-        if (userData && token) {
+        if (userData) {
           const loggedInUser = JSON.parse(userData);
           
           // Check payment status
@@ -87,7 +87,7 @@ export default function ProfileDetails() {
   const handleSendInterest = async () => {
     const token = localStorage.getItem('user_token');
     const userData = localStorage.getItem('user');
-    if (!token || !userData) {
+    if (!userData) {
       showToast("Please login to send interest", 'error');
       window.location.href = '/login';
       return;
@@ -128,7 +128,7 @@ export default function ProfileDetails() {
   const handleUndoInterest = async () => {
     const token = localStorage.getItem('user_token');
     const userData = localStorage.getItem('user');
-    if (!token || !userData) return;
+    if (!userData) return;
 
     const loggedInUser = JSON.parse(userData);
     setSending(true);

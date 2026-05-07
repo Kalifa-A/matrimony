@@ -1,37 +1,46 @@
-const nodemailer = require('nodemailer');
-
 const sendEmail = async (options) => {
-  const transporter = nodemailer.createTransport({
-    host: 'smtp-relay.brevo.com',
-    port: 465,
-    secure: true, // true for 465, false for other ports
-    auth: {
-      user: process.env.BREVO_EMAIL,
-      pass: process.env.BREVO_PASS,
+  const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
+  
+  const emailData = {
+    sender: {
+      name: "Al Fattah Matrimony",
+      email: process.env.BREVO_EMAIL, // Must be a verified sender in Brevo
     },
-    // Add connection timeout settings
-    connectionTimeout: 10000, // 10 seconds
-    greetingTimeout: 10000,
-    socketTimeout: 10000,
-  });
-  console.log(process.env.BREVO_EMAIL);
-  console.log(process.env.BREVO_PASS);
-  const mailOptions = {
-    from: `"Al Fattah Matrimony" <${process.env.BREVO_EMAIL}>`,
-    to: options.email,
+    to: [
+      {
+        email: options.email,
+      },
+    ],
     subject: options.subject,
-    html: options.html,
+    htmlContent: options.html,
   };
 
-  console.log(`Attempting to send email to: ${options.email} using Brevo...`);
+  console.log(`Attempting to send email to: ${options.email} via Brevo API...`);
+
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log("Email sent successfully!");
-    console.log("Message ID:", info.messageId);
-    console.log("Response:", info.response);
+    const response = await fetch(BREVO_API_URL, {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'api-key': process.env.BREVO_PASS,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify(emailData),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Brevo API Error Response:", data);
+      throw new Error(data.message || "Failed to send email via Brevo API");
+    }
+
+    console.log("Email sent successfully via API!");
+    console.log("Message ID:", data.messageId);
+    
   } catch (error) {
-    console.error("Nodemailer Error Details:", error);
-    throw error; // Re-throw to be caught by the route handler
+    console.error("Brevo API Connection Error:", error.message);
+    throw error;
   }
 };
 

@@ -3,13 +3,16 @@ const nodemailer = require('nodemailer');
 const sendEmail = async (options) => {
   const transporter = nodemailer.createTransport({
     host: 'smtp-relay.brevo.com',
-    port: 587,
-    secure: false, // true for 465, false for other ports
+    port: 465,
+    secure: true, // true for 465, false for other ports
     auth: {
       user: process.env.BREVO_EMAIL,
       pass: process.env.BREVO_PASS,
     },
-    debug: true
+    // Add connection timeout settings
+    connectionTimeout: 10000, // 10 seconds
+    greetingTimeout: 10000,
+    socketTimeout: 10000,
   });
   console.log(process.env.BREVO_EMAIL);
   console.log(process.env.BREVO_PASS);

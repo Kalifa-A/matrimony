@@ -9,8 +9,10 @@ const sendEmail = async (options) => {
       user: process.env.BREVO_EMAIL,
       pass: process.env.BREVO_PASS,
     },
+    debug: true
   });
-
+  console.log(process.env.BREVO_EMAIL);
+  console.log(process.env.BREVO_PASS);
   const mailOptions = {
     from: `"Al Fattah Matrimony" <${process.env.BREVO_EMAIL}>`,
     to: options.email,

@@ -7,6 +7,8 @@ const jwt = require('jsonwebtoken');
 const { authenticateUser } = require('../utils/auth-middleware');
 const { setAuthCookie, removeAuthCookie } = require('../utils/auth-cookies');
 const Joi = require('joi');
+const crypto = require('crypto');
+const sendEmail = require('../utils/emailService');
 
 // Validation schemas
 const registerSchema = Joi.object({
@@ -262,6 +264,118 @@ router.get('/me', authenticateUser, async (req, res) => {
 router.post('/logout', (req, res) => {
   removeAuthCookie(res, 'user_token');
   res.json({ message: "Logged out successfully" });
+});
+
+// --- Forgot Password OTP Flow ---
+
+// @route   POST api/auth/forgot-password
+// @desc    Send OTP to email
+router.post('/forgot-password', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User with this email does not exist." });
+    }
+
+    // Rate limiting: 1 OTP per 60 seconds
+    if (user.otpRequestedAt && (Date.now() - user.otpRequestedAt) < 60000) {
+      const remainingSeconds = Math.ceil((60000 - (Date.now() - user.otpRequestedAt)) / 1000);
+      return res.status(429).json({ message: `Please wait ${remainingSeconds} seconds before requesting a new OTP.` });
+    }
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // Set OTP and Expiry (5 minutes)
+    user.resetOtp = otp;
+    user.resetOtpExpire = Date.now() + 5 * 60 * 1000;
+    user.otpRequestedAt = Date.now();
+
+    await user.save();
+
+    // Professional HTML Email Template
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
+        <h2 style="color: #c92c3a; text-align: center;">Al Fattah Matrimony</h2>
+        <p>Hello <strong>${user.name}</strong>,</p>
+        <p>You requested a password reset. Use the following 6-digit OTP to proceed:</p>
+        <div style="text-align: center; margin: 30px 0;">
+          <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #333; background: #f4f4f4; padding: 10px 20px; border-radius: 5px; border: 1px dashed #c92c3a;">${otp}</span>
+        </div>
+        <p style="color: #555;">This OTP is valid for <strong>5 minutes</strong>. If you did not request this, please ignore this email or contact support if you have concerns.</p>
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+        <p style="font-size: 12px; color: #888; text-align: center;">Secure Message: Never share your OTP with anyone. Our team will never ask for your password or OTP.</p>
+      </div>
+    `;
+
+    await sendEmail({
+      email: user.email,
+      subject: 'Password Reset OTP - Al Fattah Matrimony',
+      html: htmlContent
+    });
+
+    res.json({ message: "OTP sent to your email." });
+
+  } catch (err) {
+    console.error("Forgot Password Error:", err);
+    res.status(500).json({ message: "Failed to send OTP. Please try again later." });
+  }
+});
+
+// @route   POST api/auth/verify-otp
+// @desc    Verify OTP
+router.post('/verify-otp', async (req, res) => {
+  const { email, otp } = req.body;
+
+  try {
+    const user = await User.findOne({ 
+      email,
+      resetOtp: otp,
+      resetOtpExpire: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired OTP." });
+    }
+
+    res.json({ message: "OTP verified successfully. You can now reset your password." });
+  } catch (err) {
+    res.status(500).json({ message: "Verification failed." });
+  }
+});
+
+// @route   POST api/auth/reset-password
+// @desc    Reset password
+router.post('/reset-password', async (req, res) => {
+  const { email, otp, newPassword } = req.body;
+
+  try {
+    const user = await User.findOne({ 
+      email,
+      resetOtp: otp,
+      resetOtpExpire: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired OTP. Please start again." });
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+
+    // Clear OTP fields
+    user.resetOtp = undefined;
+    user.resetOtpExpire = undefined;
+    
+    await user.save();
+
+    res.json({ message: "Password reset successful. You can now login with your new password." });
+  } catch (err) {
+    res.status(500).json({ message: "Password reset failed." });
+  }
 });
 
 module.exports = router;

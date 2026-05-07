@@ -20,6 +20,11 @@ const UserSchema = new mongoose.Schema({
   hasPaid: { type: Boolean, default: false },
   isMarried: { type: Boolean, default: false },
   partner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+  // --- OTP Reset fields ---
+  resetOtp: { type: String },
+  resetOtpExpire: { type: Date },
+  otpRequestedAt: { type: Date },
+
   registrationDate: { type: Date, default: Date.now },
   createdAt: { type: Date, default: Date.now }
 });

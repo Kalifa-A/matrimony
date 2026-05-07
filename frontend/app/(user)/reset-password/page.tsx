@@ -25,8 +25,9 @@ function ResetPasswordContent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (password.length < 6) {
-      showToast("Password must be at least 6 characters long", "error");
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      showToast("Password must be at least 8 characters and include uppercase, lowercase, number, and special character.", "error");
       return;
     }
 

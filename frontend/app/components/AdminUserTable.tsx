@@ -83,7 +83,7 @@ export default function AdminUserTable() {
     setActionInProgress(user._id + '-approve');
     startTransition(async () => {
       try {
-        if (user.isApproved) {
+        if (user.isAdminApproved) {
           await revokeUser(user._id);
           showToast(`Approval revoked for ${user.name}`);
         } else {
@@ -94,7 +94,7 @@ export default function AdminUserTable() {
         setUsers((prev) =>
           prev.map((u) =>
             u._id === user._id
-              ? { ...u, isApproved: !u.isApproved }
+              ? { ...u, isAdminApproved: !u.isAdminApproved }
               : u
           )
         );
@@ -157,7 +157,7 @@ export default function AdminUserTable() {
 
   // ── Stats ──────────────────────────────────────────────
   const totalUsers = users.length;
-  const pendingApproval = users.filter((u) => !u.isApproved).length;
+  const pendingApproval = users.filter((u) => !u.isAdminApproved).length;
   const paidUsers = users.filter((u) => u.hasPaid).length;
 
   return (
@@ -286,17 +286,24 @@ export default function AdminUserTable() {
 
                     {/* Status Badge */}
                     <td className="p-4">
-                      <div className="flex items-center gap-2">
-                        {user.isApproved ? (
-                          <span className="bg-emerald-50 text-emerald-600 px-2 py-1 rounded-lg text-[10px] font-bold uppercase">Verified</span>
-                        ) : (
-                          <span className="bg-orange-50 text-orange-600 px-2 py-1 rounded-lg text-[10px] font-bold uppercase">Pending Call</span>
-                        )}
-                        {user.hasPaid ? (
-                          <span className="bg-blue-50 text-blue-600 px-2 py-1 rounded-lg text-[10px] font-bold uppercase">Paid</span>
-                        ) : (
-                          <span className="bg-gray-100 text-gray-400 px-2 py-1 rounded-lg text-[10px] font-bold uppercase">Unpaid</span>
-                        )}
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center justify-between gap-4 bg-gray-50/50 p-2 rounded-xl border border-gray-100">
+                          <span className="text-[10px] font-black uppercase text-gray-400">Verify</span>
+                          <Toggle 
+                            enabled={user.isAdminApproved} 
+                            onToggle={() => handleApproveToggle(user)} 
+                            pending={actionInProgress === user._id + '-approve'} 
+                          />
+                        </div>
+                        <div className="flex items-center justify-between gap-4 bg-gray-50/50 p-2 rounded-xl border border-gray-100">
+                          <span className="text-[10px] font-black uppercase text-gray-400">Payment</span>
+                          <Toggle 
+                            enabled={user.hasPaid} 
+                            onToggle={() => handlePaymentToggle(user)} 
+                            pending={actionInProgress === user._id + '-payment'} 
+                            colorOn="bg-blue-500"
+                          />
+                        </div>
                       </div>
                     </td>
 

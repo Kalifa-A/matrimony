@@ -63,13 +63,14 @@ export default function SearchResultsContent() {
       const data = await response.json();
       
       if (response.ok) {
+        const usersArray = Array.isArray(data) ? data : (data.users && Array.isArray(data.users) ? data.users : []);
         const userData = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
         if (userData) {
           const loggedInUser = JSON.parse(userData);
           const currentId = loggedInUser._id || loggedInUser.id;
-          setProfiles(data.filter((p: any) => p._id !== currentId));
+          setProfiles(usersArray.filter((p: any) => p._id !== currentId));
         } else {
-          setProfiles(data);
+          setProfiles(usersArray);
         }
       }
     } catch (err) {

@@ -8,13 +8,35 @@ const Interest = require('../models/Interest');
 const SuccessStory = require('../models/SuccessStory');
 const { setAuthCookie, removeAuthCookie } = require('../utils/auth-cookies');
 // ── Simple admin-secret guard for setup only ──────────────────────────────────────────────
-function adminOnly(req, res, next) {
-  const secret = req.headers['x-admin-secret'];
-  if (!secret || secret !== process.env.ADMIN_SECRET) {
+// One-time setup token logic
+const crypto = require('crypto');
+const setupTokens = new Map();
+function generateSetupToken() {
+  const token = crypto.randomBytes(32).toString('hex');
+  const expiresAt = Date.now() + 30 * 60 * 1000; // 30 min
+  setupTokens.set(token, expiresAt);
+  return token;
+}
+function validateSetupToken(token) {
+  if (!setupTokens.has(token)) return false;
+  const expiresAt = setupTokens.get(token);
+  if (Date.now() > expiresAt) {
+    setupTokens.delete(token);
+    return false;
+  }
+  setupTokens.delete(token);
+  return true;
+}
+
+// Endpoint to generate setup token (protect with deployment secret)
+router.post('/generate-setup-token', (req, res) => {
+  const deploymentSecret = req.headers['x-deployment-secret'];
+  if (!deploymentSecret || deploymentSecret !== process.env.DEPLOYMENT_SECRET) {
     return res.status(403).json({ message: 'Forbidden' });
   }
-  next();
-}
+  const token = generateSetupToken();
+  res.json({ setupToken: token, expiresIn: '30 minutes' });
+});
 // Accepts JWT ONLY from Bearer header for cross-domain stability
 function authenticateAdmin(req, res, next) {
   // 1. Try to get token from cookies first
@@ -42,33 +64,33 @@ function authenticateAdmin(req, res, next) {
 }
 
 // ── POST /api/admin/setup-root ─────────────────────────────────────────────
-// Run this once manually via Postman or Curl to create the first admin.
-// Requires x-admin-secret header.
-router.post('/setup-root', adminOnly, async (req, res) => {
+// Secure root admin setup with one-time token
+router.post('/setup-root', async (req, res) => {
   try {
-    const { username, email, password } = req.body;
-
+    const { username, email, password, setupToken } = req.body;
+    if (!setupToken || !validateSetupToken(setupToken)) {
+      return res.status(403).json({ message: 'Invalid or expired setup token' });
+    }
     if (!username || !email || !password) {
       return res.status(400).json({ message: 'All fields are required.' });
     }
-
-    if (password.length < 8) {
-      return res.status(400).json({ message: 'Password must be at least 8 characters long.' });
+    if (password.length < 12) {
+      return res.status(400).json({ message: 'Password must be at least 12 characters.' });
     }
-
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/;
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({ message: 'Password must contain uppercase, lowercase, number, and special char' });
+    }
     const existing = await Admin.findOne({ $or: [{ email }, { username }] });
     if (existing) return res.status(400).json({ message: 'Admin already exists.' });
-
-    const salt = await bcrypt.genSalt(10);
+    const salt = await bcrypt.genSalt(12);
     const hashedPassword = await bcrypt.hash(password, salt);
-
     const admin = new Admin({
       username,
       email,
       password: hashedPassword,
       role: 'superadmin'
     });
-
     await admin.save();
     res.status(201).json({ message: 'Root admin created successfully.', admin: { username, email } });
   } catch (err) {
@@ -120,11 +142,15 @@ router.post('/login', async (req, res) => {
 });
 
 // ── GET /api/admin/users  (with optional ?phone= search) ──────────────────
+// Helper to escape regex
+function escapeRegex(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 router.get('/users', authenticateAdmin, async (req, res) => {
   try {
     let query = {};
     if (req.query.phone) {
-      query.phone = { $regex: req.query.phone, $options: 'i' };
+      query.phone = { $regex: escapeRegex(req.query.phone), $options: 'i' };
     }
     const users = await User.find(query)
       .select('-password')

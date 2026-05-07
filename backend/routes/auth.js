@@ -7,14 +7,12 @@ const jwt = require('jsonwebtoken');
 const { authenticateUser } = require('../utils/auth-middleware');
 const { setAuthCookie, removeAuthCookie } = require('../utils/auth-cookies');
 const Joi = require('joi');
-const crypto = require('crypto');
 const sendEmail = require('../utils/emailService');
 
-// Validation schemas
 const registerSchema = Joi.object({
   name: Joi.string().min(2).max(50).required(),
   email: Joi.string().email().required(),
-  password: Joi.string().min(6).required(),
+  password: Joi.string().min(8).required(),
   age: Joi.number().integer().min(18).max(100).optional(),
   maritalStatus: Joi.string().valid('Single', 'Divorced', 'Widowed').optional(),
   gender: Joi.string().valid('Male', 'Female').optional(),
@@ -32,100 +30,101 @@ const loginSchema = Joi.object({
   password: Joi.string().required()
 });
 
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+function escapeRegex(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
 router.post('/register', upload.single('profilePhoto'), async (req, res) => {
-    console.log("REQUEST HIT:", req.body);
-    console.log("FILE HIT:", req.file);
   try {
-    // Validate input
     const { error } = registerSchema.validate(req.body);
     if (error) return res.status(400).json({ message: error.details[0].message });
 
-    const { name, email, password, age, maritalStatus, gender, job, location, education, salary, assets, description, phone } = req.body;
+    let { name, email, password, age, maritalStatus, gender, job, location, education, salary, assets, description, phone } = req.body;
+    email = email.toLowerCase().trim();
 
-    // 1. Check if user exists
-    let user = await User.findOne({ email });
-    if (user) return res.status(400).json({ message: "User already exists" });
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({ message: 'Password must be at least 8 characters and include uppercase, lowercase, number, and special character.' });
+    }
 
-    // 2. Hash Password
-    const salt = await bcrypt.genSalt(10);
+    const existingUser = await User.findOne({ email });
+    if (existingUser) return res.status(400).json({ message: 'User already exists' });
+
+    const salt = await bcrypt.genSalt(12);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // 3. Create New User
-    user = new User({
-      name, email, password: hashedPassword, age, maritalStatus, gender, job, location, 
-      education, salary, assets, description, phone,
-      profilePhoto: req.file ? req.file.path : "",
+    const user = new User({
+      name,
+      email,
+      password: hashedPassword,
+      age,
+      maritalStatus,
+      gender,
+      job,
+      location,
+      education,
+      salary,
+      assets,
+      description,
+      phone,
+      profilePhoto: req.file ? req.file.path : ''
     });
 
     await user.save();
 
-    // Create JWT Token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-
-    // Set httpOnly cookie
+    const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1d' });
     setAuthCookie(res, 'user_token', token);
 
-    res.status(201).json({ 
-      message: "Registration Successful!", 
-      user: { _id: user._id, name: user.name, email: user.email }, 
-      profilePhoto: user.profilePhoto,
-      token // Still returning token for backward compatibility/legacy support
+    res.status(201).json({
+      message: 'Registration successful',
+      user: { _id: user._id, name: user.name, email: user.email },
+      profilePhoto: user.profilePhoto
     });
-
   } catch (err) {
-    console.error(err);
-    res.status(500).send("Server Error");
+    console.error('Register error:', err);
+    res.status(500).json({ message: 'Server error' });
   }
 });
+
 router.post('/login', async (req, res) => {
   const { error } = loginSchema.validate(req.body);
   if (error) return res.status(400).json({ message: error.details[0].message });
 
-  const { email, password } = req.body;
+  let { email, password } = req.body;
+  email = email?.toLowerCase().trim();
   try {
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "User not found" });
+    if (!user) return res.status(400).json({ message: 'Invalid credentials' });
 
-    // Compare hashed password (using bcrypt)
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
+    if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
-    // Create JWT Token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
-
-    // Set httpOnly cookie
+    const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1d' });
     setAuthCookie(res, 'user_token', token);
 
-    res.json({ 
-      message: "Login successful", 
-      user: { _id: user._id, name: user.name, email: user.email },
-      token // Still returning token for backward compatibility/legacy support
+    res.json({
+      message: 'Login successful',
+      user: { _id: user._id, name: user.name, email: user.email }
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error('Login error:', err);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
-// backend/routes/auth.js
-
-// @route   GET api/auth/profiles
-// @desc    Get all user profiles with optional filters
 router.get('/profiles', async (req, res) => {
   try {
-    let query = {};
+    const query = {};
 
-    // 1. Filter by Age (if provided)
     if (req.query.minAge || req.query.maxAge) {
       query.age = {};
       if (req.query.minAge) query.age.$gte = Number(req.query.minAge);
       if (req.query.maxAge) query.age.$lte = Number(req.query.maxAge);
     }
 
-    // 2. Filter by Location (if provided)
     if (req.query.location) {
-      // 'i' makes it case-insensitive so "chennai" matches "Chennai"
-      query.location = { $regex: req.query.location, $options: 'i' };
+      query.location = { $regex: escapeRegex(req.query.location), $options: 'i' };
     }
 
     if (req.query.gender && req.query.gender !== 'All Genders') {
@@ -137,7 +136,7 @@ router.get('/profiles', async (req, res) => {
     }
 
     if (req.query.education && req.query.education !== 'All Education') {
-      query.education = { $regex: req.query.education, $options: 'i' };
+      query.education = { $regex: escapeRegex(req.query.education), $options: 'i' };
     }
 
     if (req.query.salary && req.query.salary !== 'Any Salary') {
@@ -145,157 +144,111 @@ router.get('/profiles', async (req, res) => {
     }
 
     if (req.query.job && req.query.job !== 'Any Job') {
-      query.job = { $regex: req.query.job, $options: 'i' };
+      query.job = { $regex: escapeRegex(req.query.job), $options: 'i' };
     }
 
-    // Only show approved and unmarried users in discovery
     query.isAdminApproved = true;
     query.isMarried = { $ne: true };
 
-    // 3. Fetch from Database (excluding passwords)
-    const users = await User.find(query).select('-password').sort({ createdAt: -1 });
-    
-    res.json(users);
+    const limit = Math.min(parseInt(req.query.limit, 10) || 20, 100);
+    const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+    const skip = (page - 1) * limit;
+
+    const users = await User.find(query)
+      .select('-password')
+      .limit(limit)
+      .skip(skip)
+      .sort({ createdAt: -1 });
+
+    const total = await User.countDocuments(query);
+
+    res.json({
+      users,
+      pagination: {
+        total,
+        page,
+        limit,
+        pages: Math.ceil(total / limit)
+      }
+    });
   } catch (err) {
-    console.error("Search Error:", err.message);
-    res.status(500).json({ message: "Server Error" });
+    console.error('Search Error:', err);
+    res.status(500).json({ message: 'Server error' });
   }
 });
-
 
 router.get('/profile/:id', async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select('-password');
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
+    if (!user) return res.status(404).json({ message: 'User not found' });
     res.json(user);
   } catch (err) {
-    console.error("Profile Fetch Error:", err.message);
-    
-    if (err.kind === 'ObjectId') {
-      return res.status(404).json({ message: "Invalid Profile ID format" });
-    }
-    
-    res.status(500).json({ message: "Server Error" });
+    console.error('Profile Fetch Error:', err);
+    if (err.kind === 'ObjectId') return res.status(404).json({ message: 'Invalid Profile ID format' });
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
-
-
-router.get('/me/:id', async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id).select('-password');
-    res.json(user);
-  } catch (err) {
-    res.status(500).json({ message: "Server Error" });
-  }
-});
-
-
-router.put('/update/:id', authenticateUser, async (req, res) => {
-  try {
-    // Ensure user can only update their own profile
-    if (req.user.id !== req.params.id) {
-      return res.status(403).json({ message: 'Access denied. You can only update your own profile.' });
-    }
-    // SECURITY: Destructure and ignore fields that should not be updated via this route
-    // We explicitly exclude email, phone, password, and admin-only fields
-    const { 
-      email, 
-      phone, 
-      password, 
-      isAdminApproved, 
-      hasPaid, 
-      _id, 
-      ...safeUpdates 
-    } = req.body;
-
-    const updatedUser = await User.findByIdAndUpdate(
-      req.params.id,
-      { $set: safeUpdates },
-      { new: true }
-    ).select('-password');
-    
-    res.json(updatedUser);
-  } catch (err) {
-    console.error("Security Hardening Update Error:", err);
-    res.status(500).json({ message: "Update failed" });
-  }
-});
-
-// New route for updating profile photo
-router.put('/update-photo/:id', authenticateUser, upload.single('profilePhoto'), async (req, res) => {
-  try {
-    if (req.user.id !== req.params.id) {
-      return res.status(403).json({ message: 'Access denied. You can only update your own photo.' });
-    }
-    if (!req.file) return res.status(400).json({ message: "No file uploaded" });
-    
-    const updatedUser = await User.findByIdAndUpdate(
-      req.params.id,
-      { $set: { profilePhoto: req.file.path } },
-      { new: true }
-    ).select('-password');
-
-    res.json(updatedUser);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Photo update failed" });
-  }
-});
-
-
-
-// GET /api/auth/me - Verify session via cookie or Authorization header
 router.get('/me', authenticateUser, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
-    if (!user) return res.status(404).json({ message: "User not found" });
-
+    if (!user) return res.status(404).json({ message: 'User not found' });
     res.json(user);
   } catch (err) {
-    res.status(401).json({ message: "Invalid session" });
+    console.error('Me error:', err);
+    res.status(401).json({ message: 'Invalid session' });
   }
 });
 
-// POST /api/auth/logout - Clear cookie and Inform client
-router.post('/logout', (req, res) => {
-  removeAuthCookie(res, 'user_token');
-  res.json({ message: "Logged out successfully" });
+router.put('/update/:id', authenticateUser, async (req, res) => {
+  try {
+    if (req.user.id !== req.params.id) return res.status(403).json({ message: 'Access denied. You can only update your own profile.' });
+    const { email, phone, password, isAdminApproved, hasPaid, _id, profilePhoto, ...safeUpdates } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(req.params.id, { $set: safeUpdates }, { new: true }).select('-password');
+    res.json(updatedUser);
+  } catch (err) {
+    console.error('Update error:', err);
+    res.status(500).json({ message: 'Update failed' });
+  }
 });
 
-// --- Forgot Password OTP Flow ---
+router.put('/update-photo/:id', authenticateUser, upload.single('profilePhoto'), async (req, res) => {
+  try {
+    if (req.user.id !== req.params.id) return res.status(403).json({ message: 'Access denied. You can only update your own photo.' });
+    if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
 
-// @route   POST api/auth/forgot-password
-// @desc    Send OTP to email
+    const updatedUser = await User.findByIdAndUpdate(req.params.id, { $set: { profilePhoto: req.file.path } }, { new: true }).select('-password');
+    res.json(updatedUser);
+  } catch (err) {
+    console.error('Photo update error:', err);
+    res.status(500).json({ message: 'Photo update failed' });
+  }
+});
+
+router.post('/logout', (req, res) => {
+  removeAuthCookie(res, 'user_token');
+  res.json({ message: 'Logged out successfully' });
+});
+
 router.post('/forgot-password', async (req, res) => {
-  const { email } = req.body;
-
+  let { email } = req.body;
+  email = email?.toLowerCase().trim();
   try {
     const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ message: "User with this email does not exist." });
-    }
+    if (!user) return res.status(404).json({ message: 'User with this email does not exist.' });
 
-    // Rate limiting: 1 OTP per 60 seconds
     if (user.otpRequestedAt && (Date.now() - user.otpRequestedAt) < 60000) {
       const remainingSeconds = Math.ceil((60000 - (Date.now() - user.otpRequestedAt)) / 1000);
       return res.status(429).json({ message: `Please wait ${remainingSeconds} seconds before requesting a new OTP.` });
     }
 
-    // Generate 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    
-    // Set OTP and Expiry (5 minutes)
     user.resetOtp = otp;
     user.resetOtpExpire = Date.now() + 5 * 60 * 1000;
     user.otpRequestedAt = Date.now();
-
     await user.save();
 
-    // Professional HTML Email Template
     const htmlContent = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
         <h2 style="color: #c92c3a; text-align: center;">Al Fattah Matrimony</h2>
@@ -304,7 +257,7 @@ router.post('/forgot-password', async (req, res) => {
         <div style="text-align: center; margin: 30px 0;">
           <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #333; background: #f4f4f4; padding: 10px 20px; border-radius: 5px; border: 1px dashed #c92c3a;">${otp}</span>
         </div>
-        <p style="color: #555;">This OTP is valid for <strong>5 minutes</strong>. If you did not request this, please ignore this email or contact support if you have concerns.</p>
+        <p style="color: #555;">This OTP is valid for <strong>5 minutes</strong>. If you did not request this, please ignore this email or contact support.</p>
         <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
         <p style="font-size: 12px; color: #888; text-align: center;">Secure Message: Never share your OTP with anyone. Our team will never ask for your password or OTP.</p>
       </div>
@@ -316,65 +269,66 @@ router.post('/forgot-password', async (req, res) => {
       html: htmlContent
     });
 
-    res.json({ message: "OTP sent to your email." });
-
+    res.json({ message: 'OTP sent to your email.' });
   } catch (err) {
-    console.error("Forgot Password Error:", err);
-    res.status(500).json({ message: "Failed to send OTP. Please try again later." });
+    console.error('Forgot Password Error:', err);
+    res.status(500).json({ message: 'Failed to send OTP. Please try again later.' });
   }
 });
 
-// @route   POST api/auth/verify-otp
-// @desc    Verify OTP
 router.post('/verify-otp', async (req, res) => {
-  const { email, otp } = req.body;
-
+  let { email, otp } = req.body;
+  email = email?.toLowerCase().trim();
+  otp = otp?.trim();
   try {
-    const user = await User.findOne({ 
-      email,
-      resetOtp: otp,
-      resetOtpExpire: { $gt: Date.now() }
-    });
-
-    if (!user) {
-      return res.status(400).json({ message: "Invalid or expired OTP." });
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ message: 'User not found.' });
+    
+    if (user.resetOtp !== otp) {
+      return res.status(400).json({ message: 'Invalid OTP code.' });
+    }
+    
+    if (new Date(user.resetOtpExpire) < new Date()) {
+      return res.status(400).json({ message: 'OTP has expired. Please request a new one.' });
     }
 
-    res.json({ message: "OTP verified successfully. You can now reset your password." });
+    res.json({ message: 'OTP verified successfully. You can now reset your password.' });
   } catch (err) {
-    res.status(500).json({ message: "Verification failed." });
+    console.error('Verify OTP error:', err);
+    res.status(500).json({ message: 'Verification failed.' });
   }
 });
 
-// @route   POST api/auth/reset-password
-// @desc    Reset password
 router.post('/reset-password', async (req, res) => {
-  const { email, otp, newPassword } = req.body;
-
+  let { email, otp, newPassword } = req.body;
+  email = email?.toLowerCase().trim();
+  otp = otp?.trim();
   try {
-    const user = await User.findOne({ 
-      email,
-      resetOtp: otp,
-      resetOtpExpire: { $gt: Date.now() }
-    });
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ message: 'User not found. Please start again.' });
 
-    if (!user) {
-      return res.status(400).json({ message: "Invalid or expired OTP. Please start again." });
+    if (user.resetOtp !== otp) {
+      return res.status(400).json({ message: 'Invalid OTP code. Please start again.' });
     }
 
-    // Hash new password
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(newPassword, salt);
+    if (new Date(user.resetOtpExpire) < new Date()) {
+      return res.status(400).json({ message: 'OTP has expired. Please start again.' });
+    }
 
-    // Clear OTP fields
+    if (!passwordRegex.test(newPassword)) {
+      return res.status(400).json({ message: 'Password must be at least 8 characters and include uppercase, lowercase, number, and special character.' });
+    }
+
+    const salt = await bcrypt.genSalt(12);
+    user.password = await bcrypt.hash(newPassword, salt);
     user.resetOtp = undefined;
     user.resetOtpExpire = undefined;
-    
     await user.save();
 
-    res.json({ message: "Password reset successful. You can now login with your new password." });
+    res.json({ message: 'Password reset successful. You can now login with your new password.' });
   } catch (err) {
-    res.status(500).json({ message: "Password reset failed." });
+    console.error('Reset password error:', err);
+    res.status(500).json({ message: 'Password reset failed.' });
   }
 });
 

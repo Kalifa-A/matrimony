@@ -26,7 +26,7 @@ export interface AdminUser {
   age: number;
   profession: string;
   location: string;
-  isApproved: boolean;
+  isAdminApproved: boolean;
   hasPaid: boolean;
   profilePhoto?: string;
   isMarried?: boolean;

@@ -31,14 +31,14 @@ export default function UserVerification() {
     setActionInProgress(user._id + '-approve');
     startTransition(async () => {
       try {
-        if (user.isApproved) {
+        if (user.isAdminApproved) {
           await revokeUser(user._id);
           showToast(`Call verification revoked for ${user.name}`);
         } else {
           await approveUser(user._id);
           showToast(`${user.name}'s call verified successfully!`);
         }
-        setUsers(prev => prev.map(u => u._id === user._id ? { ...u, isApproved: !u.isApproved } : u));
+        setUsers(prev => prev.map(u => u._id === user._id ? { ...u, isAdminApproved: !u.isAdminApproved } : u));
       } catch (err) {
         showToast("Failed to update status.", 'error');
       } finally {
@@ -82,7 +82,7 @@ export default function UserVerification() {
     });
   };
 
-  const filteredUsers = showAll ? users : users.filter(u => !u.isApproved || !u.hasPaid);
+  const filteredUsers = showAll ? users : users.filter(u => !u.isAdminApproved || !u.hasPaid);
 
   return (
     <section className="space-y-8 p-4 sm:p-8">
@@ -103,7 +103,7 @@ export default function UserVerification() {
             <span className="text-xs font-bold text-gray-600 group-hover:text-gray-900 transition-colors">Show Verified Users</span>
           </label>
           <span className="bg-orange-100 text-orange-600 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl text-[10px] sm:text-xs font-bold shadow-sm">
-            {users.filter(u => !u.isApproved || !u.hasPaid).length} Pending
+            {users.filter(u => !u.isAdminApproved || !u.hasPaid).length} Pending
           </span>
         </div>
       </div>
@@ -143,7 +143,7 @@ export default function UserVerification() {
 function VerificationCard({ user, onApprove, onPayment, onDelete, isApproving, isPaying, isDeleting }: any) {
   return (
     <div className="bg-white rounded-2xl sm:rounded-[2.5rem] border border-gray-100 p-5 sm:p-8 shadow-sm hover:shadow-md transition-all relative overflow-hidden">
-      {user.isApproved && user.hasPaid && (
+      {user.isAdminApproved && user.hasPaid && (
         <div className="absolute top-0 right-0 px-4 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase rounded-bl-2xl">
            Fully Verified
         </div>
@@ -171,7 +171,7 @@ function VerificationCard({ user, onApprove, onPayment, onDelete, isApproving, i
           </div>
           <div>
             <p className="text-[9px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Call Verification</p>
-            {user.isApproved ? (
+            {user.isAdminApproved ? (
                <span className="text-emerald-500 font-bold text-xs sm:text-sm flex items-center gap-1">
                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path></svg>
                  Verified
@@ -204,9 +204,9 @@ function VerificationCard({ user, onApprove, onPayment, onDelete, isApproving, i
           <button 
             onClick={onApprove}
             disabled={isApproving}
-            className={`flex-1 sm:flex-none px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-bold transition-all text-xs sm:text-sm disabled:opacity-50 ${user.isApproved ? 'bg-gray-100 text-gray-600 hover:bg-gray-200' : 'bg-orange-500 text-white hover:bg-orange-600 shadow-lg shadow-orange-500/20'}`}
+            className={`flex-1 sm:flex-none px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl sm:rounded-2xl font-bold transition-all text-xs sm:text-sm disabled:opacity-50 ${user.isAdminApproved ? 'bg-gray-100 text-gray-600 hover:bg-gray-200' : 'bg-orange-500 text-white hover:bg-orange-600 shadow-lg shadow-orange-500/20'}`}
           >
-            {isApproving ? 'Updating...' : user.isApproved ? 'Revoke Call' : 'Verify Call'}
+            {isApproving ? 'Updating...' : user.isAdminApproved ? 'Revoke Call' : 'Verify Call'}
           </button>
           <button 
             onClick={onPayment}

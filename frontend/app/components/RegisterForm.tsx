@@ -97,12 +97,6 @@ export default function RegisterForm() {
       });
       const result = await response.json();
       if (response.ok) {
-        // Token is handled by cookies
-
-        if (result.user) {
-          localStorage.setItem('user', JSON.stringify(result.user));
-        }
-        
         showToast("Success! Bismillah, your profile is created.");
         if (plan === 'premium') {
           window.location.href = '/payment';

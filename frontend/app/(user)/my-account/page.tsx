@@ -104,7 +104,8 @@ export default function MyAccount() {
           setSentInterests(sentInterestData);
           setHasSentInterests(sentInterestData.length > 0);
           const sentInterestIds = Array.isArray(sentInterestData) ? sentInterestData.map((i: any) => i.receiver._id) : [];
-          const others = data.filter((u: any) => u._id !== profile._id && !sentInterestIds.includes(u._id)).slice(0, 4);
+          const profilesList = Array.isArray(data) ? data : (data.users && Array.isArray(data.users) ? data.users : []);
+          const others = profilesList.filter((u: any) => u._id !== profile._id && !sentInterestIds.includes(u._id)).slice(0, 4);
           setDiscoverProfiles(others);
         } catch (err) {
           console.error("Error discovery profiles:", err);

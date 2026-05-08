@@ -19,7 +19,7 @@ export default function Footer() {
           {/* 1. Brand Identity */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#9AD872] rounded-xl flex items-center justify-center text-white font-bold text-xl sm:text-2xl">A</div>
+                              <img src="/favicon.png" alt="Al Fattah Logo" className="w-8 h-8 sm:w-10 sm:h-10 object-contain" />
               <span className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">
                 Al <span className="text-[#9AD872]">Fattah</span>
               </span>

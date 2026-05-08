@@ -119,9 +119,18 @@ export default function RegisterForm() {
       <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
 
         {/* Header */}
-        <div className="bg-[#9AD872] p-5 sm:p-8 text-center text-white">
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Create Your Profile</h1>
-          <p className="text-white/80 mt-1 sm:mt-2 text-sm sm:text-base">Bismillah. Join the Matrimony community.</p>
+        <div className={`p-5 sm:p-8 text-center text-white relative overflow-hidden transition-colors duration-500 ${plan === 'premium' ? 'bg-gradient-to-r from-[#BF953F] via-[#D4AF37] to-[#B38728]' : 'bg-[#9AD872]'}`}>
+          {plan === 'premium' && (
+            <div className="absolute top-2 right-2 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest animate-pulse">
+              Gold Path
+            </div>
+          )}
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            {plan === 'premium' ? 'Premium Registration' : 'Create Your Profile'}
+          </h1>
+          <p className="text-white/80 mt-1 sm:mt-2 text-sm sm:text-base">
+            {plan === 'premium' ? 'Bismillah. You are one step away from the Gold tier.' : 'Bismillah. Join the Matrimony community.'}
+          </p>
         </div>
 
         <form onSubmit={handleRegister} className="p-4 sm:p-8 space-y-6 sm:space-y-8">
@@ -230,9 +239,17 @@ export default function RegisterForm() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-3 sm:py-4 rounded-xl text-white font-bold text-base sm:text-lg shadow-lg transition-all transform active:scale-95 ${loading ? 'bg-gray-400' : 'bg-[#9AD872] hover:bg-[#8bc764] hover:shadow-[#9AD872]/40'}`}
+            className={`w-full py-3 sm:py-4 rounded-xl text-white font-bold text-base sm:text-lg shadow-lg transition-all transform active:scale-95 ${
+              loading 
+                ? 'bg-gray-400' 
+                : (plan === 'premium' 
+                    ? 'bg-gradient-to-r from-[#BF953F] via-[#D4AF37] to-[#B38728] hover:shadow-[#BF953F]/40' 
+                    : 'bg-[#9AD872] hover:bg-[#8bc764] hover:shadow-[#9AD872]/40')
+            }`}
           >
-            {loading ? "Registering..." : "Register"}
+            {loading 
+              ? "Registering..." 
+              : (plan === 'premium' ? "Complete Registration - ₹499" : "Register Free")}
           </button>
         </form>
       </div>

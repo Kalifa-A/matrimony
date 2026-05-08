@@ -106,8 +106,8 @@ export default function Navbar() {
               </div>
             ) : (
               <div className="flex items-center gap-4">
-                <Link href="/payment" className="text-gray-500 font-bold hover:text-[#9AD872] flex items-center gap-1">
-                  <Flower2 size={14} /> Upgrade
+                <Link href="/payment" className="bg-gradient-to-r from-[#BF953F] to-[#B38728] text-white px-4 py-2 rounded-xl font-bold text-xs shadow-lg shadow-[#BF953F]/20 hover:scale-105 transition-all flex items-center gap-1">
+                  <Sparkles size={14} className="animate-pulse" /> Upgrade to Gold
                 </Link>
                 <Link href="/my-account" className="flex items-center gap-2 bg-gray-50 border border-[#9AD872]/20 px-4 py-2 rounded-2xl hover:bg-[#9AD872]/5 transition-all">
                   <div className="w-8 h-8 bg-[#9AD872] rounded-full flex items-center justify-center text-white font-bold shadow-md relative">
@@ -148,8 +148,8 @@ export default function Navbar() {
             <Link href="/search" className="flex items-center justify-between px-5 py-4 rounded-2xl text-gray-700 font-bold hover:bg-[#9AD872]/10 transition-colors">
               Find Partners <Heart size={18} className="text-pink-300" />
             </Link>
-            <Link href="/payment" className="flex items-center justify-between px-5 py-4 rounded-2xl text-gray-700 font-bold hover:bg-[#9AD872]/10 transition-colors">
-              Upgrade <Sparkles size={18} className="text-[#9AD872]" />
+            <Link href="/payment" className="flex items-center justify-between px-5 py-4 rounded-2xl bg-gradient-to-r from-[#BF953F]/10 to-[#B38728]/10 text-[#B38728] font-bold border border-[#BF953F]/20 transition-colors">
+              Upgrade to Gold <Sparkles size={18} className="animate-pulse" />
             </Link>
             {isLoggedIn === null ? (
               <div className="w-20 h-8 bg-gray-100 animate-pulse rounded-full mx-auto mt-4"></div>

@@ -53,10 +53,10 @@ app.use(mongoSanitize());
 const allowedOrigins = [
   process.env.FRONTEND_URL?.replace(/\/$/, ''),
   'http://localhost:3000',
-  'http://127.0.0.1:3000',
+  'https://alfattahnikkah.com',
+  'https://www.alfattahnikkah.com',
   'https://matrimony-rose-delta.vercel.app'
 ].filter(Boolean);
-
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   if (origin && allowedOrigins.includes(origin)) {

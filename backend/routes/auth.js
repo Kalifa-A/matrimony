@@ -155,7 +155,7 @@ router.get('/profiles', async (req, res) => {
     const skip = (page - 1) * limit;
 
     const users = await User.find(query)
-      .select('-password')
+      .select('-password -phone -email')
       .limit(limit)
       .skip(skip)
       .sort({ createdAt: -1 });
@@ -179,7 +179,41 @@ router.get('/profiles', async (req, res) => {
 
 router.get('/profile/:id', async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select('-password');
+    const targetId = req.params.id;
+    let canSeeContact = false;
+
+    // 1. Check for Admin Token
+    const adminToken = req.cookies?.admin_token;
+    if (adminToken) {
+      try {
+        const decoded = jwt.verify(adminToken, process.env.JWT_SECRET);
+        if (decoded.role === 'admin' || decoded.role === 'superadmin') {
+          canSeeContact = true;
+        }
+      } catch (err) {}
+    }
+
+    // 2. Check for User Token if not already allowed
+    if (!canSeeContact) {
+      const userToken = req.cookies?.user_token || (req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.split(' ')[1] : null);
+      if (userToken) {
+        try {
+          const decoded = jwt.verify(userToken, process.env.JWT_SECRET);
+          if (decoded.id === targetId) {
+            canSeeContact = true;
+          } else {
+            const requester = await User.findById(decoded.id);
+            if (requester && requester.hasPaid) {
+              canSeeContact = true;
+            }
+          }
+        } catch (err) {}
+      }
+    }
+
+    const selectFields = canSeeContact ? '-password' : '-password -phone -email';
+    const user = await User.findById(targetId).select(selectFields);
+
     if (!user) return res.status(404).json({ message: 'User not found' });
     res.json(user);
   } catch (err) {

@@ -79,7 +79,8 @@ const limiter = rateLimit({
   max: 100,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { message: 'Too many requests from this IP, please try again later.' }
+  message: { message: 'Too many requests from this IP, please try again later.' },
+  skip: (req) => req.originalUrl.startsWith('/api/admin')
 });
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,

@@ -89,6 +89,13 @@ export default function Navbar() {
             <Link href="/" className="group flex items-center gap-1 text-gray-600 hover:text-[#9AD872] font-semibold transition-all">
               <span>Home</span>
             </Link>
+            <Link href="/about" className="group flex items-center gap-1 text-gray-600 hover:text-[#9AD872] font-semibold transition-all">
+              <span>About</span>
+            </Link>
+             <Link href="/contact" className="group flex items-center gap-1 text-gray-600 hover:text-[#9AD872] font-semibold transition-all">
+              <span>Contact</span>
+            </Link>
+            
             <Link href="/search" className="group flex items-center gap-1 text-gray-600 hover:text-[#9AD872] font-semibold transition-all">
               <Heart size={14} className="opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all text-pink-400" />
               <span>Find Partners</span>

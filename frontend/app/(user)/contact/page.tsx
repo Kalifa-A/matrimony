@@ -28,7 +28,7 @@ export default function ContactPage() {
             <ContactCard 
               icon={<Mail size={24} />} 
               title="Email Us" 
-              value="alfattah@gmail.com" 
+              value="alfattahnikkah@gmail.com" 
               sub="Response within 24 hours"
               color="bg-emerald-50 text-emerald-600"
             />

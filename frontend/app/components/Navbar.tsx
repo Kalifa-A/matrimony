@@ -152,6 +152,12 @@ export default function Navbar() {
             <Link href="/" className="flex items-center justify-between px-5 py-4 rounded-2xl text-gray-700 font-bold hover:bg-[#9AD872]/10 transition-colors">
               Home <Flower2 size={18} className="text-[#9AD872] opacity-40" />
             </Link>
+            <Link href="/about" className="flex items-center justify-between px-5 py-4 rounded-2xl text-gray-700 font-bold hover:bg-[#9AD872]/10 transition-colors">
+              About <Flower2 size={18} className="text-[#9AD872] opacity-40" />
+            </Link>
+            <Link href="/contact" className="flex items-center justify-between px-5 py-4 rounded-2xl text-gray-700 font-bold hover:bg-[#9AD872]/10 transition-colors">
+              Contact <Flower2 size={18} className="text-[#9AD872] opacity-40" />
+            </Link>
             <Link href="/search" className="flex items-center justify-between px-5 py-4 rounded-2xl text-gray-700 font-bold hover:bg-[#9AD872]/10 transition-colors">
               Find Partners <Heart size={18} className="text-pink-300" />
             </Link>

@@ -166,111 +166,126 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile Toggle */}
-          <button
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="md:hidden relative z-[110] p-2.5 rounded-xl bg-gray-50 text-gray-700 hover:bg-[#9AD872]/10 transition-all active:scale-95"
-            aria-label="Toggle Menu"
-          >
-            {menuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          {/* Mobile Menu Button */}
+          <div className="md:hidden flex items-center">
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="p-2 text-gray-600 hover:text-[#9AD872] transition-colors"
+            >
+              {menuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Mobile Menu Backdrop */}
       <div 
-        className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-[90] transition-opacity duration-300 md:hidden ${menuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        className={`fixed inset-0 bg-black/60 backdrop-blur-md z-[90] transition-opacity duration-300 md:hidden ${
+          menuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
+        }`}
         onClick={() => setMenuOpen(false)}
       />
 
       {/* Mobile Drawer */}
-      <div className={`fixed top-0 right-0 h-full w-[85%] max-w-sm bg-white z-[95] shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.32,0,0.67,0)] md:hidden flex flex-col ${menuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div className={`fixed top-0 right-0 h-full w-[85%] max-w-sm bg-white z-[95] shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] md:hidden flex flex-col ${
+        menuOpen ? 'translate-x-0' : 'translate-x-full'
+      }`}>
         
-        {/* Mobile Header (Inside Drawer) */}
-        <div className="p-6 border-b border-gray-50 flex justify-between items-center pt-8">
-          <div className="flex items-center gap-2">
-            <span className="text-xl font-black tracking-tight"><span className="text-[#9AD872]">AL</span> FATTAH</span>
-          </div>
-          <button onClick={() => setMenuOpen(false)} className="p-2 bg-gray-50 rounded-full text-gray-400">
-            <X size={20} />
-          </button>
+        {/* Top Header inside Drawer */}
+        <div className="flex items-center justify-between px-6 pt-6 pb-2">
+           <span className="text-xs font-black text-gray-400 uppercase tracking-widest">Navigation</span>
+           <button onClick={() => setMenuOpen(false)} className="p-2 bg-gray-50 rounded-full">
+             <X size={20} className="text-gray-500" />
+           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto custom-scrollbar px-6 py-4">
-          {/* User Profile Section */}
+        <div className="px-6 py-4 flex-1 overflow-y-auto">
+          {/* User Profile Card */}
           {isLoggedIn && user ? (
-            <div className="mb-6">
-              <div className="p-4 bg-gradient-to-br from-gray-50 to-white rounded-[2rem] border border-gray-100 shadow-sm">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-14 h-14 bg-[#9AD872] rounded-2xl flex items-center justify-center text-white text-xl font-black shadow-lg shadow-[#9AD872]/20">
-                    {userInitial}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-black text-gray-900 truncate">{user.name}</h3>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5 mt-0.5">
-                      <span className="w-1.5 h-1.5 bg-[#9AD872] rounded-full"></span> Free Member
-                    </p>
+            <div 
+              className="mb-8 p-5 bg-gradient-to-br from-gray-50 to-white rounded-3xl border border-gray-100 shadow-sm transition-all duration-500 delay-100"
+              style={{ opacity: menuOpen ? 1 : 0, transform: menuOpen ? 'translateY(0)' : 'translateY(20px)' }}
+            >
+              <div className="flex items-center gap-4 mb-5">
+                <div className="w-14 h-14 bg-gradient-to-br from-[#9AD872] to-[#88c55f] rounded-2xl flex items-center justify-center text-white text-xl font-black shadow-lg shadow-[#9AD872]/20">
+                  {userInitial}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-black text-gray-900 text-base leading-tight truncate">{user.name}</h3>
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <span className="flex h-2 w-2 rounded-full bg-[#9AD872] animate-pulse"></span>
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Online Profile</span>
                   </div>
                 </div>
-                <Link 
-                  href="/my-account" 
-                  className="flex items-center justify-between w-full py-3 px-4 bg-white rounded-xl text-xs font-bold text-gray-700 border border-gray-100 active:scale-[0.98] transition-all"
-                >
-                  <span>Dashboard & Profile</span>
-                  <ChevronRight size={14} className="text-[#9AD872]" />
-                </Link>
               </div>
+              <Link 
+                href="/my-account" 
+                className="flex items-center justify-between w-full py-3 px-4 bg-gray-900 text-white rounded-xl text-xs font-bold hover:bg-black active:scale-95 transition-all shadow-lg"
+              >
+                <span>Manage Profile</span>
+                <ChevronRight size={14} />
+              </Link>
             </div>
-          ) : null}
-
-          {/* Featured Action Card */}
-          <Link 
-            href="/search"
-            className="mb-6 flex items-center gap-4 p-4 bg-pink-50/50 rounded-[2rem] border border-pink-100/50 group"
-          >
-            <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-pink-500 shadow-sm">
-              <Heart size={24} fill="currentColor" className="opacity-80" />
-            </div>
-            <div>
-              <p className="text-sm font-black text-gray-900">Find Partners</p>
-              <p className="text-[11px] font-medium text-gray-500">Discover your perfect match</p>
-            </div>
-            <ChevronRight size={18} className="ml-auto text-pink-300 group-hover:translate-x-1 transition-transform" />
-          </Link>
+          ) : (
+             <div 
+               className="mb-8 p-6 bg-[#9AD872]/5 rounded-3xl border border-[#9AD872]/10 text-center transition-all duration-500 delay-100"
+               style={{ opacity: menuOpen ? 1 : 0, transform: menuOpen ? 'translateY(0)' : 'translateY(20px)' }}
+             >
+                <div className="w-12 h-12 bg-[#9AD872]/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Heart className="text-[#9AD872]" size={24} />
+                </div>
+                <p className="text-sm font-black text-gray-800">Find Your Soulmate</p>
+                <p className="text-[10px] text-gray-500 mt-1 font-medium">Join 10,000+ verified members today</p>
+             </div>
+          )}
 
           {/* Navigation Links */}
-          <div className="space-y-1">
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-4 mb-3">Main Menu</p>
+          <div className="space-y-1.5">
             {[
               { name: "Home", href: "/", icon: Flower2 },
-              { name: "About Us", href: "/about", icon: User },
-              { name: "Contact", href: "/contact", icon: Sparkles },
-              { name: "Pricing Plans", href: "/payment", icon: Sparkles, color: "text-[#B38728]" },
-            ].map((item) => (
+              { name: "Find Partners", href: "/search", icon: Heart, color: "text-pink-500" },
+              { name: "Membership Plans", href: "/payment", icon: Sparkles, color: "text-[#B38728]" },
+              { name: "About Al Fattah", href: "/about", icon: User },
+              { name: "Help & Support", href: "/contact", icon: Menu },
+            ].map((item, idx) => (
               <Link 
                 key={item.name}
                 href={item.href}
-                className={`flex items-center gap-4 p-4 rounded-2xl font-bold text-sm transition-all active:bg-gray-100 ${pathname === item.href ? 'bg-[#9AD872]/10 text-[#9AD872]' : 'text-gray-600'}`}
+                className={`flex items-center justify-between p-4 rounded-2xl font-bold text-sm transition-all active:scale-[0.98] ${
+                  pathname === item.href ? 'bg-[#9AD872]/10 text-[#9AD872]' : 'text-gray-600 hover:bg-gray-50'
+                }`}
+                style={{ 
+                  opacity: menuOpen ? 1 : 0, 
+                  transform: menuOpen ? 'translateX(0)' : 'translateX(10px)',
+                  transition: `all 0.4s cubic-bezier(0.16, 1, 0.3, 1) ${0.2 + idx * 0.05}s`
+                }}
               >
-                <item.icon size={20} className={item.color || "text-gray-400"} />
-                <span>{item.name}</span>
+                <div className="flex items-center gap-4">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${pathname === item.href ? 'bg-[#9AD872] text-white' : 'bg-gray-100 text-gray-400 group-hover:bg-[#9AD872]/20'}`}>
+                    <item.icon size={20} className={pathname === item.href ? "text-white" : (item.color || "text-[#9AD872]")} />
+                  </div>
+                  <span className="tracking-tight">{item.name}</span>
+                </div>
+                <ChevronRight size={16} className={`transition-transform ${pathname === item.href ? 'text-[#9AD872]' : 'text-gray-300'}`} />
               </Link>
             ))}
           </div>
 
-          {/* Auth Section for Guests */}
+          {/* Auth Actions for Logged Out */}
           {!isLoggedIn && (
-            <div className="mt-8 space-y-3 pb-8">
-               <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-4 mb-3">Get Started</p>
+            <div 
+              className="mt-8 space-y-3 transition-all duration-500 delay-[400ms]"
+              style={{ opacity: menuOpen ? 1 : 0, transform: menuOpen ? 'translateY(0)' : 'translateY(20px)' }}
+            >
               <Link 
                 href="/register" 
-                className="flex items-center justify-center gap-2 w-full py-4 bg-[#9AD872] text-white rounded-[1.5rem] font-black shadow-lg shadow-[#9AD872]/20 active:scale-95 transition-all"
+                className="flex items-center justify-center gap-2 w-full py-4 bg-[#9AD872] text-white rounded-2xl font-black shadow-lg shadow-[#9AD872]/30 active:scale-95 transition-all"
               >
-                Register Free <Sparkles size={18} />
+                Create Free Account <Sparkles size={18} />
               </Link>
               <Link 
                 href="/login" 
-                className="flex items-center justify-center w-full py-4 bg-gray-50 text-gray-700 rounded-[1.5rem] font-bold border border-gray-100 active:scale-95 transition-all"
+                className="flex items-center justify-center w-full py-4 bg-white text-gray-700 rounded-2xl font-bold border border-gray-200 active:bg-gray-50 transition-all"
               >
                 Login
               </Link>
@@ -278,14 +293,17 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Sticky Logout at Bottom */}
+        {/* Logout at Bottom */}
         {isLoggedIn && (
-          <div className="p-6 bg-gray-50/50 border-t border-gray-100">
+          <div 
+            className="p-6 bg-gray-50/50 transition-all duration-500 delay-[500ms]"
+            style={{ opacity: menuOpen ? 1 : 0, transform: menuOpen ? 'translateY(0)' : 'translateY(20px)' }}
+          >
             <button 
               onClick={handleLogout}
-              className="flex items-center justify-center gap-2 w-full py-4 bg-white text-red-500 rounded-2xl font-bold border border-red-100 shadow-sm active:scale-95 transition-all"
+              className="flex items-center justify-center gap-3 w-full py-4 bg-white text-red-500 border border-red-100 rounded-2xl font-bold active:scale-95 transition-all shadow-sm hover:bg-red-50"
             >
-              <LogOut size={18} />
+              <LogOut size={20} />
               Logout from Account
             </button>
           </div>

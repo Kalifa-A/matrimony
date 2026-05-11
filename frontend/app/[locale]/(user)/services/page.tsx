@@ -1,6 +1,7 @@
 "use client";
 import React from 'react';
-import Link from 'next/link';
+import { Link } from '@/navigation';
+import { useTranslations } from 'next-intl';
 
 const HeartIcon = () => (
   <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9AD872" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
@@ -19,16 +20,18 @@ const MessageSquareIcon = () => (
 );
 
 export default function ServicesPage() {
+  const t = useTranslations('Services');
+
   return (
     <main className="min-h-screen bg-[#FCFDFB]">
       {/* Hero Section */}
       <section className="pt-32 pb-20 bg-gradient-to-b from-[#f2faf0] to-white">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-6xl font-black text-gray-900 mb-6">
-            Services for your <span className="text-[#9AD872]">Halal Journey.</span>
+            {t('title')}
           </h1>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto leading-relaxed">
-            We provide a secure, private, and values-based environment to help Tamil Muslims find their life partners.
+            {t('description')}
           </p>
         </div>
       </section>
@@ -39,23 +42,23 @@ export default function ServicesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <ServiceCard 
               icon={<HeartIcon />} 
-              title="Verified Matchmaking" 
-              desc="Every profile undergoes a manual verification process to ensure authenticity and serious intent."
+              title={t('matchmaking.title')} 
+              desc={t('matchmaking.desc')} 
             />
             <ServiceCard 
               icon={<ShieldIcon />} 
-              title="Privacy Protection" 
-              desc="Full control over your photos and personal details. Your privacy is our highest priority."
+              title={t('privacy.title')} 
+              desc={t('privacy.desc')} 
             />
             <ServiceCard 
               icon={<UserCheckIcon />} 
-              title="Halal Interaction" 
-              desc="Designed to encourage respectful and Islamic communication between families."
+              title={t('halal.title')} 
+              desc={t('halal.desc')} 
             />
             <ServiceCard 
               icon={<MessageSquareIcon />} 
-              title="Expert Guidance" 
-              desc="Our relationship managers are here to assist you in finding the right match for your deen."
+              title={t('guidance.title')} 
+              desc={t('guidance.desc')} 
             />
           </div>
         </div>
@@ -64,9 +67,9 @@ export default function ServicesPage() {
       {/* Call to Action */}
       <section className="py-20 bg-[#1a2e1a] text-white">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-8">Ready to find your match?</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-8">{t('cta.heading')}</h2>
           <Link href="/register" className="inline-block bg-[#9AD872] text-white px-10 py-4 rounded-2xl font-bold shadow-xl hover:bg-[#8bc764] transition-all">
-            Get Started for Free
+            {t('cta.button')}
           </Link>
         </div>
       </section>

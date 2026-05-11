@@ -12,6 +12,7 @@
     "firebase": "^12.12.1",
     "lucide-react": "^1.14.0",
     "next": "latest",
+    "next-intl": "^4.11.2",
     "react": "latest",
     "react-dom": "latest",
     "react-hot-toast": "^2.6.0"

@@ -1,8 +1,9 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { Link, useRouter } from '@/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Heart, MapPin, GraduationCap, Lock, Flower2, Search, Briefcase, IndianRupee, Users } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface Profile {
   _id: string;
@@ -19,6 +20,7 @@ interface Profile {
 }
 
 export default function SearchResultsContent() {
+  const t = useTranslations('Search');
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -27,11 +29,11 @@ export default function SearchResultsContent() {
 
   const [ageMin, setAgeMin] = useState('');
   const [ageMax, setAgeMax] = useState('');
-  const [city, setCity] = useState('All Cities');
-  const [gender, setGender] = useState('All Genders');
-  const [maritalStatus, setMaritalStatus] = useState('Any Status');
-  const [education, setEducation] = useState('All Education');
-  const [salary, setSalary] = useState('Any Salary');
+  const [city, setCity] = useState(t('options.allCities'));
+  const [gender, setGender] = useState(t('options.allGenders'));
+  const [maritalStatus, setMaritalStatus] = useState(t('options.anyStatus'));
+  const [education, setEducation] = useState(t('options.allEducation'));
+  const [salary, setSalary] = useState(t('options.anySalary'));
   const [job, setJob] = useState('');
   const [assets, setAssets] = useState('');
   const [showMoreFilters, setShowMoreFilters] = useState(false);
@@ -41,16 +43,16 @@ export default function SearchResultsContent() {
 
   const fetchProfiles = async () => {
     setLoading(true);
-    const token = localStorage.getItem('user_token');
+    const token = typeof window !== 'undefined' ? localStorage.getItem('user_token') : null;
     try {
       const query = new URLSearchParams({
         minAge: ageMin,
         maxAge: ageMax,
-        location: city !== 'All Cities' ? city : '',
-        gender: gender !== 'All Genders' ? gender : '',
-        maritalStatus: maritalStatus !== 'Any Status' ? maritalStatus : '',
-        education: education !== 'All Education' ? education : '',
-        salary: salary !== 'Any Salary' ? salary : '',
+        location: city !== t('options.allCities') ? city : '',
+        gender: gender !== t('options.allGenders') ? gender : '',
+        maritalStatus: maritalStatus !== t('options.anyStatus') ? maritalStatus : '',
+        education: education !== t('options.allEducation') ? education : '',
+        salary: salary !== t('options.anySalary') ? salary : '',
         job: job,
         assets: assets,
       }).toString();
@@ -106,20 +108,22 @@ export default function SearchResultsContent() {
       .catch(err => console.error('Error checking payment status:', err));
   }, []);
 
-return (
+  return (
     <div className="min-h-screen bg-[#F8FAFC]">
       
       <section className="pt-24 pb-10 px-4">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-gray-900 mb-6">
-            Find Your <span className="text-[#9AD872] italic">Soul</span>.
-          </h1>
+            {t.rich('title', {
+              sukoon: (chunks) => <span className="text-[#9AD872] italic">{chunks}</span>,
+            })}
+          </h1> 
           <div className="inline-flex items-center gap-2 bg-white border border-gray-100 px-6 py-2 rounded-full shadow-sm">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#9AD872] opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-[#9AD872]"></span>
             </span>
-            <p className="text-gray-500 font-bold uppercase tracking-widest text-[10px]">{profiles.length} curated profiles online</p>
+            <p className="text-gray-500 font-bold uppercase tracking-widest text-[10px]">{profiles.length} {t('profilesOnline')}</p>
           </div>
         </div>
       </section>
@@ -130,43 +134,43 @@ return (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
               
               <div className="bg-gray-50/50 rounded-2xl px-4 py-2 border border-transparent focus-within:bg-white focus-within:border-[#9AD872]/30 transition-all">
-                <label className="block text-[9px] font-black uppercase text-gray-400 mb-1">Age Range</label>
+                <label className="block text-[9px] font-black uppercase text-gray-400 mb-1">{t('filters.ageRange')}</label>
                 <div className="flex items-center gap-2">
-                  <input type="number" placeholder="Min" value={ageMin} onChange={(e) => setAgeMin(e.target.value)} className="w-full bg-transparent border-none p-0 focus:ring-0 text-sm font-bold" />
+                  <input type="number" placeholder={t('filters.min')} value={ageMin} onChange={(e) => setAgeMin(e.target.value)} className="w-full bg-transparent border-none p-0 focus:ring-0 text-sm font-bold" />
                   <span className="text-gray-300">-</span>
-                  <input type="number" placeholder="Max" value={ageMax} onChange={(e) => setAgeMax(e.target.value)} className="w-full bg-transparent border-none p-0 focus:ring-0 text-sm font-bold" />
+                  <input type="number" placeholder={t('filters.max')} value={ageMax} onChange={(e) => setAgeMax(e.target.value)} className="w-full bg-transparent border-none p-0 focus:ring-0 text-sm font-bold" />
                 </div>
               </div>
 
               <div className="bg-gray-50/50 rounded-2xl px-4 py-2 border border-transparent focus-within:bg-white focus-within:border-[#9AD872]/30 transition-all">
-                <label className="block text-[9px] font-black uppercase text-gray-400 mb-1">Looking For</label>
+                <label className="block text-[9px] font-black uppercase text-gray-400 mb-1">{t('filters.lookingFor')}</label>
                 <select value={gender} onChange={(e) => setGender(e.target.value)} className="w-full bg-transparent border-none p-0 focus:ring-0 text-sm font-bold cursor-pointer">
-                  <option>All Genders</option>
-                  <option>Male</option>
-                  <option>Female</option>
-                  <option>Other</option>
+                  <option value={t('options.allGenders')}>{t('options.allGenders')}</option>
+                  <option value="Male">{t('options.male')}</option>
+                  <option value="Female">{t('options.female')}</option>
+                  <option value="Other">{t('options.other')}</option>
                 </select>
               </div>
 
               <div className="bg-gray-50/50 rounded-2xl px-4 py-2 border border-transparent focus-within:bg-white focus-within:border-[#9AD872]/30 transition-all">
-                <label className="block text-[9px] font-black uppercase text-gray-400 mb-1">Location</label>
+                <label className="block text-[9px] font-black uppercase text-gray-400 mb-1">{t('filters.location')}</label>
                 <select value={city} onChange={(e) => setCity(e.target.value)} className="w-full bg-transparent border-none p-0 focus:ring-0 text-sm font-bold cursor-pointer">
-                  <option>All Cities</option>
-                  <option>Chennai</option>
-                  <option>Madurai</option>
-                  <option>Coimbatore</option>
-                  <option>Trichy</option>
-                  <option>Salem</option>
+                  <option value={t('options.allCities')}>{t('options.allCities')}</option>
+                  <option value="Chennai">Chennai</option>
+                  <option value="Madurai">Madurai</option>
+                  <option value="Coimbatore">Coimbatore</option>
+                  <option value="Trichy">Trichy</option>
+                  <option value="Salem">Salem</option>
                 </select>
               </div>
 
               <div className="bg-gray-50/50 rounded-2xl px-4 py-2 border border-transparent focus-within:bg-white focus-within:border-[#9AD872]/30 transition-all">
-                <label className="block text-[9px] font-black uppercase text-gray-400 mb-1">Marital Status</label>
+                <label className="block text-[9px] font-black uppercase text-gray-400 mb-1">{t('filters.maritalStatus')}</label>
                 <select value={maritalStatus} onChange={(e) => setMaritalStatus(e.target.value)} className="w-full bg-transparent border-none p-0 focus:ring-0 text-sm font-bold cursor-pointer">
-                  <option>Any Status</option>
-                  <option>Single</option>
-                  <option>Divorced</option>
-                  <option>Widowed</option>
+                  <option value={t('options.anyStatus')}>{t('options.anyStatus')}</option>
+                  <option value="Single">{t('options.single')}</option>
+                  <option value="Divorced">{t('options.divorced')}</option>
+                  <option value="Widowed">{t('options.widowed')}</option>
                 </select>
               </div>
 
@@ -175,13 +179,13 @@ return (
                   onClick={() => setShowMoreFilters(!showMoreFilters)}
                   className={`flex-1 rounded-2xl font-black text-[10px] uppercase tracking-tighter transition-all border ${showMoreFilters ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-900 border-gray-100 hover:border-gray-200'}`}
                 >
-                  {showMoreFilters ? "Less" : "More"} Filters
+                  {showMoreFilters ? t('filters.less') : t('filters.more')}
                 </button>
                 <button 
                   onClick={fetchProfiles}
                   className="flex-[1.5] bg-[#9AD872] hover:bg-[#8bc963] text-white rounded-2xl font-black text-xs uppercase tracking-tighter shadow-lg shadow-[#9AD872]/30 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2"
                 >
-                  {loading ? "..." : "Search"}
+                  {loading ? "..." : t('filters.search')}
                 </button>
               </div>
             </div>
@@ -189,19 +193,19 @@ return (
             {showMoreFilters && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-3 pt-3 border-t border-gray-50 animate-in fade-in slide-in-from-top-2 duration-300">
                 <div className="bg-gray-50/50 rounded-2xl px-4 py-2 border border-transparent focus-within:bg-white focus-within:border-[#9AD872]/30 transition-all">
-                  <label className="block text-[9px] font-black uppercase text-gray-400 mb-1">Education</label>
+                  <label className="block text-[9px] font-black uppercase text-gray-400 mb-1">{t('filters.education')}</label>
                   <select value={education} onChange={(e) => setEducation(e.target.value)} className="w-full bg-transparent border-none p-0 focus:ring-0 text-sm font-bold cursor-pointer">
-                    <option>All Education</option>
-                    <option>Master's</option>
-                    <option>Bachelor's</option>
-                    <option>Doctorate</option>
-                    <option>Diploma</option>
-                    <option>High School</option>
+                    <option value={t('options.allEducation')}>{t('options.allEducation')}</option>
+                    <option value="Master's">{t('options.masters')}</option>
+                    <option value="Bachelor's">{t('options.bachelors')}</option>
+                    <option value="Doctorate">{t('options.doctorate')}</option>
+                    <option value="Diploma">{t('options.diploma')}</option>
+                    <option value="High School">{t('options.highSchool')}</option>
                   </select>
                 </div>
 
                 <div className="bg-gray-50/50 rounded-2xl px-4 py-2 border border-transparent focus-within:bg-white focus-within:border-[#9AD872]/30 transition-all">
-                  <label className="block text-[9px] font-black uppercase text-gray-400 mb-1">Profession / Job</label>
+                  <label className="block text-[9px] font-black uppercase text-gray-400 mb-1">{t('filters.profession')}</label>
                   <input 
                     type="text" 
                     placeholder="e.g. Engineer" 
@@ -212,18 +216,18 @@ return (
                 </div>
 
                 <div className="bg-gray-50/50 rounded-2xl px-4 py-2 border border-transparent focus-within:bg-white focus-within:border-[#9AD872]/30 transition-all">
-                  <label className="block text-[9px] font-black uppercase text-gray-400 mb-1">Monthly Salary</label>
+                  <label className="block text-[9px] font-black uppercase text-gray-400 mb-1">{t('filters.salary')}</label>
                   <select value={salary} onChange={(e) => setSalary(e.target.value)} className="w-full bg-transparent border-none p-0 focus:ring-0 text-sm font-bold cursor-pointer">
-                    <option>Any Salary</option>
-                    <option>Below ₹20,000</option>
-                    <option>₹20,000 - ₹50,000</option>
-                    <option>₹50,000 - ₹1,00,000</option>
-                    <option>Above ₹1,00,000</option>
+                    <option value={t('options.anySalary')}>{t('options.anySalary')}</option>
+                    <option value="Below ₹20,000">Below ₹20,000</option>
+                    <option value="₹20,000 - ₹50,000">₹20,000 - ₹50,000</option>
+                    <option value="₹50,000 - ₹1,00,000">₹50,000 - ₹1,00,000</option>
+                    <option value="Above ₹1,00,000">Above ₹1,00,000</option>
                   </select>
                 </div>
 
                 <div className="bg-gray-50/50 rounded-2xl px-4 py-2 border border-transparent focus-within:bg-white focus-within:border-[#9AD872]/30 transition-all">
-                  <label className="block text-[9px] font-black uppercase text-gray-400 mb-1">Assets / Property</label>
+                  <label className="block text-[9px] font-black uppercase text-gray-400 mb-1">{t('filters.assets')}</label>
                   <input 
                     type="text" 
                     placeholder="e.g. House, Land" 
@@ -258,7 +262,7 @@ return (
                   {!hasPaid ? (
                     <div className="text-center mb-auto mt-auto">
                        <Link href="/payment" className="inline-flex items-center gap-2 bg-[#9AD872] text-white px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-transform">
-                        <Lock size={12} /> Unlock Profile
+                        <Lock size={12} /> {t('unlock')}
                       </Link>
                     </div>
                   ) : null}
@@ -277,7 +281,7 @@ return (
                   </div>
                   <div className="mt-6 flex gap-3">
                     <Link href={`/profile/${user._id}`} className="flex-1 bg-white text-black py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest text-center hover:bg-[#9AD872] hover:text-white transition-all">
-                      View Story
+                      {t('viewStory')}
                     </Link>
                     <button className="w-14 h-14 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl flex items-center justify-center text-white hover:bg-rose-500 transition-all">
                       <Heart size={20} />
@@ -291,8 +295,8 @@ return (
         {!loading && profiles.length === 0 && (
           <div className="text-center py-40">
             <Flower2 size={40} className="mx-auto text-gray-100 mb-6" />
-            <h3 className="text-2xl font-black text-gray-200 uppercase tracking-widest">No Matches Found</h3>
-            <p className="text-gray-400 text-sm mt-2 font-medium">Try adjusting your filters to see more results.</p>
+            <h3 className="text-2xl font-black text-gray-200 uppercase tracking-widest">{t('noMatches')}</h3>
+            <p className="text-gray-400 text-sm mt-2 font-medium">{t('tryAdjusting')}</p>
           </div>
         )}
       </main>

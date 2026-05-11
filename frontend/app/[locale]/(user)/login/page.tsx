@@ -1,19 +1,16 @@
 "use client";
 import React, { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-
-
+import { Link, useRouter } from '@/navigation';
 import { useToast } from '@/app/components/ToastProvider';
-
-import { setUserSession } from '@/app/actions/userAuthActions';
+import { useTranslations } from 'next-intl';
 
 export default function Login() {
+  const t = useTranslations('login');
   const { showToast } = useToast();
   const router = useRouter();
   
   // States
-  const [email, setEmail] = useState(''); // Using email as it's more standard than username
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
@@ -35,9 +32,6 @@ export default function Login() {
       const data = await response.json();
       
       if (response.ok) {
-        // Token is now handled by HttpOnly cookies set by the backend
-
-        
         // Save user basic info to localStorage (Safe, non-sensitive)
         if (data.user) {
           localStorage.setItem('user', JSON.stringify(data.user));
@@ -67,16 +61,16 @@ export default function Login() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8-0v4h8z" />
             </svg>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900">Welcome Back</h2>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900">{t('title')}</h2>
           <p className="mt-2 text-sm text-gray-600">
-            Login to your TN Muslim Matrimony account
+            {t('subtitle')}
           </p>
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('email')}</label>
               <input
                 type="email"
                 required
@@ -87,7 +81,7 @@ export default function Login() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('password')}</label>
               <input
                 type="password"
                 required
@@ -107,13 +101,13 @@ export default function Login() {
                 className="h-4 w-4 text-[#9AD872] focus:ring-[#9AD872] border-gray-300 rounded"
               />
               <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                Remember me
+                {t('rememberMe')}
               </label>
             </div>
 
             <div className="text-sm">
               <Link href="/forgot-password" title='forgot password' className="font-medium text-[#9AD872] hover:text-[#8bc764]">
-                Forgot your password?
+                {t('forgotPassword')}
               </Link>
             </div>
           </div>
@@ -126,16 +120,16 @@ export default function Login() {
                 loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#9AD872] hover:bg-[#8bc764] hover:scale-[1.01]'
               }`}
             >
-              {loading ? "Signing in..." : "Sign in"}
+              {loading ? t('loading') : t('submit')}
             </button>
           </div>
         </form>
 
         <div className="text-center mt-6">
           <p className="text-sm text-gray-600">
-            Don't have an account?{' '}
+            {t('noAccount')}{' '}
             <Link href="/register" className="font-bold text-[#9AD872] hover:text-[#8bc764]">
-              Register for free
+              {t('registerNow')}
             </Link>
           </p>
         </div>

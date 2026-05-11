@@ -2,8 +2,10 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Send, MessageSquare, Loader2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { useTranslations } from 'next-intl';
 
 function ContactForm() {
+  const t = useTranslations('Contact.form');
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -23,10 +25,10 @@ function ContactForm() {
       });
       const data = await res.json();
       if (res.ok) {
-        toast.success(data.message || 'Message sent successfully!');
+        toast.success(t('success'));
         setFormData({ name: '', email: '', subject: '', message: '' });
       } else {
-        toast.error(data.message || 'Something went wrong');
+        toast.error(t('error'));
       }
     } catch (err) {
       toast.error('Failed to send message. Please try again.');
@@ -39,7 +41,7 @@ function ContactForm() {
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <label className="text-sm font-bold text-gray-700 ml-1">Full Name</label>
+          <label className="text-sm font-bold text-gray-700 ml-1">{t('name')}</label>
           <input 
             type="text" 
             placeholder="John Doe" 
@@ -50,7 +52,7 @@ function ContactForm() {
           />
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-bold text-gray-700 ml-1">Email Address</label>
+          <label className="text-sm font-bold text-gray-700 ml-1">{t('email')}</label>
           <input 
             type="email" 
             placeholder="john@example.com" 
@@ -62,7 +64,7 @@ function ContactForm() {
         </div>
       </div>
       <div className="space-y-2">
-        <label className="text-sm font-bold text-gray-700 ml-1">Subject</label>
+        <label className="text-sm font-bold text-gray-700 ml-1">{t('subject')}</label>
         <input 
           type="text" 
           placeholder="How can we help?" 
@@ -73,7 +75,7 @@ function ContactForm() {
         />
       </div>
       <div className="space-y-2">
-        <label className="text-sm font-bold text-gray-700 ml-1">Message</label>
+        <label className="text-sm font-bold text-gray-700 ml-1">{t('message')}</label>
         <textarea 
           rows={4} 
           placeholder="Your message here..." 
@@ -92,7 +94,7 @@ function ContactForm() {
           <Loader2 className="animate-spin" size={18} />
         ) : (
           <>
-            <span>Send Message</span>
+            <span>{t('submit')}</span>
             <Send size={18} />
           </>
         )}
@@ -102,6 +104,8 @@ function ContactForm() {
 }
 
 export default function ContactPage() {
+  const t = useTranslations('Contact');
+
   return (
     <main className="min-h-screen bg-[#FCFDFB]">
       {/* Hero Section */}
@@ -109,13 +113,15 @@ export default function ContactPage() {
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#9AD872]/10 rounded-full blur-3xl -mr-48 -mt-48"></div>
         <div className="container mx-auto px-4 text-center relative z-10">
           <span className="bg-[#9AD872]/10 text-[#7db55a] px-4 py-2 rounded-full text-sm font-bold uppercase tracking-widest mb-6 inline-block">
-            Support Center
+            {t('badge')}
           </span>
           <h1 className="text-4xl md:text-6xl font-black text-gray-900 mb-6">
-            We're Here to <span className="text-[#9AD872]">Help.</span>
+            {t.rich('title', {
+                  sukoon: (chunks) => <span className="text-[#9AD872]">{chunks}</span>,
+                })}
           </h1>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto leading-relaxed">
-            Have questions? Our relationship managers are available to assist you with any inquiries or support you might need.
+            {t('description')}
           </p>
         </div>
       </section>
@@ -126,23 +132,23 @@ export default function ContactPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <ContactCard 
               icon={<Mail size={24} />} 
-              title="Email Us" 
+              title={t('cards.email.title')} 
               value="alfattahnikkah@gmail.com" 
-              sub="Response within 24 hours"
+              sub={t('cards.email.sub')}
               color="bg-emerald-50 text-emerald-600"
             />
             <ContactCard 
               icon={<Phone size={24} />} 
-              title="Call Us" 
+              title={t('cards.call.title')} 
               value="+91 8220121113" 
-              sub="Mon - Sat, 9am - 6pm"
+              sub={t('cards.call.sub')}
               color="bg-blue-50 text-blue-600"
             />
             <ContactCard 
               icon={<MapPin size={24} />} 
-              title="Visit Office" 
+              title={t('cards.office.title')} 
               value="Trichy, Tamil Nadu" 
-              sub="Headquarters Office"
+              sub={t('cards.office.sub')}
               color="bg-rose-50 text-rose-600"
             />
           </div>
@@ -156,17 +162,17 @@ export default function ContactPage() {
             {/* Left: Branding/Info */}
             <div className="md:w-2/5 bg-[#1a2e1a] p-12 text-white relative">
               <div className="relative z-10">
-                <h2 className="text-3xl font-bold mb-6">Send us a message</h2>
-                <p className="text-gray-400 mb-10">Whether it's a technical issue or a general question, our team is ready to help.</p>
+                <h2 className="text-3xl font-bold mb-6">{t('form.heading')}</h2>
+                <p className="text-gray-400 mb-10">{t('form.sub')}</p>
                 
                 <div className="space-y-6">
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center"><MessageSquare size={20} /></div>
-                    <span className="font-medium">Direct Chat Available</span>
+                    <span className="font-medium">{t('features.chat')}</span>
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center"><Send size={20} /></div>
-                    <span className="font-medium">Prompt Email Support</span>
+                    <span className="font-medium">{t('features.support')}</span>
                   </div>
                 </div>
               </div>

@@ -3,10 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { 
   Heart, MapPin, GraduationCap, Briefcase, 
-  Banknote, Phone, Mail, Award, Info, 
-  ChevronLeft, Share2, ShieldCheck, Lock, Sparkles
+  Award, Info, ShieldCheck, Lock, Sparkles, Phone, Mail
 } from 'lucide-react';
-import Link from 'next/link';
+import { Link, useRouter } from '@/navigation';
+import { useToast } from '@/app/components/ToastProvider';
+import { useTranslations } from 'next-intl';
 
 // Define the User Type for TypeScript safety
 interface UserProfile {
@@ -27,11 +28,11 @@ interface UserProfile {
   height?: string;
 }
 
-import { useToast } from '@/app/components/ToastProvider';
-
 export default function ProfileDetails() {
+  const t = useTranslations('Profile');
   const { showToast } = useToast();
   const { id } = useParams(); // Gets the ID from the URL
+  const router = useRouter();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [interestSent, setInterestSent] = useState(false);
@@ -56,7 +57,7 @@ export default function ProfileDetails() {
         }
 
         // 2. Check current user's payment status and if interest already sent
-        const userData = localStorage.getItem('user');
+        const userData = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
         if (userData) {
           const loggedInUser = JSON.parse(userData);
           
@@ -79,14 +80,13 @@ export default function ProfileDetails() {
     };
 
     if (id) fetchProfileData();
-  }, [id]);
+  }, [id, API_URL]);
 
   const handleSendInterest = async () => {
-    const token = localStorage.getItem('user_token');
-    const userData = localStorage.getItem('user');
+    const userData = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
     if (!userData) {
       showToast("Please login to send interest", 'error');
-      window.location.href = '/login';
+      router.push('/login');
       return;
     }
 
@@ -122,8 +122,7 @@ export default function ProfileDetails() {
   };
 
   const handleUndoInterest = async () => {
-    const token = localStorage.getItem('user_token');
-    const userData = localStorage.getItem('user');
+    const userData = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
     if (!userData) return;
 
     const loggedInUser = JSON.parse(userData);
@@ -150,26 +149,26 @@ export default function ProfileDetails() {
     }
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center text-[#9AD872] font-bold">Loading Profile...</div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center text-[#9AD872] font-bold">{t('loading')}</div>;
   
   if (id === 'my-account') {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center space-y-4">
-        <p className="text-gray-700 text-lg">Your session needs an update to view your profile.</p>
+        <p className="text-gray-700 text-lg">{t('sessionUpdate')}</p>
         <button 
           onClick={() => {
             localStorage.clear();
-            window.location.href = '/login';
+            router.push('/login');
           }}
           className="bg-[#9AD872] text-white px-6 py-2 rounded-xl font-bold"
         >
-          Please Login Again
+          {t('loginAgain')}
         </button>
       </div>
     );
   }
 
-  if (!profile) return <div className="min-h-screen flex items-center justify-center">Profile not found.</div>;
+  if (!profile) return <div className="min-h-screen flex items-center justify-center">{t('notFound')}</div>;
 
   return (
     <div className="min-h-screen bg-[#FDFCFB] pb-20">
@@ -190,16 +189,16 @@ export default function ProfileDetails() {
                   {/* Verified Badge Overlay */}
                   <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full flex items-center gap-2 shadow-sm">
                     <ShieldCheck size={14} className="text-[#9AD872]" />
-                    <span className="text-[10px] font-black uppercase tracking-wider text-gray-800">Verified</span>
+                    <span className="text-[10px] font-black uppercase tracking-wider text-gray-800">{t('verified')}</span>
                   </div>
 
                   {!hasPaid && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/10 backdrop-blur-[2px]">
                       <button 
-                        onClick={() => window.location.href = '/payment'}
+                        onClick={() => router.push('/payment')}
                         className="bg-white text-gray-900 px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl hover:scale-105 transition-all flex items-center gap-2"
                       >
-                        <Lock size={14} /> Unlock Gallery
+                        <Lock size={14} /> {t('unlockGallery')}
                       </button>
                     </div>
                   )}
@@ -241,7 +240,7 @@ export default function ProfileDetails() {
                 onClick={interestSent ? handleUndoInterest : handleSendInterest}
                 className={`w-full py-5 rounded-[2rem] font-black text-sm uppercase tracking-[0.2em] transition-all shadow-xl ${interestSent ? 'bg-red-100 text-red-400' : 'bg-gray-900 text-white hover:bg-[#9AD872]'}`}
               >
-                {sending ? 'Processing...' : interestSent ? 'Undo Interest' : 'Send Interest'}
+                {sending ? t('processing') : interestSent ? t('undoInterest') : t('sendInterest')}
               </button>
             </div>
           </div>
@@ -256,7 +255,7 @@ export default function ProfileDetails() {
                </div>
                <h2 className="text-2xl font-black text-gray-900 mb-6 flex items-center gap-3">
                  <span className="w-1.5 h-8 bg-[#9AD872] rounded-full"></span>
-                 Personal Story
+                 {t('personalStory')}
                </h2>
                <p className="text-gray-600 text-lg leading-relaxed italic">
                  "{profile.description || "I am a person who values family and traditional roots while embracing modern professional growth. Seeking a partner who understands mutual respect and shared dreams."}"
@@ -269,19 +268,19 @@ export default function ProfileDetails() {
               <div className="bg-white rounded-[3rem] p-8 shadow-sm border border-gray-50">
                 <h3 className="text-lg font-black text-gray-900 mb-6 flex items-center gap-3">
                   <Briefcase className="text-[#9AD872]" size={20} />
-                  Career & Finance
+                  {t('career')}
                 </h3>
                 <div className="space-y-6">
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">Current Role</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">{t('role')}</p>
                     <p className="text-gray-800 font-bold">{profile.education}</p>
                   </div>
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">Annual Income</p>
-                    <p className="text-gray-800 font-bold">{profile.salary || "Disclosed on request"}</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">{t('income')}</p>
+                    <p className="text-gray-800 font-bold">{profile.salary || t('disclosedOnRequest')}</p>
                   </div>
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">Family Assets</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">{t('assets')}</p>
                     <p className="text-gray-800 font-bold">{profile.assets || "Own House / Property"}</p>
                   </div>
                 </div>
@@ -291,15 +290,15 @@ export default function ProfileDetails() {
               <div className="bg-white rounded-[3rem] p-8 shadow-sm border border-gray-50">
                 <h3 className="text-lg font-black text-gray-900 mb-6 flex items-center gap-3">
                   <Award className="text-[#9AD872]" size={20} />
-                  Lifestyle & Background
+                  {t('lifestyle')}
                 </h3>
                 <div className="space-y-6">
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">Complexion / Height</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">{t('complexionHeight')}</p>
                     <p className="text-gray-800 font-bold">{profile.complexion || "Fair"} • {profile.height || "5'6\""}</p>
                   </div>
                   <div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">Native Place</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">{t('nativePlace')}</p>
                     <p className="text-gray-800 font-bold">{profile.location}</p>
                   </div>
                 </div>
@@ -312,8 +311,8 @@ export default function ProfileDetails() {
               
               <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-8">
                 <div>
-                  <h2 className="text-3xl font-black mb-2 tracking-tight">Direct Contact</h2>
-                  <p className="text-gray-400 text-sm font-medium">Verify compatibility and reach out to the family.</p>
+                  <h2 className="text-3xl font-black mb-2 tracking-tight">{t('directContact')}</h2>
+                  <p className="text-gray-400 text-sm font-medium">{t('contactSub')}</p>
                 </div>
 
                 <div className="w-full md:w-auto space-y-4">
@@ -332,14 +331,14 @@ export default function ProfileDetails() {
                     <div className="bg-white/5 backdrop-blur-xl p-6 rounded-[2rem] border border-white/10 text-center">
                       <div className="flex justify-center gap-2 mb-4">
                         <div className="w-2 h-2 rounded-full bg-red-400 animate-ping"></div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-[#9AD872]">Premium Access Only</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-[#9AD872]">{t('premiumAccessOnly')}</span>
                       </div>
-                      <p className="text-xs text-gray-400 mb-6 px-4">Subscribe to our Premium Plan to view phone numbers and verified contact details.</p>
+                      <p className="text-xs text-gray-400 mb-6 px-4">{t('subscribeToView')}</p>
                       <button 
-                        onClick={() => window.location.href = '/payment'}
+                        onClick={() => router.push('/payment')}
                         className="w-full bg-[#9AD872] text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:shadow-lg hover:shadow-[#9AD872]/20 transition-all"
                       >
-                        Upgrade Now
+                        {t('upgradeNow')}
                       </button>
                     </div>
                   )}

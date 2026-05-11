@@ -1,0 +1,281 @@
+{
+  "Navbar": {
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "findPartners": "Find Partners",
+    "login": "Login",
+    "registerFree": "Register Free",
+    "register": "Register",
+    "upgradeToGold": "Upgrade to Gold",
+    "manageProfile": "Manage Profile",
+    "logout": "Logout",
+    "membershipPlans": "Membership Plans"
+  },
+  "Profile": {
+    "loading": "Loading Profile...",
+    "notFound": "Profile not found.",
+    "sessionUpdate": "Your session needs an update to view your profile.",
+    "loginAgain": "Please Login Again",
+    "verified": "Verified",
+    "unlockGallery": "Unlock Gallery",
+    "unlockGallerySub": "Premium Access Only",
+    "sendInterest": "Send Interest",
+    "undoInterest": "Undo Interest",
+    "processing": "Processing...",
+    "personalStory": "Personal Story",
+    "career": "Career & Finance",
+    "role": "Current Role",
+    "income": "Annual Income",
+    "assets": "Family Assets",
+    "disclosedOnRequest": "Disclosed on request",
+    "lifestyle": "Lifestyle & Background",
+    "complexionHeight": "Complexion / Height",
+    "nativePlace": "Native Place",
+    "directContact": "Direct Contact",
+    "contactSub": "Verify compatibility and reach out to the family.",
+    "premiumAccessOnly": "Premium Access Only",
+    "subscribeToView": "Subscribe to our Premium Plan to view phone numbers and verified contact details.",
+    "upgradeNow": "Upgrade Now"
+  },
+  "Services": {
+    "title": "Services for your Halal Journey.",
+    "description": "We provide a secure, private, and values-based environment to help Tamil Muslims find their life partners.",
+    "matchmaking": {
+      "title": "Verified Matchmaking",
+      "desc": "Every profile undergoes a manual verification process to ensure authenticity and serious intent."
+    },
+    "privacy": {
+      "title": "Privacy Protection",
+      "desc": "Full control over your photos and personal details. Your privacy is our highest priority."
+    },
+    "halal": {
+      "title": "Halal Interaction",
+      "desc": "Designed to encourage respectful and Islamic communication between families."
+    },
+    "guidance": {
+      "title": "Expert Guidance",
+      "desc": "Our relationship managers are here to assist you in finding the right match for your deen."
+    },
+    "cta": {
+      "heading": "Ready to find your match?",
+      "button": "Get Started for Free"
+    }
+  },
+  "Contact": {
+    "badge": "Support Center",
+    "title": "We're Here to <sukoon>Help.</sukoon>",
+    "description": "Have questions? Our relationship managers are available to assist you with any inquiries or support you might need.",
+    "cards": {
+      "email": {
+        "title": "Email Us",
+        "sub": "Response within 24 hours"
+      },
+      "call": {
+        "title": "Call Us",
+        "sub": "Mon - Sat, 9am - 6pm"
+      },
+      "office": {
+        "title": "Visit Office",
+        "sub": "Headquarters Office"
+      }
+    },
+    "form": {
+      "heading": "Send us a message",
+      "sub": "Whether it's a technical issue or a general question, our team is ready to help.",
+      "name": "Full Name",
+      "email": "Email Address",
+      "subject": "Subject",
+      "message": "Message",
+      "submit": "Send Message",
+      "loading": "Sending...",
+      "success": "Message sent successfully!",
+      "error": "Something went wrong"
+    },
+    "features": {
+      "chat": "Direct Chat Available",
+      "support": "Prompt Email Support"
+    }
+  },
+  "Search": {
+    "title": "Find Your <sukoon>Soul</sukoon>.",
+    "profilesOnline": "curated profiles online",
+    "filters": {
+      "ageRange": "Age Range",
+      "min": "Min",
+      "max": "Max",
+      "lookingFor": "Looking For",
+      "location": "Location",
+      "maritalStatus": "Marital Status",
+      "education": "Education",
+      "profession": "Profession / Job",
+      "salary": "Monthly Salary",
+      "assets": "Assets / Property",
+      "more": "More Filters",
+      "less": "Less Filters",
+      "search": "Search"
+    },
+    "options": {
+      "allGenders": "All Genders",
+      "male": "Male",
+      "female": "Female",
+      "other": "Other",
+      "allCities": "All Cities",
+      "anyStatus": "Any Status",
+      "single": "Single",
+      "divorced": "Divorced",
+      "widowed": "Widowed",
+      "allEducation": "All Education",
+      "masters": "Master's",
+      "bachelors": "Bachelor's",
+      "doctorate": "Doctorate",
+      "diploma": "Diploma",
+      "highSchool": "High School",
+      "anySalary": "Any Salary"
+    },
+    "unlock": "Unlock Profile",
+    "viewStory": "View Story",
+    "noMatches": "No Matches Found",
+    "tryAdjusting": "Try adjusting your filters to see more results."
+  },
+  "About": {
+    "storyVision": "Our Story & Vision",
+    "connectingHearts": "Connecting Hearts with  <sukoon>Trust.</sukoon>",
+    "description": "Al Fattah Matrimony was founded on the principles of Islamic ethics and community trust. We simplify the journey of finding 'half your deen' while ensuring 100% privacy for every member.",
+    "getStarted": "Get Started Free",
+    "stats": {
+      "matches": "Successful Matches",
+      "profiles": "Active Profiles",
+      "cities": "Cities Covered",
+      "trust": "Trust Score"
+    },
+    "mission": {
+      "title": "Our Mission",
+      "heading": "Preserving Values in a Digital Age",
+      "description": "In a world of fast-paced connections, Al Fattah Matrimony stands for depth and sincerity. We believe that finding a life partner is a sacred journey that requires patience, respect, and a commitment to shared values.",
+      "item1": "Manual profile screening by community experts",
+      "item2": "Strict adherence to Islamic matrimonial ethics",
+      "item3": "Support for family-involved matchmaking"
+    },
+    "community": {
+      "title": "Our Community",
+      "heading": "A Trusted Space for Tamil Muslims",
+      "description": "We are more than just a website; we are a community-driven initiative. Our platform is specifically tailored to the cultural and linguistic nuances of the Tamil Muslim community worldwide, ensuring you feel at home while searching for your partner."
+    },
+    "vision": {
+      "title": "Our Vision",
+      "heading": "The Future of Halal Matchmaking",
+      "description": "Our vision is to become the most trusted global platform for Halal matchmaking, leveraging modern technology while staying rooted in our timeless traditions. We aim to make the path to Nikkah accessible, safe, and blessed for everyone."
+    }
+  },
+  "Home": {
+    "hero": {
+      "trusted": "Trusted by 10k+ Families",
+      "heading": "Find the <sukoon>Sukoon</sukoon> Your Heart Deserves.",
+      "description": "Al Fattah Nikkah simplifies the journey to completing half your deen with 100% privacy and verified Tamil Muslim profiles.",
+      "register": "Start Free Registration",
+      "howItWorks": "How it Works",
+      "matches": "124 Matches",
+      "successThisMonth": "Successfully this month"
+    },
+    "services": {
+      "heading": "Services for your Halal Journey.",
+      "description": "We provide a secure, private, and values-based environment to help Tamil Muslims find their life partners.",
+      "viewAll": "View All",
+
+      "halal":{
+        "title": "Pure & Halal Interactions",
+        "desc": "We provide a secure, private, and values-based environment to help Tamil Muslims find their life partners."
+      },
+      "privacy":{
+        "title": "Privacy Protection for Every Step",
+        "desc": "We provide a secure, private, and values-based environment to help Tamil Muslims find their life partners."
+      },
+      "verified":{
+        "title": "Verified Muslim Profiles",
+        "desc": "We provide a secure, private, and values-based environment to help Tamil Muslims find their life partners."
+      }
+    },
+    "blessedPath": {
+      "badge": "Verified Tamil Muslim Community",
+      "heading": "Walk the Blessed <sukoon>Path to Nikkah.</sukoon>",
+      "description": "Find the perfect match who shares your deen and cultural values, trusted by our community.",
+      "button": "Create Free Profile"
+    },
+    "directConnection": {
+      "heading": "A Direct Connection to your <sukoon>Destiny.</sukoon>",
+      "features": {
+        "halal": "Pure & Halal Interactions",
+        "screening": "Manual Community Screening",
+        "privacy": "Privacy Protection for Every Step",
+        "stories": "Success Stories from Tamil Families"
+      },
+      "accepted": "Interests Accepted"
+    },
+    "membership": {
+      "heading": "Membership Plans",
+      "description": "Choose the perfect plan to accelerate your journey to Nikkah.",
+      "starter": {
+        "title": "Starter",
+        "price": "Free",
+        "duration": "/lifetime",
+        "features": {
+          "profile": "Create Detailed Profile",
+          "browse": "Browse Verified Members",
+          "interest": "Express Interest (Limited)",
+          "contact": "View Contact Details (Locked)"
+        },
+        "button": "Join Community"
+      },
+      "premium": {
+        "badge": "Most Blessed Choice",
+        "title": "Premium",
+        "price": "₹499",
+        "duration": "/one-time",
+        "features": {
+          "views": "Unlimited Profile Views",
+          "phone": "View Verified Phone Numbers",
+          "chat": "Halal Direct Chat Support",
+          "priority": "Priority Search Placement"
+        },
+        "button": "Upgrade to Gold",
+        "secure": "Secure Payment after Registration"
+      }
+    },
+    "successStories": {
+      "heading": "Hearts United by Allah",
+      "quote": "Finding a partner who shares the same cultural and religious values was hard until I found Al Fattah. Alhamdulillah, we are now happily married.",
+      "couple": "Dr. Irfan & Sameera",
+      "location": "Coimbatore, Tamil Nadu"
+    }
+  },
+  "register": {
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "passwordConfirm": "Confirm Password",
+    "phone": "Phone Number",
+    "gender": "Gender",
+    "age": "Age",
+    "location": "Location",
+    "religion": "Religion",
+    "education": "Education",
+    "occupation": "Occupation",
+    "salary": "Salary",
+    "bio": "Bio",
+    "image": "Image",
+    "submit": "Register"
+  },
+  "login": {
+    "title": "Welcome Back",
+    "subtitle": "Login to your account",
+    "email": "Email Address",
+    "password": "Password",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot your password?",
+    "submit": "Sign in",
+    "loading": "Signing in...",
+    "noAccount": "Don't have an account?",
+    "registerNow": "Register for free"
+  }
+}

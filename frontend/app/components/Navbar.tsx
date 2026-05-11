@@ -1,11 +1,13 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { Link, useRouter, usePathname } from "@/navigation";
 import { Flower2, Heart, Sparkles, X, Menu, User, LogOut, ChevronRight } from "lucide-react"; 
 import { clearUserSession } from "@/app/actions/userAuthActions";
+import { useTranslations } from 'next-intl';
+import LanguageSwitcher from "./LanguageSwitcher";
 
 export default function Navbar() {
+  const t = useTranslations('Navbar');
   const router = useRouter();
   const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
@@ -123,37 +125,40 @@ export default function Navbar() {
             {/* Desktop Nav */}
             <div className="hidden md:flex space-x-8 items-center">
               <Link href="/" className="group text-sm font-bold text-gray-600 hover:text-[#9AD872] transition-colors relative py-1">
-                Home
+                {t('home')}
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#9AD872] transition-all group-hover:w-full"></span>
               </Link>
               <Link href="/about" className="group text-sm font-bold text-gray-600 hover:text-[#9AD872] transition-colors relative py-1">
-                About
+                {t('about')}
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#9AD872] transition-all group-hover:w-full"></span>
               </Link>
               <Link href="/contact" className="group text-sm font-bold text-gray-600 hover:text-[#9AD872] transition-colors relative py-1">
-                Contact
+                {t('contact')}
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#9AD872] transition-all group-hover:w-full"></span>
               </Link>
               
               <Link href="/search" className="group flex items-center gap-1.5 text-sm font-bold text-gray-600 hover:text-[#9AD872] transition-all">
                 <Heart size={14} className="text-pink-400 group-hover:scale-125 transition-transform" />
-                <span>Find Partners</span>
+                <span>{t('findPartners')}</span>
               </Link>
+
+              {/* Language Switcher */}
+              <LanguageSwitcher />
 
               {isLoggedIn === null ? (
                 <div className="w-24 h-9 bg-gray-100 animate-pulse rounded-full"></div>
               ) : !isLoggedIn ? (
                 <div className="flex items-center gap-6">
-                  <Link href="/login" className="text-sm font-bold text-gray-600 hover:text-[#9AD872] transition-colors">Login</Link>
+                  <Link href="/login" className="text-sm font-bold text-gray-600 hover:text-[#9AD872] transition-colors">{t('login')}</Link>
                   <Link href="/register" className="bg-[#9AD872] text-white px-6 py-2.5 rounded-full font-black shadow-lg shadow-[#9AD872]/20 hover:shadow-xl hover:-translate-y-0.5 transition-all flex items-center gap-2">
-                    <span>Register Free</span>
+                    <span>{t('registerFree')}</span>
                     <Sparkles size={16} className="animate-pulse" />
                   </Link>
                 </div>
               ) : (
                 <div className="flex items-center gap-4">
                   <Link href="/payment" className="bg-gradient-to-r from-[#BF953F] to-[#B38728] text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase tracking-wider shadow-lg shadow-[#BF953F]/20 hover:scale-105 transition-all flex items-center gap-1.5">
-                    <Sparkles size={12} className="animate-pulse" /> Upgrade to Gold
+                    <Sparkles size={12} className="animate-pulse" /> {t('upgradeToGold')}
                   </Link>
                   <div className="h-8 w-[1px] bg-gray-200 mx-2"></div>
                   <Link href="/my-account" className="flex items-center gap-3 bg-gray-50 border border-gray-100 px-3 py-1.5 rounded-full hover:bg-white hover:border-[#9AD872]/30 transition-all shadow-sm group">
@@ -197,7 +202,7 @@ export default function Navbar() {
         
         {/* Top Header inside Drawer */}
         <div className="flex items-center justify-between px-6 pt-6 pb-2">
-           <span className="text-xs font-black text-gray-400 uppercase tracking-widest">Navigation</span>
+           <span className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('home')}</span>
            <button onClick={() => setMenuOpen(false)} className="p-2 bg-gray-50 rounded-full">
              <X size={20} className="text-gray-500" />
            </button>
@@ -225,7 +230,7 @@ export default function Navbar() {
                 href="/my-account" 
                 className="flex items-center justify-between w-full py-3 px-4 bg-gray-900 text-white rounded-xl text-xs font-bold hover:bg-black active:scale-95 transition-all shadow-lg"
               >
-                <span>Manage Profile</span>
+                <span>{t('manageProfile')}</span>
                 <ChevronRight size={14} />
               </Link>
             </div>
@@ -235,18 +240,18 @@ export default function Navbar() {
                   <Heart className="text-[#9AD872]" size={24} />
                 </div>
                 <p className="text-sm font-black text-gray-800">Find Your Soulmate</p>
-                <p className="text-[10px] text-gray-500 mt-1 font-medium">Join 10,000+ verified members today</p>
+                <p className="text-[10px] text-gray-500 mt-1 font-medium">Join thousands of verified members</p>
              </div>
           )}
 
           {/* Navigation Links */}
           <div className="space-y-1">
             {[
-              { name: "Home", href: "/", icon: Flower2 },
-              { name: "Find Partners", href: "/search", icon: Heart, color: "text-pink-500" },
-              { name: "Membership Plans", href: "/payment", icon: Sparkles, color: "text-[#B38728]" },
-              { name: "About Al Fattah", href: "/about", icon: User },
-              { name: "Help & Support", href: "/contact", icon: Menu },
+              { name: t('home'), href: "/", icon: Flower2 },
+              { name: t('findPartners'), href: "/search", icon: Heart, color: "text-pink-500" },
+              { name: t('membershipPlans'), href: "/payment", icon: Sparkles, color: "text-[#B38728]" },
+              { name: t('about'), href: "/about", icon: User },
+              { name: t('contact'), href: "/contact", icon: Menu },
             ].map((item) => (
               <Link 
                 key={item.name}
@@ -266,6 +271,11 @@ export default function Navbar() {
             ))}
           </div>
 
+          {/* Language Switcher in Mobile Menu */}
+          <div className="p-4 mt-2">
+            <LanguageSwitcher />
+          </div>
+
           {/* Auth Actions for Logged Out */}
           {!isLoggedIn && isLoggedIn !== null && (
             <div className="mt-8 space-y-3">
@@ -273,13 +283,13 @@ export default function Navbar() {
                 href="/register" 
                 className="flex items-center justify-center gap-2 w-full py-4 bg-[#9AD872] text-white rounded-2xl font-black shadow-lg shadow-[#9AD872]/30 active:scale-95 transition-all"
               >
-                Create Free Account <Sparkles size={18} />
+                {t('register')} <Sparkles size={18} />
               </Link>
               <Link 
                 href="/login" 
                 className="flex items-center justify-center w-full py-4 bg-white text-gray-700 rounded-2xl font-bold border border-gray-200 active:bg-gray-50 transition-all"
               >
-                Login
+                {t('login')}
               </Link>
             </div>
           )}
@@ -293,7 +303,7 @@ export default function Navbar() {
               className="flex items-center justify-center gap-3 w-full py-4 bg-white text-red-500 border border-red-100 rounded-2xl font-bold active:scale-95 transition-all shadow-sm hover:bg-red-50"
             >
               <LogOut size={20} />
-              Logout from Account
+              {t('logout')}
             </button>
           </div>
         )}

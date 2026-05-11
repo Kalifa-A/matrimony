@@ -1,14 +1,17 @@
 "use client";
 import React from "react";
 import { Heart, ShieldCheck, Users, Globe, CheckCircle } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/navigation";
+import { useTranslations } from 'next-intl';
 
 export default function About() {
+  const t = useTranslations('About');
+
   const stats = [
-    { label: "Successful Matches", value: "2,000+" },
-    { label: "Active Profiles", value: "15,000+" },
-    { label: "Cities Covered", value: "50+" },
-    { label: "Trust Score", value: "99%" },
+    { label: t('stats.matches'), value: "2,000+" },
+    { label: t('stats.profiles'), value: "15,000+" },
+    { label: t('stats.cities'), value: "50+" },
+    { label: t('stats.trust'), value: "99%" },
   ];
 
   return (
@@ -28,18 +31,19 @@ export default function About() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="text-left">
               <span className="bg-[#9AD872]/10 text-[#7db55a] px-4 py-2 rounded-full text-sm font-bold uppercase tracking-widest mb-6 inline-block">
-                Our Story & Vision
+                {t('storyVision')}
               </span>
               <h1 className="text-4xl md:text-7xl font-black text-gray-900 mb-6 leading-tight">
-                Connecting Hearts with <span className="text-[#9AD872]">Trust.</span>
+                {t.rich('connectingHearts', {
+                  sukoon: (chunks) => <span className="text-[#9AD872]">{chunks}</span>,
+                })}
               </h1>
               <p className="text-lg text-gray-600 max-w-xl leading-relaxed mb-8">
-                Al Fattah Matrimony was founded on the principles of Islamic ethics and community trust. 
-                We simplify the journey of finding "half your deen" while ensuring 100% privacy for every member.
+                {t('description')}
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link href="/register" className="bg-[#9AD872] text-white px-8 py-4 rounded-2xl font-bold shadow-xl shadow-[#9AD872]/40 hover:-translate-y-1 transition-all">
-                  Get Started Free
+                  {t('getStarted')}
                 </Link>
               </div>
             </div>
@@ -48,7 +52,6 @@ export default function About() {
             <div className="relative h-[400px] lg:h-[550px]">
               <div className="absolute inset-0 bg-[#9AD872] rounded-[3rem] rotate-3 opacity-20 blur-2xl"></div>
               <div className="absolute inset-0 bg-white border-2 border-gray-50 rounded-[3rem] overflow-hidden shadow-2xl">
-                {/* Using the generated hero image */}
                 <img 
                   src="/chatgpt.png" 
                   alt="Islamic Partnership" 
@@ -80,18 +83,18 @@ export default function About() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="order-2 lg:order-1">
-              <span className="text-[#9AD872] font-black uppercase tracking-widest text-sm mb-4 block">Our Mission</span>
-              <h2 className="text-3xl md:text-5xl font-black text-gray-900 mb-6 leading-tight">Preserving Values in a Digital Age</h2>
+              <span className="text-[#9AD872] font-black uppercase tracking-widest text-sm mb-4 block">{t('mission.title')}</span>
+              <h2 className="text-3xl md:text-5xl font-black text-gray-900 mb-6 leading-tight">
+                {t('mission.heading')}
+              </h2>
               <p className="text-gray-600 text-lg leading-relaxed mb-6">
-                In a world of fast-paced connections, Al Fattah Matrimony stands for depth and sincerity. 
-                We believe that finding a life partner is a sacred journey that requires patience, 
-                respect, and a commitment to shared values.
+                {t('mission.description')}
               </p>
               <ul className="space-y-4">
                 {[
-                  "Manual profile screening by community experts",
-                  "Strict adherence to Islamic matrimonial ethics",
-                  "Support for family-involved matchmaking"
+                  t('mission.item1'),
+                  t('mission.item2'),
+                  t('mission.item3')
                 ].map((item, i) => (
                   <li key={i} className="flex items-center gap-3 text-gray-700 font-medium">
                     <CheckCircle className="text-[#9AD872]" size={20} />
@@ -115,12 +118,12 @@ export default function About() {
               <img src="/ab2.png" alt="Our Community" className="absolute inset-0 w-full h-full object-cover rounded-[3rem] shadow-2xl relative z-10" />
             </div>
             <div>
-              <span className="text-[#9AD872] font-black uppercase tracking-widest text-sm mb-4 block">Our Community</span>
-              <h2 className="text-3xl md:text-5xl font-black text-gray-900 mb-6 leading-tight">A Trusted Space for Tamil Muslims</h2>
+              <span className="text-[#9AD872] font-black uppercase tracking-widest text-sm mb-4 block">{t('community.title')}</span>
+              <h2 className="text-3xl md:text-5xl font-black text-gray-900 mb-6 leading-tight">
+                {t('community.heading')}
+              </h2>
               <p className="text-gray-600 text-lg leading-relaxed">
-                We are more than just a website; we are a community-driven initiative. 
-                Our platform is specifically tailored to the cultural and linguistic nuances 
-                of the Tamil Muslim community worldwide, ensuring you feel at home while searching for your partner.
+                {t('community.description')}
               </p>
             </div>
           </div>
@@ -130,12 +133,12 @@ export default function About() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="order-2 lg:order-1">
-              <span className="text-[#9AD872] font-black uppercase tracking-widest text-sm mb-4 block">Our Vision</span>
-              <h2 className="text-3xl md:text-5xl font-black text-gray-900 mb-6 leading-tight">The Future of Halal Matchmaking</h2>
+              <span className="text-[#9AD872] font-black uppercase tracking-widest text-sm mb-4 block">{t('vision.title')}</span>
+              <h2 className="text-3xl md:text-5xl font-black text-gray-900 mb-6 leading-tight">
+                {t('vision.heading')}
+              </h2>
               <p className="text-gray-600 text-lg leading-relaxed">
-                Our vision is to become the most trusted global platform for Halal matchmaking, 
-                leveraging modern technology while staying rooted in our timeless traditions. 
-                We aim to make the path to Nikkah accessible, safe, and blessed for everyone.
+                {t('vision.description')}
               </p>
             </div>
             <div className="order-1 lg:order-2 relative h-[350px] md:h-[500px]">

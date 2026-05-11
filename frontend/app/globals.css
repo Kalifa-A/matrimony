@@ -1,1 +1,65 @@
 @import "tailwindcss";
+
+@theme {
+  --font-inter: var(--font-inter);
+  --font-catamaran: var(--font-catamaran);
+}
+
+@layer base {
+  :root {
+    --primary-green: #9AD872;
+    --dark-green: #1a2e1a;
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+
+  /* DEFAULT / ENGLISH FONT: Inter */
+  body {
+    font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* TAMIL FONT: Catamaran (Applies to ALL text when locale is Tamil) */
+  [lang="ta"] body {
+    font-family: var(--font-catamaran), sans-serif;
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+  }
+
+  /* Ensure headings also follow the locale-specific font */
+  [lang="ta"] h1, 
+  [lang="ta"] h2, 
+  [lang="ta"] h3,
+  [lang="ta"] h4,
+  [lang="ta"] h5,
+  [lang="ta"] h6 {
+    font-family: var(--font-catamaran), sans-serif;
+    font-weight: 900; /* Catamaran looks great when extra bold */
+    line-height: 1.3;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-[#9AD872] text-white px-8 py-3 rounded-2xl font-bold shadow-lg shadow-[#9AD872]/20 hover:bg-[#8bc764] transition-all active:scale-95;
+  }
+  
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-xl border border-white/20 shadow-xl;
+  }
+}
+
+/* Custom animations for the "Blessed Path" feel */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}

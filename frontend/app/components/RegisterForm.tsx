@@ -1,10 +1,12 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { useRouter, } from 'next/navigation';
+import { useRouter } from '@/navigation';
 import { useToast } from '@/app/components/ToastProvider';
 import { setUserSession } from '@/app/actions/userAuthActions';
+import { useTranslations } from 'next-intl';
 
 export default function RegisterForm() {
+  const t = useTranslations('register');
   const { showToast } = useToast();
   const router = useRouter();
   
@@ -29,15 +31,15 @@ export default function RegisterForm() {
     name: '',
     age: '',
     maritalStatus: 'Single',
-    education: 'Nil',
-    salary: 'Nil',
-    assets: 'Nil',
+    education: '',
+    salary: '',
+    assets: '',
     description: '',
     gender: 'Male',
     phone: '',
     location: '',
     email: '',
-    job: 'Nil',
+    job: '',
     password: '',
     confirmPassword: ''
   });
@@ -99,9 +101,9 @@ export default function RegisterForm() {
       if (response.ok) {
         showToast("Success! Bismillah, your profile is created.");
         if (plan === 'premium') {
-          window.location.href = '/payment';
+          router.push('/payment');
         } else {
-          window.location.href = '/login';
+          router.push('/login');
         }
       } else {
         showToast(result.message || "Registration failed", 'error');
@@ -143,7 +145,7 @@ export default function RegisterForm() {
                   <img src={selectedImage} alt="Preview" className="w-full h-full object-cover" />
                 ) : (
                   <div className="text-center p-4">
-                    <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">Upload Photo</p>
+                    <p className="text-xs text-gray-400 font-semibold uppercase tracking-wider">{t('image')}</p>
                   </div>
                 )}
               </div>
@@ -165,29 +167,29 @@ export default function RegisterForm() {
             <div className="space-y-4">
               <h3 className="text-lg font-bold text-gray-800 border-l-4 border-[#9AD872] pl-3">Personal Details</h3>
               <div className="space-y-1">
-                <label className="text-sm font-semibold text-gray-600">Full Name</label>
-                <input name="name" type="text" value={formData.name} onChange={handleChange} required className="input-field" placeholder="Full Name" />
+                <label className="text-sm font-semibold text-gray-600">{t('name')}</label>
+                <input name="name" type="text" value={formData.name} onChange={handleChange} required className="input-field" placeholder={t('name')} />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-sm font-semibold text-gray-600">Age</label>
+                  <label className="text-sm font-semibold text-gray-600">{t('age')}</label>
                   <input name="age" type="number" value={formData.age} onChange={handleChange} required className="input-field" />
                 </div>
                 <div className="space-y-1">
                   <label className="text-sm font-semibold text-gray-600">Status</label>
                   <select name="maritalStatus" value={formData.maritalStatus} onChange={handleChange} className="input-field">
-                    <option>Single</option>
-                    <option>Divorced</option>
-                    <option>Widowed</option>
+                    <option value="Single">Single</option>
+                    <option value="Divorced">Divorced</option>
+                    <option value="Widowed">Widowed</option>
                   </select>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-sm font-semibold text-gray-600">Gender</label>
+                  <label className="text-sm font-semibold text-gray-600">{t('gender')}</label>
                   <select name="gender" value={formData.gender} onChange={handleChange} className="input-field">
-                    <option>Male</option>
-                    <option>Female</option>
-                    <option>Other</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
                   </select>
                 </div>
               </div>
@@ -197,15 +199,15 @@ export default function RegisterForm() {
             <div className="space-y-4">
               <h3 className="text-lg font-bold text-gray-800 border-l-4 border-[#9AD872] pl-3">Professional</h3>
               <div className="space-y-1">
-                <label className="text-sm font-semibold text-gray-600">Education</label>
+                <label className="text-sm font-semibold text-gray-600">{t('education')}</label>
                 <input name="education" type="text" value={formData.education} onChange={handleChange} required className="input-field" placeholder="M.B.B.S, B.E, etc." />
               </div>
               <div className="space-y-1">
-                <label className="text-sm font-semibold text-gray-600">Job</label>
+                <label className="text-sm font-semibold text-gray-600">{t('occupation')}</label>
                 <input name="job" type="text" value={formData.job} onChange={handleChange} required className="input-field" placeholder="Software Engineer" />
               </div>
               <div className="space-y-1">
-                <label className="text-sm font-semibold text-gray-600">Monthly Salary</label>
+                <label className="text-sm font-semibold text-gray-600">{t('salary')}</label>
                 <input name="salary" type="text" value={formData.salary} onChange={handleChange} required className="input-field" placeholder="₹70,000" />
               </div>
               <div className="space-y-1">
@@ -219,20 +221,20 @@ export default function RegisterForm() {
           {/* Contact & Bio */}
           <div className="space-y-4">
             <h3 className="text-lg font-bold text-gray-800 border-l-4 border-[#9AD872] pl-3">Contact & Bio</h3>
-            <textarea name="description" value={formData.description} onChange={handleChange} required rows={3} className="input-field" placeholder="Tell us about yourself..." />
+            <textarea name="description" value={formData.description} onChange={handleChange} required rows={3} className="input-field" placeholder={t('bio')} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <input name="phone" type="tel" value={formData.phone} onChange={handleChange} required className="input-field" placeholder="Phone Number" />
-              <input name="location" type="text" value={formData.location} onChange={handleChange} required className="input-field" placeholder="City/District" />
+              <input name="phone" type="tel" value={formData.phone} onChange={handleChange} required className="input-field" placeholder={t('phone')} />
+              <input name="location" type="text" value={formData.location} onChange={handleChange} required className="input-field" placeholder={t('location')} />
             </div>
           </div>
 
           {/* Account Details */}
           <div className="pt-6 border-t border-gray-100 space-y-4">
             <h3 className="text-lg font-bold text-gray-800 border-l-4 border-[#9AD872] pl-3">Account</h3>
-            <input name="email" type="email" value={formData.email} onChange={handleChange} required className="input-field" placeholder="Email Address" />
+            <input name="email" type="email" value={formData.email} onChange={handleChange} required className="input-field" placeholder={t('email')} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <input name="password" type="password" value={formData.password} onChange={handleChange} required className="input-field" placeholder="Password" />
-              <input name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleChange} required className="input-field" placeholder="Confirm Password" />
+              <input name="password" type="password" value={formData.password} onChange={handleChange} required className="input-field" placeholder={t('password')} />
+              <input name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleChange} required className="input-field" placeholder={t('passwordConfirm')} />
             </div>
           </div>
 
@@ -244,12 +246,12 @@ export default function RegisterForm() {
                 ? 'bg-gray-400' 
                 : (plan === 'premium' 
                     ? 'bg-gradient-to-r from-[#BF953F] via-[#D4AF37] to-[#B38728] hover:shadow-[#BF953F]/40' 
-                    : 'bg-[#9AD872] hover:bg-[#8bc764] hover:shadow-[#9AD872]/40')
+                    : 'bg-[#9AD872] hover:bg-[#8bc664] hover:shadow-[#9AD872]/40')
             }`}
           >
             {loading 
-              ? "Registering..." 
-              : (plan === 'premium' ? "Complete Registration - ₹499" : "Register Free")}
+              ? "..." 
+              : (plan === 'premium' ? `${t('submit')} - ₹499` : t('submit'))}
           </button>
         </form>
       </div>

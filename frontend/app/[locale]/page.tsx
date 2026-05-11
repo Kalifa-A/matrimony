@@ -1,6 +1,7 @@
 "use client";
 import React from 'react';
-import Link from 'next/link';
+import { Link } from '@/navigation';
+import { useTranslations } from 'next-intl';
 
 // --- SVG Icons ---
 const HeartIcon = ({ className }: { className?: string }) => (
@@ -20,6 +21,8 @@ const CheckCircle = ({ className }: { className?: string }) => (
 );
 
 export default function Home() {
+  const t = useTranslations('Home');
+
   return (
     <main className="bg-[#FCFDFB] overflow-x-hidden">
 
@@ -32,20 +35,23 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center relative z-10">
           <div className="text-left pt-8 lg:pt-0">
             <span className="bg-[#9AD872]/10 text-[#7db55a] px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold uppercase tracking-widest">
-              Trusted by 10k+ Families
+              {t('hero.trusted')}
             </span>
             <h1 className="text-3xl sm:text-5xl md:text-7xl font-black text-gray-900 mt-4 sm:mt-6 leading-[1.1]">
-              Find the <span className="text-[#9AD872]">Sukoon</span> <br />Your Heart Deserves.
+              {t.rich('hero.heading', {
+                sukoon: (chunks) => <span className="text-[#9AD872]">{chunks}</span>,
+                highlight: (chunks) => <span className="text-[#9AD872]">{chunks}</span>
+              })}
             </h1>
             <p className="text-gray-600 text-base sm:text-lg mt-4 sm:mt-6 max-w-lg leading-relaxed">
-              Al Fattah Nikkah simplifies the journey to completing half your deen with 100% privacy and verified Tamil Muslim profiles.
+              {t('hero.description')}
             </p>
             <div className="mt-6 sm:mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4">
               <Link href="/register" className="bg-[#9AD872] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-bold shadow-xl shadow-[#9AD872]/40 hover:-translate-y-1 transition-all text-center">
-                Start Free Registration
+                {t('hero.register')}
               </Link>
               <Link href="/about" className="bg-white text-gray-900 px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-bold border border-gray-100 shadow-sm hover:bg-gray-50 transition-all text-center">
-                How it Works
+                {t('hero.howItWorks')}
               </Link>
             </div>
           </div>
@@ -55,14 +61,14 @@ export default function Home() {
             <div className="absolute inset-0 bg-[#9AD872] rounded-[2rem] sm:rounded-[4rem] rotate-3 opacity-20 animate-pulse"></div>
             <div className="absolute inset-0 bg-white border-2 border-gray-50 rounded-[2rem] sm:rounded-[4rem] overflow-hidden shadow-2xl">
               <video autoPlay loop muted playsInline className="w-full h-full object-cover">
-                <source src="wedding2.mp4" type="video/mp4" />
+                <source src="/wedding2.mp4" type="video/mp4" />
               </video>
             </div>
             <div className="absolute -bottom-4 sm:-bottom-6 left-2 sm:-left-10 bg-white p-3 sm:p-6 rounded-2xl sm:rounded-3xl shadow-xl border border-gray-50 flex items-center gap-3 sm:gap-4">
               <div className="bg-emerald-100 p-2 sm:p-3 rounded-xl sm:rounded-2xl">💍</div>
               <div>
-                <p className="font-bold text-gray-900 text-sm sm:text-base">124 Matches</p>
-                <p className="text-[10px] sm:text-xs text-gray-400">Successfully this month</p>
+                <p className="font-bold text-gray-900 text-sm sm:text-base">{t('hero.matches')}</p>
+                <p className="text-[10px] sm:text-xs text-gray-400">{t('hero.successThisMonth')}</p>
               </div>
             </div>
           </div>
@@ -76,17 +82,17 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 sm:mb-16 gap-3 sm:gap-6">
             <div className="max-w-xl">
-              <h2 className="text-2xl sm:text-4xl font-bold text-gray-900">Our Nikkah Services</h2>
-              <p className="text-gray-600 mt-2 sm:mt-4 text-sm sm:text-base">We combine technology with tradition to respect your family's values.</p>
+              <h2 className="text-2xl sm:text-4xl font-bold text-gray-900">{t('services.heading')}</h2>
+              <p className="text-gray-600 mt-2 sm:mt-4 text-sm sm:text-base">{t('services.description')}</p>
             </div>
             <Link href="/services" className="text-[#9AD872] font-bold flex items-center gap-2 group text-sm sm:text-base">
-              View all services <span className="group-hover:translate-x-2 transition-transform">→</span>
+              {t('services.viewAll')} <span className="group-hover:translate-x-2 transition-transform">→</span>
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8">
-            <ServiceCard icon={<HeartIcon />} title="Halal Matchmaking" desc="Verified profiles filtered by Deen, Education, and Location." />
-            <ServiceCard icon={<ShieldIcon />} title="Privacy Guard" desc="Control who sees your photos and contact information." />
-            <ServiceCard icon={<StarIcon />} title="Family Verified" desc="Manual verification of every profile to ensure zero fake accounts." />
+            <ServiceCard icon={<HeartIcon />} title={t('services.halal.title')} desc={t('services.halal.desc')} />
+            <ServiceCard icon={<ShieldIcon />} title={t('services.privacy.title')} desc={t('services.privacy.desc')} />
+            <ServiceCard icon={<StarIcon />} title={t('services.verified.title')} desc={t('services.verified.desc')} />
           </div>
         </div>
       </section>
@@ -99,17 +105,20 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-center">
           <div className="lg:col-span-2 text-left">
             <span className="bg-[#9AD872]/10 text-[#7db55a] px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-2 w-fit">
-              <CheckCircle /> Verified Tamil Muslim Community
+              <CheckCircle /> {t('blessedPath.badge')}
             </span>
-            <h2 className="text-3xl sm:text-4xl md:text-6xl font-black text-gray-900 mt-4 sm:mt-6 leading-tight">
-              Walk the Blessed <span className="text-[#9AD872]">Path to Nikkah.</span>
-            </h2>
+                <h1 className="text-3xl sm:text-4xl md:text-6xl font-black text-gray-900 mt-4 sm:mt-6 leading-tight">
+              {t.rich('blessedPath.heading', {
+                sukoon: (chunks) => <span className="text-[#9AD872]">{chunks}</span>,
+                highlight: (chunks) => <span className="text-[#9AD872]">{chunks}</span>
+              })}
+            </h1>
             <p className="text-gray-600 text-base sm:text-lg mt-4 sm:mt-6 leading-relaxed">
-              Find the perfect match who shares your deen and cultural values, trusted by our community.
+              {t('blessedPath.description')}
             </p>
             <div className="mt-6 sm:mt-8">
               <Link href="/register" className="inline-block bg-[#9AD872] text-white px-8 sm:px-10 py-3 sm:py-4 rounded-full font-bold shadow-lg hover:bg-[#8bc764] transition-all">
-                Create Free Profile
+                {t('blessedPath.button')}
               </Link>
             </div>
           </div>
@@ -117,7 +126,7 @@ export default function Home() {
             {/* Subtle tinted overlay behind image */}
             <div className="absolute inset-0 bg-[#9AD872]/5 rounded-[2rem] sm:rounded-[4rem] rotate-3 blur-2xl"></div>
             <div className="absolute inset-0 bg-white border border-gray-100 rounded-[2rem] sm:rounded-[4rem] overflow-hidden shadow-2xl">
-              <img src="chatgpt.png" alt="Couple walking" className="w-full h-full object-cover" />
+              <img src="/chatgpt.png" alt="Couple walking" className="w-full h-full object-cover" />
               <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-gray-900/50 to-transparent"></div>
             </div>
           </div>
@@ -130,22 +139,30 @@ export default function Home() {
           <div className="relative h-[300px] sm:h-[450px] md:h-[550px] order-2 md:order-1">
             <div className="absolute inset-0 z-0 bg-gray-100 rounded-[2rem] sm:rounded-[4rem] -rotate-3 opacity-80 blur-xl scale-105"></div>
             <div className="absolute inset-0 z-10 bg-white border border-gray-100 rounded-[2rem] sm:rounded-[4rem] overflow-hidden shadow-2xl">
-              <img src="gemini.png" alt="Intimate couple" className="w-full h-full object-cover" />
+              <img src="/gemini.png" alt="Intimate couple" className="w-full h-full object-cover" />
             </div>
             <div className="absolute top-4 sm:top-10 right-2 sm:-right-8 z-30 bg-white p-3 sm:p-5 rounded-xl sm:rounded-2xl shadow-xl border border-gray-100 flex items-center gap-2 sm:gap-4">
               <div className="bg-emerald-50/50 p-2 sm:p-3 rounded-full text-base sm:text-lg">❤️</div>
               <div>
-                <p className="text-[10px] sm:text-xs text-gray-400">Interests Accepted</p>
+                <p className="text-[10px] sm:text-xs text-gray-400">{t('directConnection.accepted')}</p>
                 <p className="font-black text-lg sm:text-2xl text-emerald-900">2,145+</p>
               </div>
             </div>
           </div>
           <div className="text-left space-y-6 sm:space-y-8 order-1 md:order-2">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white leading-tight">
-              A Direct Connection to your <span className="text-[#9AD872]">Destiny.</span>
-            </h2>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white leading-tight">
+              {t.rich('directConnection.heading', {
+                sukoon: (chunks) => <span className="text-[#9AD872]">{chunks}</span>,
+                highlight: (chunks) => <span className="text-[#9AD872]">{chunks}</span>
+              })}
+            </h1> 
             <div className="space-y-3 sm:space-y-4">
-              {["Pure & Halal Interactions", "Manual Community Screening", "Privacy Protection for Every Step", "Success Stories from Tamil Families"].map((text, i) => (
+              {[
+                t('directConnection.features.halal'),
+                t('directConnection.features.screening'),
+                t('directConnection.features.privacy'),
+                t('directConnection.features.stories')
+              ].map((text, i) => (
                 <div key={i} className="flex items-center gap-3 sm:gap-4 text-gray-300">
                   <div className="bg-[#9AD872] p-1.5 rounded-full flex-shrink-0"><CheckCircle className="text-white w-4 h-4" /></div>
                   <span className="font-semibold text-sm sm:text-base">{text}</span>
@@ -161,8 +178,8 @@ export default function Home() {
         <div className="absolute top-0 right-0 w-96 h-96 bg-[#9AD872]/5 rounded-full blur-3xl opacity-50"></div>
         <div className="container mx-auto px-4 sm:px-6 relative z-10">
           <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">Membership Plans</h2>
-            <p className="text-gray-500 text-sm sm:text-base">Choose the perfect plan to accelerate your journey to Nikkah.</p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">{t('membership.heading')}</h2>
+            <p className="text-gray-500 text-sm sm:text-base">{t('membership.description')}</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-12 max-w-5xl mx-auto items-center">
             {/* Starter Card - Calm & Clean */}
@@ -171,23 +188,23 @@ export default function Home() {
                 <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9AD872" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                 </div>
-                <h3 className="text-base sm:text-lg font-bold text-gray-500 uppercase tracking-widest">Starter</h3>
+                <h3 className="text-base sm:text-lg font-bold text-gray-500 uppercase tracking-widest">{t('membership.starter.title')}</h3>
               </div>
               
               <div className="flex items-baseline gap-1">
-                <span className="text-4xl sm:text-5xl font-black text-gray-900">Free</span>
-                <span className="text-gray-400 font-medium text-sm">/lifetime</span>
+                <span className="text-4xl sm:text-5xl font-black text-gray-900">{t('membership.starter.price')}</span>
+                <span className="text-gray-400 font-medium text-sm">{t('membership.starter.duration')}</span>
               </div>
 
               <div className="space-y-3 sm:space-y-4 my-6 sm:my-8">
-                <PlanFeature text="Create Detailed Profile" active={true} />
-                <PlanFeature text="Browse Verified Members" active={true} />
-                <PlanFeature text="Express Interest (Limited)" active={true} />
-                <PlanFeature text="View Contact Details" active={false} />
+                <PlanFeature text={t('membership.starter.features.profile')} active={true} />
+                <PlanFeature text={t('membership.starter.features.browse')} active={true} />
+                <PlanFeature text={t('membership.starter.features.interest')} active={true} />
+                <PlanFeature text={t('membership.starter.features.contact')} active={false} />
               </div>
               
               <Link href="/register" className="block text-center py-3 sm:py-4 rounded-2xl border-2 border-gray-200 text-gray-600 font-bold hover:bg-white hover:border-[#9AD872] hover:text-[#9AD872] transition-all">
-                Join Community
+                {t('membership.starter.button')}
               </Link>
             </div>
             
@@ -203,29 +220,29 @@ export default function Home() {
                   <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-[#BF953F] opacity-10 rounded-full blur-3xl"></div>
 
                   <div className="absolute -top-4 sm:-top-5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#BF953F] to-[#B38728] text-white px-5 sm:px-8 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg whitespace-nowrap">
-                    Most Blessed Choice
+                    {t('membership.premium.badge')}
                   </div>
                   
                   <div className="relative z-10">
                     <h3 className="text-base sm:text-lg font-black text-[#B38728] uppercase tracking-widest flex items-center gap-2">
-                      Premium <span className="w-2 h-2 rounded-full bg-[#B38728] animate-pulse"></span>
+                      {t('membership.premium.title')} <span className="w-2 h-2 rounded-full bg-[#B38728] animate-pulse"></span>
                     </h3>
                     <div className="flex items-baseline gap-1 mt-2">
-                      <span className="text-4xl sm:text-5xl font-black text-gray-900">₹499</span>
-                      <span className="text-gray-400 font-bold text-sm">/one-time</span>
+                      <span className="text-4xl sm:text-5xl font-black text-gray-900">{t('membership.premium.price')}</span>
+                      <span className="text-gray-400 font-bold text-sm">{t('membership.premium.duration')}</span>
                     </div>
                     
                     <div className="space-y-3 sm:space-y-4 my-6 sm:my-8">
-                      <PlanFeature text="Unlimited Profile Views" active={true} premium={true} />
-                      <PlanFeature text="View Verified Phone Numbers" active={true} premium={true} />
-                      <PlanFeature text="Halal Direct Chat Support" active={true} premium={true} />
-                      <PlanFeature text="Priority Search Placement" active={true} premium={true} />
+                      <PlanFeature text={t('membership.premium.features.views')} active={true} premium={true} />
+                      <PlanFeature text={t('membership.premium.features.phone')} active={true} premium={true} />
+                      <PlanFeature text={t('membership.premium.features.chat')} active={true} premium={true} />
+                      <PlanFeature text={t('membership.premium.features.priority')} active={true} premium={true} />
                     </div>
                     
                     <Link href="/register?plan=premium" className="block text-center py-4 sm:py-5 rounded-2xl bg-gradient-to-r from-[#BF953F] via-[#D4AF37] to-[#B38728] text-white font-black shadow-xl shadow-[#BF953F]/30 hover:opacity-90 transition-all active:scale-95">
-                      UPGRADE TO GOLD
+                      {t('membership.premium.button')}
                     </Link>
-                    <p className="text-[10px] text-center text-gray-400 mt-3 font-bold uppercase tracking-widest">Secure Payment after Registration</p>
+                    <p className="text-[10px] text-center text-gray-400 mt-3 font-bold uppercase tracking-widest">{t('membership.premium.secure')}</p>
                   </div>
                 </div>
               </div>
@@ -240,17 +257,17 @@ export default function Home() {
            <svg width="100%" height="100%"><pattern id="success-pattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="#9AD872" opacity="0.2" /></pattern><rect width="100%" height="100%" fill="url(#success-pattern)" /></svg>
         </div>
         <div className="container mx-auto px-4 sm:px-6 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-10 sm:mb-16">Blessed Unions</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold mb-10 sm:mb-16">{t('successStories.heading')}</h2>
           <div className="bg-white p-6 sm:p-12 rounded-[2rem] sm:rounded-[4rem] shadow-sm border border-gray-50 max-w-3xl mx-auto relative">
             <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-[#9AD872] p-4 rounded-2xl">
               <svg width="30" height="30" viewBox="0 0 24 24" fill="white"><path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C20.1216 16 21.017 16.8954 21.017 18V21C21.017 22.1046 20.1216 23 19.017 23H16.017C14.9124 23 14.017 22.1046 14.017 21ZM14.017 21C14.017 14.462 16.542 9.25 21.017 7L19.517 4C14.017 7.5 11.017 12.5 11.017 19V21H14.017ZM3.017 21L3.017 18C3.017 16.8954 3.91243 16 5.017 16H8.017C9.12157 16 10.017 16.8954 10.017 18V21C10.017 22.1046 9.12157 23 8.017 23H5.017C3.91243 23 3.017 22.1046 3.017 21ZM3.017 21C3.017 14.462 5.542 9.25 10.017 7L8.517 4C3.017 7.5 0.017 12.5 0.017 19V21H3.017Z" /></svg>
             </div>
             <p className="text-2xl font-serif italic text-gray-700">
-              "Finding a partner who shares the same cultural and religious values was hard until I found Al Fattah. Alhamdulillah, we are now happily married."
+              "{t('successStories.quote')}"
             </p>
             <div className="mt-8">
-              <p className="font-bold text-gray-900">Dr. Irfan & Sameera</p>
-              <p className="text-sm text-gray-400">Coimbatore, Tamil Nadu</p>
+              <p className="font-bold text-gray-900">{t('successStories.couple')}</p>
+              <p className="text-sm text-gray-400">{t('successStories.location')}</p>
             </div>
           </div>
         </div>

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
+const Message = require('../models/Message');
 const upload = require('../config/cloudinary');
 const jwt = require('jsonwebtoken');
 const { authenticateUser } = require('../utils/auth-middleware');
@@ -72,6 +73,20 @@ router.post('/register', upload.single('profilePhoto'), async (req, res) => {
     });
 
     await user.save();
+
+    // Create notification for admin
+    try {
+      const adminNotification = new Message({
+        name: 'System',
+        email: 'system@alfattahnikkah.com',
+        subject: 'New User Registration',
+        message: `A new user named ${user.name} (${user.email}) has registered.`,
+        type: 'notification'
+      });
+      await adminNotification.save();
+    } catch (notificationError) {
+      console.error('Failed to create admin notification:', notificationError);
+    }
 
     const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1d' });
     setAuthCookie(res, 'user_token', token);

@@ -1,6 +1,105 @@
 "use client";
-import React from 'react';
-import { Mail, Phone, MapPin, Send, MessageSquare } from 'lucide-react';
+import React, { useState } from 'react';
+import { Mail, Phone, MapPin, Send, MessageSquare, Loader2 } from 'lucide-react';
+import { toast } from 'react-hot-toast';
+
+function ContactForm() {
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        toast.success(data.message || 'Message sent successfully!');
+        setFormData({ name: '', email: '', subject: '', message: '' });
+      } else {
+        toast.error(data.message || 'Something went wrong');
+      }
+    } catch (err) {
+      toast.error('Failed to send message. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <label className="text-sm font-bold text-gray-700 ml-1">Full Name</label>
+          <input 
+            type="text" 
+            placeholder="John Doe" 
+            required
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-[#9AD872] transition-all" 
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-bold text-gray-700 ml-1">Email Address</label>
+          <input 
+            type="email" 
+            placeholder="john@example.com" 
+            required
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-[#9AD872] transition-all" 
+          />
+        </div>
+      </div>
+      <div className="space-y-2">
+        <label className="text-sm font-bold text-gray-700 ml-1">Subject</label>
+        <input 
+          type="text" 
+          placeholder="How can we help?" 
+          required
+          value={formData.subject}
+          onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+          className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-[#9AD872] transition-all" 
+        />
+      </div>
+      <div className="space-y-2">
+        <label className="text-sm font-bold text-gray-700 ml-1">Message</label>
+        <textarea 
+          rows={4} 
+          placeholder="Your message here..." 
+          required
+          value={formData.message}
+          onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+          className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-[#9AD872] transition-all resize-none"
+        ></textarea>
+      </div>
+      <button 
+        type="submit"
+        disabled={loading}
+        className="w-full bg-[#9AD872] text-white py-4 rounded-2xl font-bold shadow-lg shadow-[#9AD872]/20 hover:bg-[#8bc764] transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+      >
+        {loading ? (
+          <Loader2 className="animate-spin" size={18} />
+        ) : (
+          <>
+            <span>Send Message</span>
+            <Send size={18} />
+          </>
+        )}
+      </button>
+    </form>
+  );
+}
 
 export default function ContactPage() {
   return (
@@ -76,30 +175,7 @@ export default function ContactPage() {
 
             {/* Right: Actual Form */}
             <div className="md:w-3/5 p-12 bg-white">
-              <form className="space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-700 ml-1">Full Name</label>
-                    <input type="text" placeholder="John Doe" className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-[#9AD872] transition-all" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-bold text-gray-700 ml-1">Email Address</label>
-                    <input type="email" placeholder="john@example.com" className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-[#9AD872] transition-all" />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-700 ml-1">Subject</label>
-                  <input type="text" placeholder="How can we help?" className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-[#9AD872] transition-all" />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-bold text-gray-700 ml-1">Message</label>
-                  <textarea rows={4} placeholder="Your message here..." className="w-full px-6 py-4 rounded-2xl bg-gray-50 border border-gray-100 focus:outline-none focus:border-[#9AD872] transition-all resize-none"></textarea>
-                </div>
-                <button className="w-full bg-[#9AD872] text-white py-4 rounded-2xl font-bold shadow-lg shadow-[#9AD872]/20 hover:bg-[#8bc764] transition-all flex items-center justify-center gap-2">
-                  <span>Send Message</span>
-                  <Send size={18} />
-                </button>
-              </form>
+              <ContactForm />
             </div>
           </div>
         </div>

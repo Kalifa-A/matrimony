@@ -7,6 +7,7 @@ export interface AdminStats {
   successStories: number;
   pendingVerifications: number;
   mutualMatches: number;
+  unreadMessages: number;
 }
 
 export interface AdminProfile {

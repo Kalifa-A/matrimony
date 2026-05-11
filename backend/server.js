@@ -98,6 +98,7 @@ app.use('/api/admin/login', authLimiter);
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/interests', require('./routes/interests'));
 app.use('/api/admin', require('./routes/admin'));
+app.use('/api/contact', require('./routes/contact'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

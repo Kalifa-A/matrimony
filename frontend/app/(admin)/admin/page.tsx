@@ -72,15 +72,42 @@ export default function AdminDashboard() {
             success
             icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.703 2.703 0 01-3 0 2.704 2.704 0 01-3 0 2.703 2.703 0 01-3 0 2.704 2.704 0 01-3 0 2.703 2.703 0 01-1.5-.454M21 12.046c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.703 2.703 0 01-3 0 2.704 2.704 0 01-3 0 2.703 2.703 0 01-3 0 2.704 2.704 0 01-3 0 2.703 2.703 0 01-1.5-.454M21 8.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.703 2.703 0 01-3 0 2.704 2.704 0 01-3 0 2.703 2.703 0 01-3 0 2.704 2.704 0 01-3 0 2.703 2.703 0 01-1.5-.454" /></svg>}
           />
+          <StatsCard 
+            label="New Messages" 
+            value={loading ? "..." : stats?.unreadMessages} 
+            warning={!!stats?.unreadMessages && stats.unreadMessages > 0}
+            icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" /></svg>}
+          />
         </div>
 
-        {/* Real Dynamic Admin Table */}
+        {/* Alert for Pending Verifications */}
+        {!loading && stats && stats.pendingVerifications > 0 && (
+          <div className="mb-8 bg-orange-50 border border-orange-100 rounded-[2rem] p-6 flex flex-col sm:flex-row items-center justify-between gap-4 animate-pulse">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center text-orange-600">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+              </div>
+              <div>
+                <h4 className="font-black text-orange-900 uppercase tracking-tight">New Users Pending Verification</h4>
+                <p className="text-sm text-orange-700/80">You have {stats.pendingVerifications} users waiting for call or payment verification.</p>
+              </div>
+            </div>
+            <Link 
+              href="/admin/verifications" 
+              className="bg-orange-500 text-white px-6 py-3 rounded-2xl font-bold text-sm hover:bg-orange-600 transition-all shadow-lg shadow-orange-500/20"
+            >
+              Verify Now
+            </Link>
+          </div>
+        )}
+
+        {/* User Management Table */}
         <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
           <div className="p-6 border-b border-gray-50 flex justify-between items-center">
             <h3 className="font-bold text-gray-900">User Management</h3>
             <Link href="/admin/verifications" className="text-xs font-bold text-[#9AD872] hover:underline">View All Verifications</Link>
           </div>
-          <AdminUserTable />
+          <AdminUserTable simplifiedStatus={true} />
         </div>
       </main>
     </div>

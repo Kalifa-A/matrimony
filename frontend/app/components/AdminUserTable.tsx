@@ -44,7 +44,13 @@ function Toggle({
 }
 
 /* ───────────────────── Main Table ──────────────────────── */
-export default function AdminUserTable() {
+export default function AdminUserTable({ 
+  onlyVerified = false, 
+  simplifiedStatus = false 
+}: { 
+  onlyVerified?: boolean;
+  simplifiedStatus?: boolean;
+}) {
   const { showToast } = useToast();
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [loading, setLoading] = useState(true);
@@ -155,24 +161,25 @@ export default function AdminUserTable() {
     });
   };
 
-  // ── Stats ──────────────────────────────────────────────
-  const totalUsers = users.length;
-  const pendingApproval = users.filter((u) => !u.isAdminApproved).length;
-  const paidUsers = users.filter((u) => u.hasPaid).length;
+  // ── Stats & Filtering ─────────────────────────────────────
+  const displayedUsers = onlyVerified ? users.filter(u => u.isAdminApproved && u.hasPaid) : users;
+  const totalUsers = displayedUsers.length;
+  const pendingApproval = displayedUsers.filter((u) => !u.isAdminApproved).length;
+  const paidUsers = displayedUsers.filter((u) => u.hasPaid).length;
 
   return (
     <section className="space-y-6 sm:space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-black text-gray-900">User Management</h2>
+          <h2 className="text-xl sm:text-2xl font-black text-gray-900">{onlyVerified ? 'Verified Members' : 'User Management'}</h2>
           <p className="text-xs sm:text-sm text-gray-500">
-            View registered users and manage account access.
+            {onlyVerified ? 'View and manage fully verified community members.' : 'View registered users and manage account access.'}
           </p>
         </div>
         <div className="flex gap-2 flex-wrap">
           <span className="bg-blue-50 text-blue-600 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl sm:rounded-2xl text-[10px] sm:text-xs font-bold">
-            {totalUsers} Total Users
+            {totalUsers} {onlyVerified ? 'Verified' : 'Total'} Users
           </span>
         </div>
       </div>
@@ -250,7 +257,7 @@ export default function AdminUserTable() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {users.map((user) => (
+                {displayedUsers.map((user) => (
                   <tr
                     key={user._id}
                     className="hover:bg-gray-50/50 transition-colors"
@@ -286,25 +293,50 @@ export default function AdminUserTable() {
 
                     {/* Status Badge */}
                     <td className="p-4">
-                      <div className="flex flex-col gap-2">
-                        <div className="flex items-center justify-between gap-4 bg-gray-50/50 p-2 rounded-xl border border-gray-100">
-                          <span className="text-[10px] font-black uppercase text-gray-400">Verify</span>
-                          <Toggle 
-                            enabled={user.isAdminApproved} 
-                            onToggle={() => handleApproveToggle(user)} 
-                            pending={actionInProgress === user._id + '-approve'} 
-                          />
+                      {simplifiedStatus ? (
+                        user.isAdminApproved && user.hasPaid ? (
+                          <div className="flex items-center gap-2 bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-xl border border-emerald-100 w-fit">
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                            <span className="text-xs font-bold uppercase tracking-tight">Verified</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 bg-orange-50 text-orange-600 px-3 py-1.5 rounded-xl border border-orange-100 w-fit">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span className="text-xs font-bold uppercase tracking-tight">Pending</span>
+                          </div>
+                        )
+                      ) : onlyVerified ? (
+                        <div className="flex items-center gap-2 bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-xl border border-emerald-100 w-fit">
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          </svg>
+                          <span className="text-xs font-bold uppercase tracking-tight">Verified</span>
                         </div>
-                        <div className="flex items-center justify-between gap-4 bg-gray-50/50 p-2 rounded-xl border border-gray-100">
-                          <span className="text-[10px] font-black uppercase text-gray-400">Payment</span>
-                          <Toggle 
-                            enabled={user.hasPaid} 
-                            onToggle={() => handlePaymentToggle(user)} 
-                            pending={actionInProgress === user._id + '-payment'} 
-                            colorOn="bg-blue-500"
-                          />
+                      ) : (
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center justify-between gap-4 bg-gray-50/50 p-2 rounded-xl border border-gray-100">
+                            <span className="text-[10px] font-black uppercase text-gray-400">Verify</span>
+                            <Toggle 
+                              enabled={user.isAdminApproved} 
+                              onToggle={() => handleApproveToggle(user)} 
+                              pending={actionInProgress === user._id + '-approve'} 
+                            />
+                          </div>
+                          <div className="flex items-center justify-between gap-4 bg-gray-50/50 p-2 rounded-xl border border-gray-100">
+                            <span className="text-[10px] font-black uppercase text-gray-400">Payment</span>
+                            <Toggle 
+                              enabled={user.hasPaid} 
+                              onToggle={() => handlePaymentToggle(user)} 
+                              pending={actionInProgress === user._id + '-payment'} 
+                              colorOn="bg-blue-500"
+                            />
+                          </div>
                         </div>
-                      </div>
+                      )}
                     </td>
 
                     {/* Delete */}

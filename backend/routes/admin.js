@@ -6,6 +6,7 @@ const User = require('../models/User');
 const Admin = require('../models/Admin');
 const Interest = require('../models/Interest');
 const SuccessStory = require('../models/SuccessStory');
+const Message = require('../models/Message');
 const { setAuthCookie, removeAuthCookie } = require('../utils/auth-cookies');
 // ── Simple admin-secret guard for setup only ──────────────────────────────────────────────
 // One-time setup token logic
@@ -309,13 +310,15 @@ router.get('/stats', authenticateAdmin, async (req, res) => {
     mutualMatches = Math.floor(mutualMatches / 2);
 
     const successStories = await SuccessStory.countDocuments();
+    const unreadMessages = await Message.countDocuments({ isRead: false });
 
     res.json({
       totalUsers,
       pendingVerifications,
       totalInterests,
       mutualMatches,
-      successStories
+      successStories,
+      unreadMessages
     });
   } catch (err) {
     console.error('Admin /stats error details:', err);
@@ -425,6 +428,45 @@ router.delete('/unmarry', authenticateAdmin, async (req, res) => {
 router.post('/logout', (req, res) => {
   removeAuthCookie(res, 'admin_token');
   res.json({ message: 'Admin logged out successfully.' });
+});
+
+// ── GET /api/admin/messages ──────────────────────────────────────────────
+router.get('/messages', authenticateAdmin, async (req, res) => {
+  try {
+    const messages = await Message.find().sort({ createdAt: -1 });
+    res.json(messages);
+  } catch (err) {
+    console.error('Admin /messages error:', err.message);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+// ── PATCH /api/admin/messages/:id ─────────────────────────────────────────
+router.patch('/messages/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const message = await Message.findByIdAndUpdate(
+      req.params.id,
+      { $set: { isRead: true } },
+      { new: true }
+    );
+    if (!message) return res.status(404).json({ message: 'Message not found' });
+    res.json(message);
+  } catch (err) {
+    console.error('Admin mark-read error:', err.message);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+// ── DELETE /api/admin/messages/:id ────────────────────────────────────────
+router.delete('/messages/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const message = await Message.findByIdAndDelete(req.params.id);
+    if (!message) return res.status(404).json({ message: 'Message not found' });
+    res.json({ message: 'Message deleted successfully' });
+  } catch (err) {
+    console.error('Admin delete-message error:', err.message);
+    res.status(500).json({ message: 'Server Error' });
+  }
 });
 
 module.exports = router;

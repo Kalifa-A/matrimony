@@ -184,80 +184,109 @@ export default function Navbar() {
       />
 
       {/* Mobile Drawer */}
-      <div className={`fixed top-0 right-0 h-full w-[80%] max-w-xs bg-white z-[95] shadow-2xl transition-transform duration-500 ease-out md:hidden flex flex-col ${menuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-        <div className="p-6 pt-24 flex-1 overflow-y-auto">
-          {isLoggedIn && user && (
-            <div className="mb-8 p-4 bg-gray-50 rounded-3xl border border-gray-100">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-14 h-14 bg-gradient-to-br from-[#9AD872] to-[#88c55f] rounded-2xl flex items-center justify-center text-white text-xl font-black shadow-lg">
-                  {userInitial}
-                </div>
-                <div>
-                  <h3 className="font-black text-gray-900 leading-tight truncate max-w-[150px]">{user.name}</h3>
-                  <p className="text-[10px] font-bold text-[#9AD872] uppercase tracking-widest mt-1 flex items-center gap-1">
-                    <div className="w-1.5 h-1.5 bg-[#9AD872] rounded-full animate-pulse"></div>
-                    Active Profile
-                  </p>
-                </div>
-              </div>
-              <Link 
-                href="/my-account" 
-                className="flex items-center justify-between w-full py-3 px-4 bg-white rounded-2xl text-xs font-bold text-gray-700 shadow-sm border border-gray-100 hover:border-[#9AD872] transition-colors"
-              >
-                <span>View My Profile</span>
-                <ChevronRight size={14} className="text-gray-400" />
-              </Link>
-            </div>
-          )}
+      <div className={`fixed top-0 right-0 h-full w-[85%] max-w-sm bg-white z-[95] shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.32,0,0.67,0)] md:hidden flex flex-col ${menuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        
+        {/* Mobile Header (Inside Drawer) */}
+        <div className="p-6 border-b border-gray-50 flex justify-between items-center pt-8">
+          <div className="flex items-center gap-2">
+            <span className="text-xl font-black tracking-tight"><span className="text-[#9AD872]">AL</span> FATTAH</span>
+          </div>
+          <button onClick={() => setMenuOpen(false)} className="p-2 bg-gray-50 rounded-full text-gray-400">
+            <X size={20} />
+          </button>
+        </div>
 
+        <div className="flex-1 overflow-y-auto custom-scrollbar px-6 py-4">
+          {/* User Profile Section */}
+          {isLoggedIn && user ? (
+            <div className="mb-6">
+              <div className="p-4 bg-gradient-to-br from-gray-50 to-white rounded-[2rem] border border-gray-100 shadow-sm">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-14 h-14 bg-[#9AD872] rounded-2xl flex items-center justify-center text-white text-xl font-black shadow-lg shadow-[#9AD872]/20">
+                    {userInitial}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-black text-gray-900 truncate">{user.name}</h3>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5 mt-0.5">
+                      <span className="w-1.5 h-1.5 bg-[#9AD872] rounded-full"></span> Free Member
+                    </p>
+                  </div>
+                </div>
+                <Link 
+                  href="/my-account" 
+                  className="flex items-center justify-between w-full py-3 px-4 bg-white rounded-xl text-xs font-bold text-gray-700 border border-gray-100 active:scale-[0.98] transition-all"
+                >
+                  <span>Dashboard & Profile</span>
+                  <ChevronRight size={14} className="text-[#9AD872]" />
+                </Link>
+              </div>
+            </div>
+          ) : null}
+
+          {/* Featured Action Card */}
+          <Link 
+            href="/search"
+            className="mb-6 flex items-center gap-4 p-4 bg-pink-50/50 rounded-[2rem] border border-pink-100/50 group"
+          >
+            <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-pink-500 shadow-sm">
+              <Heart size={24} fill="currentColor" className="opacity-80" />
+            </div>
+            <div>
+              <p className="text-sm font-black text-gray-900">Find Partners</p>
+              <p className="text-[11px] font-medium text-gray-500">Discover your perfect match</p>
+            </div>
+            <ChevronRight size={18} className="ml-auto text-pink-300 group-hover:translate-x-1 transition-transform" />
+          </Link>
+
+          {/* Navigation Links */}
           <div className="space-y-1">
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-4 mb-3">Main Menu</p>
             {[
               { name: "Home", href: "/", icon: Flower2 },
-              { name: "About Us", href: "/about", icon: Flower2 },
-              { name: "Contact", href: "/contact", icon: Flower2 },
-              { name: "Find Partners", href: "/search", icon: Heart, color: "text-pink-400" },
+              { name: "About Us", href: "/about", icon: User },
+              { name: "Contact", href: "/contact", icon: Sparkles },
               { name: "Pricing Plans", href: "/payment", icon: Sparkles, color: "text-[#B38728]" },
             ].map((item) => (
               <Link 
                 key={item.name}
                 href={item.href}
-                className={`flex items-center justify-between p-4 rounded-2xl font-bold text-sm transition-all ${pathname === item.href ? 'bg-[#9AD872]/10 text-[#9AD872]' : 'text-gray-600 hover:bg-gray-50'}`}
+                className={`flex items-center gap-4 p-4 rounded-2xl font-bold text-sm transition-all active:bg-gray-100 ${pathname === item.href ? 'bg-[#9AD872]/10 text-[#9AD872]' : 'text-gray-600'}`}
               >
-                <div className="flex items-center gap-3">
-                  <item.icon size={18} className={item.color || "text-[#9AD872] opacity-60"} />
-                  <span>{item.name}</span>
-                </div>
-                <ChevronRight size={16} className="opacity-0 group-hover:opacity-100" />
+                <item.icon size={20} className={item.color || "text-gray-400"} />
+                <span>{item.name}</span>
               </Link>
             ))}
           </div>
 
+          {/* Auth Section for Guests */}
           {!isLoggedIn && (
-            <div className="mt-8 space-y-3">
+            <div className="mt-8 space-y-3 pb-8">
+               <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-4 mb-3">Get Started</p>
               <Link 
                 href="/register" 
-                className="flex items-center justify-center gap-2 w-full py-4 bg-[#9AD872] text-white rounded-2xl font-black shadow-lg shadow-[#9AD872]/20 active:scale-95 transition-all"
+                className="flex items-center justify-center gap-2 w-full py-4 bg-[#9AD872] text-white rounded-[1.5rem] font-black shadow-lg shadow-[#9AD872]/20 active:scale-95 transition-all"
               >
                 Register Free <Sparkles size={18} />
               </Link>
               <Link 
                 href="/login" 
-                className="flex items-center justify-center w-full py-4 bg-gray-50 text-gray-700 rounded-2xl font-bold border border-gray-100 active:scale-95 transition-all"
+                className="flex items-center justify-center w-full py-4 bg-gray-50 text-gray-700 rounded-[1.5rem] font-bold border border-gray-100 active:scale-95 transition-all"
               >
-                Login to Account
+                Login
               </Link>
             </div>
           )}
         </div>
 
+        {/* Sticky Logout at Bottom */}
         {isLoggedIn && (
-          <div className="p-6 border-t border-gray-50">
+          <div className="p-6 bg-gray-50/50 border-t border-gray-100">
             <button 
               onClick={handleLogout}
-              className="flex items-center justify-center gap-2 w-full py-4 bg-red-50 text-red-500 rounded-2xl font-bold active:scale-95 transition-all"
+              className="flex items-center justify-center gap-2 w-full py-4 bg-white text-red-500 rounded-2xl font-bold border border-red-100 shadow-sm active:scale-95 transition-all"
             >
               <LogOut size={18} />
-              Logout
+              Logout from Account
             </button>
           </div>
         )}

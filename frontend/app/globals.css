@@ -2,7 +2,7 @@
 
 @theme {
   --font-inter: var(--font-inter);
-  --font-catamaran: var(--font-catamaran);
+  --font-tiro-tamil: var(--font-tiro-tamil);
 }
 
 @layer base {
@@ -23,10 +23,10 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* TAMIL FONT: Catamaran (Applies to ALL text when locale is Tamil) */
+  /* TAMIL FONT: Tiro Tamil (Elegant serif style) */
   [lang="ta"] body {
-    font-family: var(--font-catamaran), sans-serif;
-    line-height: 1.6;
+    font-family: var(--font-tiro-tamil), serif;
+    line-height: 1.7;
     letter-spacing: 0.01em;
   }
 
@@ -37,9 +37,22 @@
   [lang="ta"] h4,
   [lang="ta"] h5,
   [lang="ta"] h6 {
-    font-family: var(--font-catamaran), sans-serif;
-    font-weight: 900; /* Catamaran looks great when extra bold */
-    line-height: 1.3;
+    font-family: var(--font-tiro-tamil), serif;
+    font-weight: 400; /* Tiro Tamil is a serif font that looks best at its natural weight */
+    line-height: 1.4;
+  }
+
+  /* Fix for Tamil text being too bold in general */
+  [lang="ta"] .font-bold,
+  [lang="ta"] .font-black,
+  [lang="ta"] .font-semibold {
+    font-weight: 400 !important; /* Override excessive bolding for Tiro Tamil */
+  }
+
+  /* Optional: slightly bold if browser supports faux bold well, but user requested less bold */
+  [lang="ta"] b, 
+  [lang="ta"] strong {
+    font-weight: 400;
   }
 }
 

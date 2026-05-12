@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Catamaran } from "next/font/google";
+import { Inter, Tiro_Tamil } from "next/font/google";
 import "../globals.css";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -15,11 +15,12 @@ const inter = Inter({
   display: 'swap',
 });
 
-// Catamaran: Excellent modern Tamil font for all elements in Tamil mode
-const catamaran = Catamaran({ 
-  subsets: ["tamil", "latin"], 
-  variable: '--font-catamaran',
-  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+// Tiro Tamil: Elegant Tamil font for all elements in Tamil mode
+const tiroTamil = Tiro_Tamil({ 
+  subsets: ["tamil"], 
+  variable: '--font-tiro-tamil',
+  weight: ['400'],
+  style: ['normal', 'italic'],
   display: 'swap',
 });
 
@@ -49,7 +50,7 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={`${inter.variable} ${catamaran.variable}`}>
+    <html lang={locale} className={`${inter.variable} ${tiroTamil.variable}`}>
       <body className="antialiased text-gray-900 bg-[#FCFDFB]">
         <NextIntlClientProvider messages={messages} locale={locale}>
           <ClientProviders>

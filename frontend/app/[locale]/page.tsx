@@ -34,7 +34,8 @@ export default function Home() {
 
         <div className="container mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center relative z-10">
           <div className="text-left pt-8 lg:pt-0">
-            <span className="bg-[#9AD872]/10 text-[#7db55a] px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold uppercase tracking-widest">
+            <span className="bg-[#9AD872]/10 text-[#7db55a] px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold uppercase tracking-widest flex items-center gap-2 w-fit border border-[#9AD872]/20 shadow-sm shadow-[#9AD872]/5">
+              <CheckCircle className="w-3.5 h-3.5" />
               {t('hero.trusted')}
             </span>
             <h1 className="text-3xl sm:text-5xl md:text-7xl font-black text-gray-900 mt-4 sm:mt-6 leading-[1.1]">
@@ -104,8 +105,8 @@ export default function Home() {
         <div className="absolute -bottom-20 -right-12 w-56 h-56 bg-[#9AD872]/5 rounded-full blur-3xl"></div>
         <div className="container mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-center">
           <div className="lg:col-span-2 text-left">
-            <span className="bg-[#9AD872]/10 text-[#7db55a] px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-2 w-fit">
-              <CheckCircle /> {t('blessedPath.badge')}
+            <span className="bg-[#9AD872]/10 text-[#7db55a] px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-2 w-fit border border-[#9AD872]/20 shadow-sm shadow-[#9AD872]/5">
+              <CheckCircle className="w-3.5 h-3.5" /> {t('blessedPath.badge')}
             </span>
                 <h1 className="text-3xl sm:text-4xl md:text-6xl font-black text-gray-900 mt-4 sm:mt-6 leading-tight">
               {t.rich('blessedPath.heading', {

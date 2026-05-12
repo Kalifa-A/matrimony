@@ -55,7 +55,7 @@ export default function AdTicker() {
       
       {/* Contact Details Bar */}
       <div className="bg-[#9AD872]/10 py-1.5 px-4 flex items-center justify-center gap-2 text-[10px] sm:text-xs font-bold text-[#1a2e1a] border-t border-[#9AD872]/20">
-        <span className="tracking-wide">102-k ஜமாலி நகர் பென்னங்கோணம் ரோடு லப்பைகுடிக்காடு பெரம்பலூர் 621108</span>
+        <span className="tracking-wide">102-k ஜமாலி நகர் பென்னங்கோணம் ரோடு லப்பைக்குடிக்காடு பெரம்பலூர் 621108</span>
         <span className="text-[#9AD872] px-1">|</span>
         <span className="text-[#7db55a]">தொடர்புக்கு: 8220121113</span>
       </div>

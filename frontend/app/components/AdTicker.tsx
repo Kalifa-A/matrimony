@@ -1,5 +1,6 @@
 "use client";
 import React from 'react';
+import { usePathname } from 'next/navigation';
 
 const ads = [
   { id: 1, src: '/ad3.mp4', alt: 'Ad 1' },
@@ -15,6 +16,8 @@ const ads = [
 ];
 
 export default function AdTicker() {
+  const pathname = usePathname();
+  if (pathname?.includes('/admin')) return null;
   return (
     <div className="bg-white border-b border-gray-100 relative group/ticker flex flex-col">
       {/* Ticker Section */}

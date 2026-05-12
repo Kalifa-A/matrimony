@@ -30,9 +30,11 @@ export default function AdminLogin() {
       const data = await res.json();
       
       if (res.ok) {
-        // Token is now set via HttpOnly cookie by the backend
-        // We no longer store it in localStorage for security
-
+        // We set both a secure cookie (server actions) and a localStorage flag (for client-side UI)
+        if (data.token) {
+          localStorage.setItem('admin_token', data.token);
+          await setAdminSession(data.token);
+        }
 
         showToast('Access Granted. Welcome, Admin.');
         router.push('/admin');

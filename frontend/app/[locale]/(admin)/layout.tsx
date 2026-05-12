@@ -8,10 +8,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+
+  React.useEffect(() => {
+    const token = localStorage.getItem('admin_token');
+    setIsAuthenticated(!!token);
+    
+    // Redirect to login if not authenticated and not on login page
+    if (!token && !pathname.endsWith('/admin/login')) {
+      router.push('/admin/login');
+    }
+  }, [pathname, router]);
 
   const handleSignOut = async () => {
     await clearAdminSession();
     localStorage.removeItem('admin_token');
+    setIsAuthenticated(false);
     router.push('/admin/login');
   };
 
@@ -24,14 +36,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { label: 'Admin Profile', href: '/admin/profile', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
   ];
 
-  const isLoginPage = pathname === '/admin/login';
+  const isLoginPage = pathname.endsWith('/admin/login');
 
-  if (isLoginPage) {
-    return <div className="min-h-screen bg-gray-900">{children}</div>;
+  if (isLoginPage || isAuthenticated === false) {
+    return <div className="min-h-screen bg-gray-900 font-sans tracking-tight">{children}</div>;
+  }
+
+  // Prevent flash of sidebar while checking auth
+  if (isAuthenticated === null) {
+    return <div className="min-h-screen bg-white font-sans" />;
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC]">
+    <div className="flex min-h-screen bg-white font-sans tracking-tight">
       
       {/* --- DESKTOP SIDEBAR --- */}
       <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-100 transition-transform duration-300 lg:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} flex flex-col`}>

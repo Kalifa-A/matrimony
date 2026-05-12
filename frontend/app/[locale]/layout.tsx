@@ -3,6 +3,7 @@ import { Inter, Tiro_Tamil } from "next/font/google";
 import "../globals.css";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import AdTicker from "../components/AdTicker";
 import ClientProviders from "../components/ClientProviders";
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
@@ -55,6 +56,7 @@ export default async function RootLayout({
         <NextIntlClientProvider messages={messages} locale={locale}>
           <ClientProviders>
             <div className="flex flex-col min-h-screen">
+              <AdTicker />
               <Navbar />
               <main className="flex-grow">{children}</main>
               <Footer />

@@ -178,7 +178,7 @@ export default function Navbar() {
             {/* Mobile Menu Button */}
 
             {/* Language Switcher in Mobile */}
-            <div className="md:hidden flex items-center ml-22">
+            <div className="md:hidden flex items-center ml-35">
               <LanguageSwitcher />
             </div>
             <button

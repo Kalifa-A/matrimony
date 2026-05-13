@@ -176,6 +176,11 @@ export default function Navbar() {
             </div>
 
             {/* Mobile Menu Button */}
+            
+            {/* Language Switcher in Mobile */}
+            <div className="md:hidden flex items-center mr-2">
+              <LanguageSwitcher />
+            </div>
             <button
               onClick={() => setMenuOpen(!menuOpen)}
               className="md:hidden p-2 text-gray-600 hover:text-[#9AD872] transition-colors"
@@ -199,7 +204,6 @@ export default function Navbar() {
       <div className={`fixed top-0 right-0 h-full w-[85%] max-w-sm bg-white z-[10001] shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] md:hidden flex flex-col ${
         menuOpen ? 'translate-x-0' : 'translate-x-full'
       }`}>
-        
         {/* Top Header inside Drawer */}
         <div className="flex items-center justify-between px-6 pt-6 pb-2">
            <span className="text-xs font-black text-gray-400 uppercase tracking-widest">{t('home')}</span>
@@ -269,11 +273,6 @@ export default function Navbar() {
                 <ChevronRight size={16} className={`transition-transform ${pathname === item.href ? 'text-[#9AD872]' : 'text-gray-300'}`} />
               </Link>
             ))}
-          </div>
-
-          {/* Language Switcher in Mobile Menu */}
-          <div className="p-4 mt-2">
-            <LanguageSwitcher />
           </div>
 
           {/* Auth Actions for Logged Out */}

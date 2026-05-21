@@ -10,7 +10,12 @@
     "upgradeToGold": "Upgrade to Gold",
     "manageProfile": "Manage Profile",
     "logout": "Logout",
-    "membershipPlans": "Membership Plans"
+    "membershipPlans": "Membership Plans",
+    "brandPart1": "AL",
+    "brandPart2": "FATTAH",
+    "onlineProfile": "Online Profile",
+    "findSoulmate": "Find Your Soulmate",
+    "joinMembers": "Join thousands of verified members"
   },
   "Profile": {
     "loading": "Loading Profile...",

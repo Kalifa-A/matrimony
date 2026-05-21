@@ -23,30 +23,30 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* TAMIL FONT: Tiro Tamil (Elegant serif style) */
+  /* TAMIL FONT: Combined stack (Inter for English, Tiro Tamil for Tamil) */
   [lang="ta"] body {
-    font-family: var(--font-tiro-tamil), serif;
+    font-family: var(--font-inter), var(--font-tiro-tamil), ui-sans-serif, system-ui, serif;
     line-height: 1.7;
     letter-spacing: 0.01em;
   }
 
-  /* Ensure headings also follow the locale-specific font */
+  /* Ensure headings also follow the locale-specific font stack */
   [lang="ta"] h1, 
   [lang="ta"] h2, 
   [lang="ta"] h3,
   [lang="ta"] h4,
   [lang="ta"] h5,
   [lang="ta"] h6 {
-    font-family: var(--font-tiro-tamil), serif;
-    font-weight: 400; /* Tiro Tamil is a serif font that looks best at its natural weight */
+    font-family: var(--font-inter), var(--font-tiro-tamil), ui-sans-serif, system-ui, serif;
+    font-weight: 600; /* Balanced weight for mixed fonts */
     line-height: 1.4;
   }
 
-  /* Fix for Tamil text being too bold in general */
+  /* Fix for Tamil text being too bold, while allowing English to stay readable */
   [lang="ta"] .font-bold,
   [lang="ta"] .font-black,
   [lang="ta"] .font-semibold {
-    font-weight: 400 !important; /* Override excessive bolding for Tiro Tamil */
+    font-weight: 500; /* Medium weight works better for mixed Latin/Tamil scripts */
   }
 
   /* Optional: slightly bold if browser supports faux bold well, but user requested less bold */

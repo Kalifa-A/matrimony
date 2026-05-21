@@ -116,8 +116,8 @@ export default function Navbar() {
               <div className="relative group">
                  <Flower2 className="text-[#9AD872] absolute -top-3 -left-3 opacity-40 group-hover:rotate-45 transition-transform duration-500" size={20} />
                  <Link href="/" className="text-xl sm:text-2xl font-black tracking-tight flex items-center">
-                   <span className="text-[#9AD872]">AL</span>
-                   <span className="text-gray-900 ml-1">FATTAH</span>
+                   <span className="text-[#9AD872]">{t('brandPart1')}</span>
+                   <span className="text-gray-900 ml-1">{t('brandPart2')}</span>
                  </Link>
               </div>
             </div>
@@ -226,7 +226,7 @@ export default function Navbar() {
                   <h3 className="font-black text-gray-900 text-base leading-tight truncate">{user.name}</h3>
                   <div className="flex items-center gap-1.5 mt-1">
                     <span className="flex h-2 w-2 rounded-full bg-[#9AD872] animate-pulse"></span>
-                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Online Profile</span>
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{t('onlineProfile')}</span>
                   </div>
                 </div>
               </div>
@@ -239,13 +239,13 @@ export default function Navbar() {
               </Link>
             </div>
           ) : (
-             <div className="mb-8 p-6 bg-[#9AD872]/5 rounded-3xl border border-[#9AD872]/10 text-center">
+              <div className="mb-8 p-6 bg-[#9AD872]/5 rounded-3xl border border-[#9AD872]/10 text-center">
                 <div className="w-12 h-12 bg-[#9AD872]/10 rounded-full flex items-center justify-center mx-auto mb-3">
                   <Heart className="text-[#9AD872]" size={24} />
                 </div>
-                <p className="text-sm font-black text-gray-800">Find Your Soulmate</p>
-                <p className="text-[10px] text-gray-500 mt-1 font-medium">Join thousands of verified members</p>
-             </div>
+                <p className="text-sm font-black text-gray-800">{t('findSoulmate')}</p>
+                <p className="text-[10px] text-gray-500 mt-1 font-medium">{t('joinMembers')}</p>
+              </div>
           )}
 
           {/* Navigation Links */}

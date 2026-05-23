@@ -23,6 +23,23 @@ router.post('/', async (req, res) => {
 
     await newMessage.save();
 
+    // Emit real-time notification to admin
+    try {
+      const { io } = require('../socket');
+      const { sendPushNotification } = require('../utils/pushNotifications');
+      const payload = { 
+        title: 'New Contact Inquiry',
+        body: `${name}: ${subject}`,
+        type: 'contact',
+        user: { name, email } 
+      };
+      
+      io.emit('admin-notification', payload);
+      sendPushNotification(payload);
+    } catch (err) {
+      console.error('Notification error:', err);
+    }
+
     res.status(201).json({ message: 'Message sent successfully' });
   } catch (err) {
     console.error(err);

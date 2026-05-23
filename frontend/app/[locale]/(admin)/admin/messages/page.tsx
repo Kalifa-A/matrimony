@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Mail, Trash2, CheckCircle, Bell, MessageSquare, Clock } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { useAdminNotification } from '@/app/components/NotificationProvider';
 
 interface Message {
   _id: string;
@@ -17,6 +18,12 @@ interface Message {
 export default function MessagesPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
+  const [previousUnread, setPreviousUnread] = useState(0);
+  const { setUnread } = useAdminNotification();
+
+  useEffect(() => {
+    setUnread(0);
+  }, [setUnread]);
 
   const fetchMessages = async () => {
     try {
@@ -33,6 +40,29 @@ export default function MessagesPage() {
       setLoading(false);
     }
   };
+
+  // Poll for new messages every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      await fetchMessages();
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const prevUnreadRef = React.useRef(0);
+
+  // Show toast when new unread messages arrive
+  useEffect(() => {
+    if (!loading) {
+      const currentUnread = messages.filter((m) => !m.isRead).length;
+      if (currentUnread > prevUnreadRef.current) {
+        const newCount = currentUnread - prevUnreadRef.current;
+        toast.success(`You have ${newCount} new unread message${newCount > 1 ? 's' : ''}`);
+      }
+      // Update the ref for next comparison
+      prevUnreadRef.current = currentUnread;
+    }
+  }, [loading, messages]);
 
   useEffect(() => {
     fetchMessages();

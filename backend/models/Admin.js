@@ -5,6 +5,13 @@ const AdminSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: { type: String, default: 'superadmin' },
+  subscriptions: [{
+    endpoint: String,
+    keys: {
+      p256dh: String,
+      auth: String
+    }
+  }],
   createdAt: { type: Date, default: Date.now }
 });
 

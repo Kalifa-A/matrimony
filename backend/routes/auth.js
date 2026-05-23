@@ -37,6 +37,7 @@ function escapeRegex(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+
 router.post('/register', upload.single('profilePhoto'), async (req, res) => {
   try {
     const { error } = registerSchema.validate(req.body);
@@ -86,6 +87,23 @@ router.post('/register', upload.single('profilePhoto'), async (req, res) => {
       await adminNotification.save();
     } catch (notificationError) {
       console.error('Failed to create admin notification:', notificationError);
+    }
+
+    // Emit real-time notification to admin
+    try {
+      const { io } = require('../socket');
+      const { sendPushNotification } = require('../utils/pushNotifications');
+      const payload = { 
+        title: 'New User Registration',
+        body: `${user.name} just joined Al Fattah Nikkah.`,
+        type: 'registration', 
+        user: { name: user.name, email: user.email } 
+      };
+      
+      io.emit('admin-notification', payload);
+      sendPushNotification(payload);
+    } catch (socketError) {
+      console.error('Failed to emit socket notification:', socketError);
     }
 
     const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1d' });

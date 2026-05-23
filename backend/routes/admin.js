@@ -469,4 +469,28 @@ router.delete('/messages/:id', authenticateAdmin, async (req, res) => {
   }
 });
 
+// ── POST /api/admin/subscribe ─────────────────────────────────────────────
+router.post('/subscribe', authenticateAdmin, async (req, res) => {
+  try {
+    const subscription = req.body;
+    const adminId = req.admin.id;
+
+    // Add subscription if it doesn't exist for this admin
+    const admin = await Admin.findById(adminId);
+    if (!admin) return res.status(404).json({ message: 'Admin not found' });
+
+    // Check if subscription already exists (prevent duplicates)
+    const exists = admin.subscriptions.some(s => s.endpoint === subscription.endpoint);
+    if (!exists) {
+      admin.subscriptions.push(subscription);
+      await admin.save();
+    }
+
+    res.status(201).json({ message: 'Subscribed to push notifications' });
+  } catch (err) {
+    console.error('Subscription error:', err.message);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
 module.exports = router;

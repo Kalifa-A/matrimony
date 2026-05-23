@@ -9,8 +9,20 @@ router.post('/', async (req, res) => {
   try {
     const { name, email, subject, message } = req.body;
 
+    // Basic Validation
     if (!name || !email || !subject || !message) {
       return res.status(400).json({ message: 'Please fill all fields' });
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: 'Please provide a valid email address' });
+    }
+
+    // Length validation to prevent large payload attacks
+    if (name.length > 100 || subject.length > 200 || message.length > 5000) {
+      return res.status(400).json({ message: 'Input text too long' });
     }
 
     const newMessage = new Message({

@@ -4,7 +4,23 @@ const http = require('http');
 const { Server } = require('socket.io');
 const app = require('./app'); // existing Express app
 const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: '*', methods: ['GET', 'POST'] } });
+
+// Use allowed origins for socket.io as well
+const allowedOrigins = [
+  process.env.FRONTEND_URL?.replace(/\/$/, ''),
+  'http://localhost:3000',
+  'https://alfattahnikkah.com',
+  'https://www.alfattahnikkah.com',
+  'https://matrimony-rose-delta.vercel.app'
+].filter(Boolean);
+
+const io = new Server(server, { 
+  cors: { 
+    origin: allowedOrigins,
+    methods: ['GET', 'POST'],
+    credentials: true
+  } 
+});
 
 // Middleware to verify admin token
 io.use((socket, next) => {

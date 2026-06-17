@@ -116,13 +116,11 @@ export default function MyAccount() {
   }, [profile._id, profile.gender]);
 
   const handleSave = async () => {
-    const token = localStorage.getItem('user_token');
     try {
       const response = await fetch(`${API_URL}/api/auth/update/${profile._id}`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
         },
         credentials: 'include',
         body: JSON.stringify(profile),
@@ -143,12 +141,10 @@ export default function MyAccount() {
     if (!e.target.files?.[0]) return;
     const formData = new FormData();
     formData.append('profilePhoto', e.target.files[0]);
-    const token = localStorage.getItem('user_token');
     try {
       setLoading(true);
       const res = await fetch(`${API_URL}/api/auth/update-photo/${profile._id}`, {
         method: 'PUT',
-        headers: token ? { 'Authorization': `Bearer ${token}` } : {},
         credentials: 'include',
         body: formData,
       });
@@ -218,8 +214,8 @@ export default function MyAccount() {
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-4xl font-black text-gray-300">
-                            {profile.name?.charAt(0)}
+                          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-gray-150 text-gray-400">
+                             <span className="text-5xl font-black uppercase text-gray-300">{profile.name?.charAt(0)}</span>
                           </div>
                         )}
                         <label className="absolute inset-0 bg-black/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer">
@@ -365,13 +361,19 @@ export default function MyAccount() {
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {interests.map((interest: any) => (
                       <div key={interest._id} className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 rounded-3xl flex items-center gap-4 hover:bg-white/10 transition-all group">
-                         <div className="w-14 h-14 rounded-2xl overflow-hidden relative border border-white/10">
-                            <img 
-                              src={interest.sender.profilePhoto?.startsWith('http') ? interest.sender.profilePhoto : `${API_URL}/${interest.sender.profilePhoto}`} 
-                              className={`w-full h-full object-cover ${!profile.hasPaid ? 'blur-md' : ''}`}
-                              alt="Sender"
-                            />
-                            {!profile.hasPaid && <div className="absolute inset-0 bg-black/20 flex items-center justify-center"><Lock size={12}/></div>}
+                         <div className="w-14 h-14 rounded-2xl overflow-hidden relative border border-white/10 flex items-center justify-center bg-gray-800 text-gray-500">
+                             {interest.sender.profilePhoto ? (
+                               <>
+                                 <img 
+                                   src={interest.sender.profilePhoto.startsWith('http') ? interest.sender.profilePhoto : `${API_URL}/${interest.sender.profilePhoto}`} 
+                                   className={`w-full h-full object-cover ${!profile.hasPaid ? 'blur-md' : ''}`}
+                                   alt="Sender"
+                                 />
+                                 {!profile.hasPaid && <div className="absolute inset-0 bg-black/20 flex items-center justify-center"><Lock size={12}/></div>}
+                               </>
+                             ) : (
+                               <User size={20} className="text-gray-500" />
+                             )}
                          </div>
                          <div className="flex-1">
                             <p className="font-black text-sm">{interest.sender.name}</p>
@@ -405,11 +407,20 @@ export default function MyAccount() {
                    if (!user) return null;
                    return (
                      <div key={user._id} className="group relative aspect-[4/5] rounded-[2.5rem] overflow-hidden bg-gray-100 border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500">
-                        <img 
-                           src={user.profilePhoto?.startsWith('http') ? user.profilePhoto : `${API_URL}/${user.profilePhoto}`} 
-                           className={`absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 ${!profile.hasPaid ? 'blur-2xl grayscale' : ''}`}
-                           alt="Liked"
-                        />
+                        {user.profilePhoto ? (
+                           <img 
+                              src={user.profilePhoto.startsWith('http') ? user.profilePhoto : `${API_URL}/${user.profilePhoto}`} 
+                              className={`absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 ${!profile.hasPaid ? 'blur-2xl grayscale' : ''}`}
+                              alt="Liked"
+                           />
+                         ) : (
+                           <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 flex flex-col items-center justify-center p-6 text-center">
+                             <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-md mb-3 text-gray-400">
+                               <User size={24} className="text-gray-300" />
+                             </div>
+                             <span className="text-[9px] font-black uppercase tracking-wider text-gray-400 bg-white/80 px-2.5 py-1 rounded-full border border-gray-100">No Photo</span>
+                           </div>
+                         )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-90 transition-opacity"></div>
                         
                         <div className="absolute inset-0 p-6 flex flex-col justify-end text-white">

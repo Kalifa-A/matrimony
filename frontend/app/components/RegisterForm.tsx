@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from '@/navigation';
 import { useToast } from '@/app/components/ToastProvider';
 import { useTranslations } from 'next-intl';
+import { tamilNaduData } from '@/app/data/tamilNaduData';
 
 export default function RegisterForm() {
   const t = useTranslations('register');
@@ -15,6 +16,13 @@ export default function RegisterForm() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [plan, setPlan] = useState<string | null>(null);
   const [step, setStep] = useState<number>(1); // 1: Personal, 2: Professional, 3: Account
+
+  // Location Suggestion States
+  const [locationStep, setLocationStep] = useState<'district' | 'town' | 'idle'>('idle');
+  const [selectedDistrict, setSelectedDistrict] = useState<string>('');
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+  const [filteredDistricts, setFilteredDistricts] = useState<string[]>([]);
+  const [filteredTowns, setFilteredTowns] = useState<string[]>([]);
 
   // Form data (shared across steps)
   const [formData, setFormData] = useState({
@@ -52,9 +60,75 @@ export default function RegisterForm() {
     };
   }, [selectedImage]);
 
+  // Click outside handler for location picker
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      const container = document.getElementById('location-picker-container');
+      if (container && !container.contains(e.target as Node)) {
+        setShowLocationSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
+
   // Helpers
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+
+    if (name === 'location') {
+      setShowLocationSuggestions(true);
+      if (locationStep === 'district' || !selectedDistrict) {
+        setLocationStep('district');
+        const filtered = tamilNaduData
+          .map(d => d.district)
+          .filter(d => d.toLowerCase().includes(value.toLowerCase()));
+        setFilteredDistricts(filtered);
+      } else if (locationStep === 'town') {
+        const distInfo = tamilNaduData.find(d => d.district === selectedDistrict);
+        if (distInfo) {
+          const searchVal = value.replace(new RegExp(`,?\\s*${selectedDistrict}`, 'i'), '').trim();
+          const filtered = distInfo.towns.filter(t => t.toLowerCase().includes(searchVal.toLowerCase()));
+          setFilteredTowns(filtered);
+        }
+      }
+    }
+  };
+
+  const handleLocationFocus = () => {
+    setShowLocationSuggestions(true);
+    if (!selectedDistrict) {
+      setLocationStep('district');
+      setFilteredDistricts(tamilNaduData.map(d => d.district));
+    } else {
+      setLocationStep('town');
+      const distInfo = tamilNaduData.find(d => d.district === selectedDistrict);
+      setFilteredTowns(distInfo ? distInfo.towns : []);
+    }
+  };
+
+  const handleSelectDistrict = (districtName: string) => {
+    setSelectedDistrict(districtName);
+    setFormData({ ...formData, location: districtName });
+    setLocationStep('town');
+    const distInfo = tamilNaduData.find(d => d.district === districtName);
+    setFilteredTowns(distInfo ? distInfo.towns : []);
+  };
+
+  const handleSelectTown = (townName: string) => {
+    const fullLocation = `${townName}, ${selectedDistrict}`;
+    setFormData({ ...formData, location: fullLocation });
+    setShowLocationSuggestions(false);
+    setLocationStep('idle');
+  };
+
+  const handleClearLocation = () => {
+    setSelectedDistrict('');
+    setFormData({ ...formData, location: '' });
+    setLocationStep('district');
+    setFilteredDistricts(tamilNaduData.map(d => d.district));
+    setShowLocationSuggestions(true);
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -282,9 +356,101 @@ export default function RegisterForm() {
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wide">Phone Number</label>
                   <input name="phone" type="tel" value={formData.phone} onChange={handleChange} required className={inputClass} placeholder={t('phone')} />
                 </div>
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 relative" id="location-picker-container">
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wide">Location</label>
-                  <input name="location" type="text" value={formData.location} onChange={handleChange} required className={inputClass} placeholder={t('location')} />
+                  <div className="relative">
+                    <input 
+                      name="location" 
+                      type="text" 
+                      value={formData.location} 
+                      onChange={handleChange} 
+                      onFocus={handleLocationFocus}
+                      required 
+                      className={inputClass} 
+                      placeholder={t('location')}
+                      autoComplete="off"
+                    />
+                    {formData.location && (
+                      <button 
+                        type="button" 
+                        onClick={handleClearLocation} 
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                        title="Clear Location"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Suggestions Dropdown */}
+                  {showLocationSuggestions && (
+                    <div className="absolute left-0 right-0 mt-1.5 bg-white border border-gray-100 rounded-2xl shadow-xl z-50 max-h-60 overflow-y-auto animate-in fade-in slide-in-from-top-1 duration-200">
+                      
+                      {locationStep === 'district' && (
+                        <div className="p-2">
+                          <div className="px-3 py-1.5 text-[10px] font-black uppercase text-gray-400 tracking-wider">
+                            Select Tamil Nadu District
+                          </div>
+                          {filteredDistricts.length === 0 ? (
+                            <div className="px-3 py-3 text-xs text-gray-400 italic">No districts found</div>
+                          ) : (
+                            filteredDistricts.map((d) => (
+                              <button
+                                key={d}
+                                type="button"
+                                onClick={() => handleSelectDistrict(d)}
+                                className="w-full text-left px-3 py-2.5 hover:bg-gray-50 rounded-xl text-sm font-semibold text-gray-700 transition-colors flex items-center justify-between group"
+                              >
+                                <span>{d}</span>
+                                <svg className="w-4 h-4 text-gray-300 group-hover:text-[#9AD872] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/></svg>
+                              </button>
+                            ))
+                          )}
+                        </div>
+                      )}
+
+                      {locationStep === 'town' && (
+                        <div className="p-2">
+                          <div className="px-3 py-2 flex items-center justify-between border-b border-gray-50 mb-1.5">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setLocationStep('district');
+                                setFilteredDistricts(tamilNaduData.map(d => d.district));
+                                setFormData({ ...formData, location: '' });
+                                setSelectedDistrict('');
+                              }}
+                              className="text-[10px] font-black uppercase text-[#9AD872] hover:text-[#8bc664] tracking-wider flex items-center gap-1"
+                            >
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7"/></svg>
+                              Back
+                            </button>
+                            <span className="text-[10px] font-black uppercase text-gray-400 tracking-wider">
+                              In {selectedDistrict}
+                            </span>
+                          </div>
+                          {filteredTowns.length === 0 ? (
+                            <div className="px-3 py-3 text-xs text-gray-400 italic">No towns/villages found</div>
+                          ) : (
+                            filteredTowns.map((t) => (
+                              <button
+                                key={t}
+                                type="button"
+                                onClick={() => handleSelectTown(t)}
+                                className="w-full text-left px-3 py-2.5 hover:bg-gray-50 rounded-xl text-sm font-semibold text-gray-700 transition-colors flex items-center justify-between group"
+                              >
+                                <span>{t}</span>
+                                <svg className="w-4 h-4 text-gray-300 group-hover:text-[#9AD872] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7"/></svg>
+                              </button>
+                            ))
+                          )}
+                        </div>
+                      )}
+
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

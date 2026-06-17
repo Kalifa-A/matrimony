@@ -17,3 +17,8 @@ export async function clearAdminSession() {
   const cookieStore = await cookies();
   cookieStore.delete('admin_token');
 }
+
+export async function getAdminToken() {
+  const cookieStore = await cookies();
+  return cookieStore.get('admin_token')?.value || null;
+}

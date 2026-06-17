@@ -30,9 +30,8 @@ export default function AdminLogin() {
       const data = await res.json();
       
       if (res.ok) {
-        // We set both a secure cookie (server actions) and a localStorage flag (for client-side UI)
+        // We set a secure cookie (server actions)
         if (data.token) {
-          localStorage.setItem('admin_token', data.token);
           await setAdminSession(data.token);
         }
 

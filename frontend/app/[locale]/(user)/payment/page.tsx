@@ -1,8 +1,27 @@
 "use client";
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from '@/navigation';
 
 export default function PaymentPage() {
+  const router = useRouter();
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+  useEffect(() => {
+    fetch(`${API_URL}/api/auth/me`, { credentials: 'include' })
+      .then(res => {
+        if (res.ok) return res.json();
+        throw new Error('Not authenticated');
+      })
+      .then(data => {
+        if (data && data.hasPaid) {
+          router.replace('/');
+        }
+      })
+      .catch(err => {
+        console.error('Error verifying gold membership status:', err);
+      });
+  }, [router, API_URL]);
   return (
     <main className="min-h-screen bg-[#FCFDFB] py-10 sm:py-20">
       <div className="container mx-auto px-4 sm:px-6">

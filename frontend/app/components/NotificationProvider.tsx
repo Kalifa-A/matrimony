@@ -3,6 +3,8 @@ import React, { createContext, useContext, useEffect, useRef, useState } from 'r
 import { io, Socket } from 'socket.io-client';
 import { toast } from 'react-hot-toast';
 
+import { getAdminToken } from '@/app/actions/adminAuthActions';
+
 const NotificationContext = createContext<{ unread: number; setUnread: React.Dispatch<React.SetStateAction<number>> }>(null!);
 
 export const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
@@ -10,44 +12,53 @@ export const NotificationProvider = ({ children }: { children: React.ReactNode }
   const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('admin_token');
-    if (!token) return;
-    const socket = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000', {
-      auth: { token },
-    });
-    socketRef.current = socket;
+    let socket: Socket | null = null;
 
-    // Socket listener for in-app and native notifications
-    socket.on('admin-notification', (payload) => {
-      setUnread((c) => c + 1);
-      toast.success(`New ${payload.type} from ${payload.user.name}`);
-      
-      // Native notification guard for iOS/Safari
-      if (typeof window !== 'undefined' && 'Notification' in window && 
-          document.hidden && Notification.permission === 'granted') {
-        new Notification('New admin notification', {
-          body: `${payload.type} – ${payload.user.name}`,
-        });
-      }
-    });
+    const setupSocket = async () => {
+      const token = await getAdminToken();
+      if (!token) return;
+
+      socket = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000', {
+        auth: { token },
+      });
+      socketRef.current = socket;
+
+      // Socket listener for in-app and native notifications
+      socket.on('admin-notification', (payload) => {
+        setUnread((c) => c + 1);
+        toast.success(`New ${payload.type} from ${payload.user.name}`);
+        
+        // Native notification guard for iOS/Safari
+        if (typeof window !== 'undefined' && 'Notification' in window && 
+            document.hidden && Notification.permission === 'granted') {
+          new Notification('New admin notification', {
+            body: `${payload.type} – ${payload.user.name}`,
+          });
+        }
+      });
+    };
+
+    setupSocket();
 
     return () => {
-      socket.disconnect();
+      if (socket) {
+        socket.disconnect();
+      }
     };
   }, []);
 
   // Register service worker and subscribe to push
   useEffect(() => {
-    const token = localStorage.getItem('admin_token');
-    
     const subscribeToPush = async () => {
       if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
         return;
       }
       
       try {
-        const registration = await navigator.serviceWorker.register('/sw.js');
+        const token = await getAdminToken();
         if (!token) return;
+
+        const registration = await navigator.serviceWorker.register('/sw.js');
 
         let subscription = await registration.pushManager.getSubscription();
         

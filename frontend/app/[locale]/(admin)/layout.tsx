@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { clearAdminSession } from '@/app/actions/adminAuthActions';
+import { clearAdminSession, getAdminToken } from '@/app/actions/adminAuthActions';
 import { Toaster } from 'react-hot-toast';
 import { NotificationProvider, useAdminNotification } from '@/app/components/NotificationProvider';
 
@@ -13,17 +13,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   React.useEffect(() => {
-    const token = localStorage.getItem('admin_token');
-    setIsAuthenticated(!!token);
-    
-    if (!token && !pathname.endsWith('/admin/login')) {
-      router.push('/admin/login');
-    }
+    const checkAuth = async () => {
+      const token = await getAdminToken();
+      setIsAuthenticated(!!token);
+      
+      if (!token && !pathname.endsWith('/admin/login')) {
+        router.push('/admin/login');
+      }
+    };
+    checkAuth();
   }, [pathname, router]);
 
   const handleSignOut = async () => {
     await clearAdminSession();
-    localStorage.removeItem('admin_token');
     setIsAuthenticated(false);
     router.push('/admin/login');
   };

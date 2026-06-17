@@ -179,27 +179,35 @@ export default function ProfileDetails() {
           <div className="w-full lg:w-[400px] shrink-0">
             <div className="sticky top-28 space-y-6">
               <div className="bg-white rounded-[3rem] p-4 shadow-2xl shadow-gray-200/50 border border-gray-50 overflow-hidden">
-                <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden mb-6 group">
-                  <img 
-                    src={profile.profilePhoto ? (profile.profilePhoto.startsWith('http') ? profile.profilePhoto : `${API_URL}/${profile.profilePhoto}`) : '/placeholder-user.jpg'} 
-                    alt={profile.name}
-                    className={`w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 ${!hasPaid ? 'blur-3xl scale-110 grayscale' : ''}`}
-                  />
-                  
-                  {/* Verified Badge Overlay */}
-                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full flex items-center gap-2 shadow-sm">
-                    <ShieldCheck size={14} className="text-[#9AD872]" />
-                    <span className="text-[10px] font-black uppercase tracking-wider text-gray-800">{t('verified')}</span>
-                  </div>
-
-                  {!hasPaid && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/10 backdrop-blur-[2px]">
-                      <button 
-                        onClick={() => router.push('/payment')}
-                        className="bg-white text-gray-900 px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl hover:scale-105 transition-all flex items-center gap-2"
-                      >
-                        <Lock size={14} /> {t('unlockGallery')}
-                      </button>
+                <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden mb-6 group flex items-center justify-center">
+                  {profile.profilePhoto ? (
+                    <>
+                      <img 
+                        src={profile.profilePhoto.startsWith('http') ? profile.profilePhoto : `${API_URL}/${profile.profilePhoto}`} 
+                        alt={profile.name}
+                        className={`w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 ${!hasPaid ? 'blur-3xl scale-110 grayscale' : ''}`}
+                      />
+                      {!hasPaid && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/10 backdrop-blur-[2px]">
+                          <button 
+                            onClick={() => router.push('/payment')}
+                            className="bg-white text-gray-900 px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl hover:scale-105 transition-all flex items-center gap-2"
+                          >
+                            <Lock size={14} /> {t('unlockGallery')}
+                          </button>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 flex flex-col items-center justify-center p-6 text-center">
+                      <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center shadow-lg shadow-gray-200/50 mb-4 text-gray-400 group-hover:scale-110 transition-transform duration-500">
+                        <svg className="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                      </div>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 bg-white/80 border border-gray-100/50 px-4 py-2 rounded-full shadow-sm">
+                        Photo Not Uploaded
+                      </span>
                     </div>
                   )}
                 </div>

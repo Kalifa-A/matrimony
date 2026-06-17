@@ -43,7 +43,6 @@ export default function SearchResultsContent() {
 
   const fetchProfiles = async () => {
     setLoading(true);
-    const token = typeof window !== 'undefined' ? localStorage.getItem('user_token') : null;
     try {
       const query = new URLSearchParams({
         minAge: ageMin,
@@ -57,9 +56,7 @@ export default function SearchResultsContent() {
         assets: assets,
       }).toString();
 
-      const fetchHeaders: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
       const response = await fetch(`${API_URL}/api/auth/profiles?${query}`, {
-        headers: fetchHeaders,
         credentials: 'include'
       });
       const data = await response.json();
@@ -247,11 +244,24 @@ export default function SearchResultsContent() {
           {profiles.map((user) => (
             <div key={user._id} className="group relative bg-white rounded-[3rem] p-3 shadow-sm hover:shadow-2xl transition-all duration-500 border border-gray-100">
               <div className="relative aspect-[4/5] overflow-hidden rounded-[2.5rem]">
-                <img 
-                  src={user.profilePhoto ? (user.profilePhoto.startsWith('http') ? user.profilePhoto : `${API_URL}/${user.profilePhoto}`) : '/placeholder.jpg'} 
-                  alt={user.name}
-                  className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${!hasPaid ? 'blur-2xl scale-110' : ''}`}
-                />
+                {user.profilePhoto ? (
+                  <img 
+                    src={user.profilePhoto.startsWith('http') ? user.profilePhoto : `${API_URL}/${user.profilePhoto}`} 
+                    alt={user.name}
+                    className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${!hasPaid ? 'blur-2xl scale-110' : ''}`}
+                  />
+                ) : (
+                  <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200 flex flex-col items-center justify-center p-6 text-center">
+                    <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center shadow-lg shadow-gray-200/50 mb-4 text-gray-400 group-hover:scale-110 transition-transform duration-500">
+                      <svg className="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 bg-white/80 border border-gray-100/50 px-3 py-1.5 rounded-full shadow-sm">
+                      Photo Not Uploaded
+                    </span>
+                  </div>
+                )}
                 <div className="absolute top-5 left-5">
                   <span className="bg-white/20 backdrop-blur-md border border-white/30 text-white text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
                     {user.maritalStatus}

@@ -11,7 +11,7 @@ export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
-  const [user, setUser] = useState<{ name: string; _id?: string } | null>(null);
+  const [user, setUser] = useState<{ name: string; _id?: string; hasPaid?: boolean } | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const navRef = useRef<HTMLDivElement>(null);
   
@@ -37,7 +37,7 @@ export default function Navbar() {
           setIsLoggedIn(true);
           setUser(data);
         } else {
-          localStorage.removeItem('user_token');
+          localStorage.removeItem('user');
           setIsLoggedIn(false);
           setUser(null);
         }
@@ -157,9 +157,15 @@ export default function Navbar() {
                 </div>
               ) : (
                 <div className="flex items-center gap-4">
-                  <Link href="/payment" className="bg-gradient-to-r from-[#BF953F] to-[#B38728] text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase tracking-wider shadow-lg shadow-[#BF953F]/20 hover:scale-105 transition-all flex items-center gap-1.5">
-                    <Sparkles size={12} className="animate-pulse" /> {t('upgradeToGold')}
-                  </Link>
+                  {!user?.hasPaid ? (
+                    <Link href="/payment" className="bg-gradient-to-r from-[#BF953F] to-[#B38728] text-white px-4 py-2 rounded-xl font-bold text-[10px] uppercase tracking-wider shadow-lg shadow-[#BF953F]/20 hover:scale-105 transition-all flex items-center gap-1.5">
+                      <Sparkles size={12} className="animate-pulse" /> {t('upgradeToGold')}
+                    </Link>
+                  ) : (
+                    <span className="bg-gradient-to-r from-[#BF953F] to-[#B38728] text-white px-3.5 py-1.5 rounded-xl font-black text-[9px] uppercase tracking-wider shadow-md shadow-[#BF953F]/10 flex items-center gap-1">
+                      <Sparkles size={10} /> Gold Member
+                    </span>
+                  )}
                   <div className="h-8 w-[1px] bg-gray-200 mx-2"></div>
                   <Link href="/my-account" className="flex items-center gap-3 bg-gray-50 border border-gray-100 px-3 py-1.5 rounded-full hover:bg-white hover:border-[#9AD872]/30 transition-all shadow-sm group">
                     <div className="w-8 h-8 bg-gradient-to-br from-[#9AD872] to-[#88c55f] rounded-full flex items-center justify-center text-white font-bold shadow-sm relative overflow-hidden">
@@ -253,10 +259,10 @@ export default function Navbar() {
             {[
               { name: t('home'), href: "/", icon: Flower2 },
               { name: t('findPartners'), href: "/search", icon: Heart, color: "text-pink-500" },
-              { name: t('membershipPlans'), href: "/payment", icon: Sparkles, color: "text-[#B38728]" },
+              !user?.hasPaid && { name: t('membershipPlans'), href: "/payment", icon: Sparkles, color: "text-[#B38728]" },
               { name: t('about'), href: "/about", icon: User },
               { name: t('contact'), href: "/contact", icon: Menu },
-            ].map((item) => (
+            ].filter((item): item is { name: string; href: string; icon: any; color?: string } => !!item).map((item) => (
               <Link 
                 key={item.name}
                 href={item.href}

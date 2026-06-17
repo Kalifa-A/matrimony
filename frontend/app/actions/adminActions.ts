@@ -133,7 +133,10 @@ export async function updateAdminProfile(data: any) {
     credentials: 'include',
     body: JSON.stringify(data)
   });
-  if (!res.ok) throw new Error('Failed to update profile');
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.message || 'Failed to update profile');
+  }
   return res.json();
 }
 

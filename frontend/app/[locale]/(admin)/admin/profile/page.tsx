@@ -8,11 +8,11 @@ export default function AdminProfilePage() {
   const [updating, setUpdating] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
-  // Form states
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
 
   useEffect(() => {
     async function fetchProfile() {
@@ -34,22 +34,42 @@ export default function AdminProfilePage() {
     e.preventDefault();
     setMessage(null);
 
-    if (password && password !== confirmPassword) {
-      setMessage({ type: 'error', text: 'Passwords do not match.' });
+    if (!currentPassword) {
+      setMessage({ type: 'error', text: 'Current password is required to verify changes.' });
       return;
+    }
+
+    if (password) {
+      if (password.length < 12) {
+        setMessage({ type: 'error', text: 'New password must be at least 12 characters long.' });
+        return;
+      }
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/;
+      if (!passwordRegex.test(password)) {
+        setMessage({ type: 'error', text: 'New password must contain uppercase, lowercase, number, and special character.' });
+        return;
+      }
+      if (password !== confirmPassword) {
+        setMessage({ type: 'error', text: 'Passwords do not match.' });
+        return;
+      }
     }
 
     setUpdating(true);
     try {
-      const updateData: any = { username, email };
+      const updateData: any = { username, email, currentPassword };
       if (password) updateData.password = password;
 
       await updateAdminProfile(updateData);
       setMessage({ type: 'success', text: 'Profile updated successfully!' });
       setPassword('');
       setConfirmPassword('');
-    } catch (err) {
-      setMessage({ type: 'error', text: 'Failed to update profile.' });
+      setCurrentPassword('');
+      // Reload page state
+      const updatedProfile = await getAdminProfile();
+      setProfile(updatedProfile);
+    } catch (err: any) {
+      setMessage({ type: 'error', text: err.message || 'Failed to update profile.' });
     } finally {
       setUpdating(false);
     }
@@ -133,8 +153,25 @@ export default function AdminProfilePage() {
                 </div>
               </div>
 
+              <div className="grid grid-cols-1 gap-6 pt-4 border-t border-gray-50">
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-red-500 uppercase tracking-widest ml-1">Current Password (Required to Save)</label>
+                  <input 
+                    type="password" 
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="Enter your current password to authorize changes"
+                    className="w-full bg-red-50/10 border-2 border-red-100 rounded-2xl py-3.5 px-5 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/25 focus:border-red-400 transition-all font-bold text-gray-700"
+                    required
+                  />
+                </div>
+              </div>
+
               <div className="pt-6 border-t border-gray-50 space-y-6">
-                <p className="text-sm font-bold text-gray-900">Change Password <span className="text-gray-400 font-medium">(Leave blank to keep current)</span></p>
+                <div className="space-y-1">
+                  <p className="text-sm font-bold text-gray-900">Change Password <span className="text-gray-400 font-medium">(Leave blank to keep current)</span></p>
+                  <p className="text-[10px] text-gray-400 font-medium">Requirements: Min 12 chars, must include uppercase, lowercase, digit, and special char (@$!%*?&)</p>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">New Password</label>

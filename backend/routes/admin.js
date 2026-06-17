@@ -340,14 +340,30 @@ router.get('/profile', authenticateAdmin, async (req, res) => {
 // ── PATCH /api/admin/profile ──────────────────────────────────────────────
 router.patch('/profile', authenticateAdmin, async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, currentPassword } = req.body;
     const admin = await Admin.findOne();
     if (!admin) return res.status(404).json({ message: 'Admin not found' });
+
+    if (!currentPassword) {
+      return res.status(400).json({ message: 'Current password is required to verify changes.' });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, admin.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid current password.' });
+    }
 
     if (username) admin.username = username;
     if (email) admin.email = email;
     if (password) {
-      const salt = await bcrypt.genSalt(10);
+      if (password.length < 12) {
+        return res.status(400).json({ message: 'New password must be at least 12 characters.' });
+      }
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/;
+      if (!passwordRegex.test(password)) {
+        return res.status(400).json({ message: 'New password must contain uppercase, lowercase, number, and special character.' });
+      }
+      const salt = await bcrypt.genSalt(12);
       admin.password = await bcrypt.hash(password, salt);
     }
 

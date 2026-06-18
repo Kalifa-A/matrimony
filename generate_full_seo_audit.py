@@ -1,4 +1,6 @@
 import json
+import os
+
 
 audit_pages = [
     {
@@ -531,6 +533,12 @@ for page in audit_pages:
     assert 50 <= len(t) <= 60, f"Error: Title length {len(t)} invalid for {u}"
     assert 150 <= len(d) <= 160, f"Error: Description length {len(d)} invalid for {u}"
 
-with open("c:/Users/khalifa/Desktop/Matrimony/full_seo_audit.json", "w", encoding="utf-8") as f:
+script_dir = os.path.dirname(os.path.abspath(__file__))
+output_dir = os.path.join(script_dir, "backend", "data")
+os.makedirs(output_dir, exist_ok=True)
+output_path = os.path.join(output_dir, "full_seo_audit.json")
+
+with open(output_path, "w", encoding="utf-8") as f:
     json.dump(audit_pages, f, indent=2, ensure_ascii=False)
-print("Saved to full_seo_audit.json!")
+print(f"Saved to {output_path}!")
+

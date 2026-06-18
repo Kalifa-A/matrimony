@@ -1,4 +1,6 @@
 import json
+import os
+
 
 seo_data = {}
 
@@ -575,6 +577,12 @@ for page_key, page_info in seo_data.items():
     assert 150 <= l <= 160, f"Error: Description for {page_key} has invalid length {l}"
 
 # Save to output file
-with open("c:/Users/khalifa/Desktop/Matrimony/seo_content.json", "w", encoding="utf-8") as f:
+script_dir = os.path.dirname(os.path.abspath(__file__))
+output_dir = os.path.join(script_dir, "backend", "data")
+os.makedirs(output_dir, exist_ok=True)
+output_path = os.path.join(output_dir, "seo_content.json")
+
+with open(output_path, "w", encoding="utf-8") as f:
     json.dump(seo_data, f, indent=2, ensure_ascii=False)
-print("\nSuccessfully verified and saved to seo_content.json!")
+print(f"\nSuccessfully verified and saved to {output_path}!")
+

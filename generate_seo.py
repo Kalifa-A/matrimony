@@ -578,11 +578,21 @@ for page_key, page_info in seo_data.items():
 
 # Save to output file
 script_dir = os.path.dirname(os.path.abspath(__file__))
-output_dir = os.path.join(script_dir, "backend", "data")
-os.makedirs(output_dir, exist_ok=True)
-output_path = os.path.join(output_dir, "seo_content.json")
 
-with open(output_path, "w", encoding="utf-8") as f:
+# 1. Save to backend/data/
+backend_dir = os.path.join(script_dir, "backend", "data")
+os.makedirs(backend_dir, exist_ok=True)
+backend_path = os.path.join(backend_dir, "seo_content.json")
+with open(backend_path, "w", encoding="utf-8") as f:
     json.dump(seo_data, f, indent=2, ensure_ascii=False)
-print(f"\nSuccessfully verified and saved to {output_path}!")
+print(f"\nSuccessfully verified and saved to {backend_path}!")
+
+# 2. Save to frontend/app/data/
+frontend_dir = os.path.join(script_dir, "frontend", "app", "data")
+os.makedirs(frontend_dir, exist_ok=True)
+frontend_path = os.path.join(frontend_dir, "seo_content.json")
+with open(frontend_path, "w", encoding="utf-8") as f:
+    json.dump(seo_data, f, indent=2, ensure_ascii=False)
+print(f"Successfully verified and saved to {frontend_path}!")
+
 

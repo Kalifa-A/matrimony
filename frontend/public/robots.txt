@@ -1,0 +1,80 @@
+User-agent: *
+
+# Public indexable sections
+Allow: /en$
+Allow: /en/
+Allow: /ta$
+Allow: /ta/
+Allow: /en/about
+Allow: /ta/about
+Allow: /en/contact
+Allow: /ta/contact
+Allow: /en/faq
+Allow: /ta/faq
+Allow: /en/privacy
+Allow: /ta/privacy
+Allow: /en/terms
+Allow: /ta/terms
+Allow: /en/blog
+Allow: /ta/blog
+Allow: /en/success-stories
+Allow: /ta/success-stories
+Allow: /en/services
+Allow: /ta/services
+Allow: /en/search
+Allow: /ta/search
+Allow: /en/bride-search
+Allow: /ta/bride-search
+Allow: /en/groom-search
+Allow: /ta/groom-search
+Allow: /en/second-marriage
+Allow: /ta/second-marriage
+Allow: /en/widow-matrimony
+Allow: /ta/widow-matrimony
+Allow: /en/widower-matrimony
+Allow: /ta/widower-matrimony
+Allow: /en/tamil-nadu-matrimony
+Allow: /ta/tamil-nadu-matrimony
+Allow: /en/dubai-muslim-matrimony
+Allow: /ta/dubai-muslim-matrimony
+
+# Disallow login / register flow to prevent crawl budget waste and duplication
+Disallow: /en/login
+Disallow: /ta/login
+Disallow: /login
+Disallow: /en/register
+Disallow: /ta/register
+Disallow: /register
+Disallow: /en/forgot-password
+Disallow: /ta/forgot-password
+Disallow: /forgot-password
+Disallow: /en/reset-password
+Disallow: /ta/reset-password
+Disallow: /reset-password
+Disallow: /en/verify-otp
+Disallow: /ta/verify-otp
+Disallow: /verify-otp
+Disallow: /en/verification-pending
+Disallow: /ta/verification-pending
+Disallow: /verification-pending
+
+# Disallow authenticated transactional states
+Disallow: /en/payment
+Disallow: /ta/payment
+Disallow: /payment
+Disallow: /en/my-account
+Disallow: /ta/my-account
+Disallow: /my-account
+
+# Disallow dynamic profiles (require authentication to view full details anyway)
+Disallow: /en/profile/
+Disallow: /ta/profile/
+Disallow: /profile/
+
+# Disallow administrative dashboards
+Disallow: /en/admin/
+Disallow: /ta/admin/
+Disallow: /admin/
+Disallow: /api/
+
+Sitemap: https://www.alfattahnikkah.com/sitemap.xml

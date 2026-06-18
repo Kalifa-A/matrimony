@@ -534,11 +534,21 @@ for page in audit_pages:
     assert 150 <= len(d) <= 160, f"Error: Description length {len(d)} invalid for {u}"
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
-output_dir = os.path.join(script_dir, "backend", "data")
-os.makedirs(output_dir, exist_ok=True)
-output_path = os.path.join(output_dir, "full_seo_audit.json")
 
-with open(output_path, "w", encoding="utf-8") as f:
+# 1. Save to backend/data/
+backend_dir = os.path.join(script_dir, "backend", "data")
+os.makedirs(backend_dir, exist_ok=True)
+backend_path = os.path.join(backend_dir, "full_seo_audit.json")
+with open(backend_path, "w", encoding="utf-8") as f:
     json.dump(audit_pages, f, indent=2, ensure_ascii=False)
-print(f"Saved to {output_path}!")
+print(f"Saved to {backend_path}!")
+
+# 2. Save to frontend/app/data/
+frontend_dir = os.path.join(script_dir, "frontend", "app", "data")
+os.makedirs(frontend_dir, exist_ok=True)
+frontend_path = os.path.join(frontend_dir, "full_seo_audit.json")
+with open(frontend_path, "w", encoding="utf-8") as f:
+    json.dump(audit_pages, f, indent=2, ensure_ascii=False)
+print(f"Saved to {frontend_path}!")
+
 

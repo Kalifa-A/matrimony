@@ -6,7 +6,7 @@ seo_data = {}
 seo_data["home"] = {
     "seo_title": "Halal Muslim Matrimony in Tamil Nadu | Al Fattah Nikkah", # 55 chars
     "seo_description": "Looking for trusted Muslim Matrimony in Tamil Nadu? Al Fattah Nikkah connects verified brides and grooms globally. Register today to find your half deen.", # 154 chars
-    "seo_keywords": "Muslim Matrimony, Muslim matrimony in Tamil Nadu, Al Fattah Nikkah, halal matrimony, Islamic marriage, Tamil Muslim brides, Tamil Muslim grooms",
+    "seo_keywords": "Muslim Matrimony, Muslim matrimony in Tamil Nadu, Al Fattah Nikkah, Tamil Muslim Matrimony in Tamil Nadu, Muslim Matrimony Labbikudikadu, Muslim Matrimony Trichy, halal matrimony, Islamic marriage, Tamil Muslim brides, Tamil Muslim grooms",
     "og_title": "Halal Muslim Matrimony in Tamil Nadu | Al Fattah Nikkah",
     "og_description": "Find your practicing life partner on Al Fattah Nikkah, the trusted Muslim matrimony service. 100% verified profiles. Start your halal journey today.",
     "slug": "",
@@ -26,7 +26,7 @@ Our mission is to simplify the journey of matchmaking while upholding strict adh
 
 ## Finding Your Half of Deen in Tamil Nadu and Beyond
 
-Finding a partner who shares your religious values and cultural background can be challenging in a fast-paced world. Al Fattah Nikkah bridges this gap by focusing on depth, sincerity, and local trust. From Chennai, Madurai, and Trichy to Dubai and beyond, we unite families who share a common vision of a blessed home built on mutual respect and Islamic values.
+Finding a partner who shares your religious values and cultural background can be challenging in a fast-paced world. Al Fattah Nikkah bridges this gap by focusing on depth, sincerity, and local trust. Whether you are looking for Tamil Muslim Matrimony in Tamil Nadu, specialized matchmaking such as Muslim Matrimony Labbikudikadu, or connecting with families in Muslim Matrimony Trichy, we unite families who share a common vision of a blessed home built on mutual respect and Islamic values.
 
 ### Safe and Family-Approved Muslim Matrimony in Tamil Nadu
 
@@ -361,16 +361,22 @@ Begin your journey toward a blessed home today. Register your free account on Al
 seo_data["tamil_nadu"] = {
     "seo_title": "Tamil Muslim Matrimony Services | Al Fattah Nikkah", # 50 chars
     "seo_description": "Join Al Fattah, the premier Tamil Muslim Matrimony platform. Connect with verified brides and grooms across Chennai, Madurai, Trichy, and Tamil Nadu today.", # 158 chars
-    "seo_keywords": "Tamil Muslim Matrimony, Muslim matrimony Tamil Nadu, Tamil Nadu Muslim brides, Tamil Nadu Muslim grooms, Al Fattah Nikkah, Chennai Muslim matrimony",
+    "seo_keywords": "Tamil Muslim Matrimony, Tamil Muslim Matrimony in Tamil Nadu, Muslim Matrimony Labbikudikadu, Muslim Matrimony Trichy, Muslim matrimony Tamil Nadu, Tamil Nadu Muslim brides, Tamil Nadu Muslim grooms, Al Fattah Nikkah, Chennai Muslim matrimony",
     "og_title": "Tamil Muslim Matrimony Services | Al Fattah Nikkah",
     "og_description": "The leading Tamil Muslim Matrimony platform. Discover verified profiles of brides and grooms in Chennai, Madurai, Trichy, and worldwide. Register today.",
     "slug": "tamil-nadu-matrimony",
     "h1": "Leading Tamil Muslim Matrimony Platform",
     "content": """## Connecting Tamil Muslim Families Globally
 
-Welcome to the premier Tamil Muslim Matrimony portal on Al Fattah Nikkah. The Tamil Muslim community has a rich cultural heritage and values that define its families. We are proud to support families in Chennai, Madurai, Coimbatore, Trichy, Tirunelveli, and across the state of Tamil Nadu in finding compatible, practicing matches.
+Welcome to the premier Tamil Muslim Matrimony portal on Al Fattah Nikkah. The Tamil Muslim community has a rich cultural heritage and values that define its families. We are proud to support families in Chennai, Madurai, Coimbatore, Trichy, Tirunelveli, and across the state of Tamil Nadu in finding compatible, practicing matches. Whether you are searching for local connections like Muslim Matrimony Labbikudikadu, looking for regional profiles in Muslim Matrimony Trichy, or seeking general Tamil Muslim Matrimony in Tamil Nadu, our platform acts as a bridge to help you discover profiles that match both your religious preferences and cultural expectations.
 
-We understand the specific traditions, values, and community connections unique to Tamil Muslims. Our platform acts as a bridge, enabling you to discover profiles that match both your religious preferences and cultural expectations.
+### Halal Matchmaking Across All Tamil Nadu Districts
+
+To help you find your half of deen close to home, our database includes verified brides and grooms from all 38 districts of Tamil Nadu. You can filter and search for matches in:
+* **Northern Districts:** Chennai, Chengalpattu, Kanchipuram, Ranipet, Tiruvallur, Tiruvannamalai, Vellore, and Viluppuram.
+* **Central & Eastern Districts:** Ariyalur, Cuddalore, Kallakurichi, Mayiladuthurai, Nagapattinam, Perambalur (including Labbikudikadu), Pudukkottai, Thanjavur, and Tiruvarur.
+* **Western Districts:** Coimbatore, Dharmapuri, Erode, Karur, Krishnagiri, Namakkal, Nilgiris, Salem, and Tiruppur.
+* **Southern Districts:** Dindigul, Madurai, Kanyakumari, Ramanathapuram, Sivaganga, Tenkasi, Theni, Thoothukudi, Tiruchirappalli (Trichy), Tirunelveli, and Virudhunagar.
 
 ### Bridging the Gap Between Tradition and Technology
 
@@ -505,7 +511,7 @@ You can reach out to us through multiple channels. We offer localized support fo
 
 ### Call-to-Action
 Have a question or need personalized help finding a match? Contact our customer support team today, and let us assist you in your halal marriage search.
-[Email Support](mailto:info@alfattahnikkah.com) | [Visit FAQ Page](/faq)
+[Email Support](mailto:alfattahnikkah@gmail.com) | [Visit FAQ Page](/faq)
 
 ### Internal Linking Suggestions
 * Read answers to common questions on our [FAQ](/faq) page.
@@ -569,6 +575,6 @@ for page_key, page_info in seo_data.items():
     assert 150 <= l <= 160, f"Error: Description for {page_key} has invalid length {l}"
 
 # Save to output file
-with open("c:/Users/khalifa/.gemini/antigravity-ide/scratch/seo_content.json", "w", encoding="utf-8") as f:
+with open("c:/Users/khalifa/Desktop/Matrimony/seo_content.json", "w", encoding="utf-8") as f:
     json.dump(seo_data, f, indent=2, ensure_ascii=False)
-print("\\nSuccessfully verified and saved to seo_content.json!")
+print("\nSuccessfully verified and saved to seo_content.json!")

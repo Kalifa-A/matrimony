@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from '@/navigation';
 import { useToast } from '@/app/components/ToastProvider';
 import { useTranslations } from 'next-intl';
-import { tamilNaduData } from '@/app/data/tamilNaduData';
 
 export default function RegisterForm() {
   const t = useTranslations('register');
@@ -17,12 +16,10 @@ export default function RegisterForm() {
   const [plan, setPlan] = useState<string | null>(null);
   const [step, setStep] = useState<number>(1); // 1: Personal, 2: Professional, 3: Account
 
-  // Location Suggestion States
-  const [locationStep, setLocationStep] = useState<'district' | 'town' | 'idle'>('idle');
-  const [selectedDistrict, setSelectedDistrict] = useState<string>('');
-  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
-  const [filteredDistricts, setFilteredDistricts] = useState<string[]>([]);
-  const [filteredTowns, setFilteredTowns] = useState<string[]>([]);
+  // Location Suggestion States (Pincode API)
+  const [pincodeSuggestions, setPincodeSuggestions] = useState<any[]>([]);
+  const [fetchingPincode, setFetchingPincode] = useState(false);
+  const [showPincodeSuggestions, setShowPincodeSuggestions] = useState(false);
 
   // Form data (shared across steps)
   const [formData, setFormData] = useState({
@@ -60,12 +57,12 @@ export default function RegisterForm() {
     };
   }, [selectedImage]);
 
-  // Click outside handler for location picker
+  // Click outside handler for location suggestions picker
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
       const container = document.getElementById('location-picker-container');
       if (container && !container.contains(e.target as Node)) {
-        setShowLocationSuggestions(false);
+        setShowPincodeSuggestions(false);
       }
     };
     document.addEventListener('mousedown', handleOutsideClick);
@@ -78,57 +75,58 @@ export default function RegisterForm() {
     setFormData({ ...formData, [name]: value });
 
     if (name === 'location') {
-      setShowLocationSuggestions(true);
-      if (locationStep === 'district' || !selectedDistrict) {
-        setLocationStep('district');
-        const filtered = tamilNaduData
-          .map(d => d.district)
-          .filter(d => d.toLowerCase().includes(value.toLowerCase()));
-        setFilteredDistricts(filtered);
-      } else if (locationStep === 'town') {
-        const distInfo = tamilNaduData.find(d => d.district === selectedDistrict);
-        if (distInfo) {
-          const searchVal = value.replace(new RegExp(`,?\\s*${selectedDistrict}`, 'i'), '').trim();
-          const filtered = distInfo.towns.filter(t => t.toLowerCase().includes(searchVal.toLowerCase()));
-          setFilteredTowns(filtered);
+      // If user typed a 6-digit code, fetch suggestions from Postal Pincode API
+      if (/^\d{6}$/.test(value)) {
+        setFetchingPincode(true);
+        setShowPincodeSuggestions(true);
+        fetch(`https://api.postalpincode.in/pincode/${value}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data && data[0] && data[0].Status === 'Success') {
+              setPincodeSuggestions(data[0].PostOffice || []);
+            } else {
+              setPincodeSuggestions([]);
+            }
+          })
+          .catch(err => {
+            console.error('Error fetching pincode details:', err);
+            setPincodeSuggestions([]);
+          })
+          .finally(() => {
+            setFetchingPincode(false);
+          });
+      } else {
+        // If not a 6-digit code, hide suggestions if it doesn't look like we're typing a pincode
+        if (!/^\d+$/.test(value)) {
+          setShowPincodeSuggestions(false);
         }
       }
     }
   };
 
   const handleLocationFocus = () => {
-    setShowLocationSuggestions(true);
-    if (!selectedDistrict) {
-      setLocationStep('district');
-      setFilteredDistricts(tamilNaduData.map(d => d.district));
-    } else {
-      setLocationStep('town');
-      const distInfo = tamilNaduData.find(d => d.district === selectedDistrict);
-      setFilteredTowns(distInfo ? distInfo.towns : []);
+    const value = formData.location;
+    if (/^\d{6}$/.test(value)) {
+      setShowPincodeSuggestions(true);
+      if (pincodeSuggestions.length === 0) {
+        setFetchingPincode(true);
+        fetch(`https://api.postalpincode.in/pincode/${value}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data && data[0] && data[0].Status === 'Success') {
+              setPincodeSuggestions(data[0].PostOffice || []);
+            }
+          })
+          .catch(err => console.error(err))
+          .finally(() => setFetchingPincode(false));
+      }
     }
   };
 
-  const handleSelectDistrict = (districtName: string) => {
-    setSelectedDistrict(districtName);
-    setFormData({ ...formData, location: districtName });
-    setLocationStep('town');
-    const distInfo = tamilNaduData.find(d => d.district === districtName);
-    setFilteredTowns(distInfo ? distInfo.towns : []);
-  };
-
-  const handleSelectTown = (townName: string) => {
-    const fullLocation = `${townName}, ${selectedDistrict}`;
+  const handleSelectPincodeVillage = (postOffice: any) => {
+    const fullLocation = `${postOffice.Name}, ${postOffice.District}, ${postOffice.State}`;
     setFormData({ ...formData, location: fullLocation });
-    setShowLocationSuggestions(false);
-    setLocationStep('idle');
-  };
-
-  const handleClearLocation = () => {
-    setSelectedDistrict('');
-    setFormData({ ...formData, location: '' });
-    setLocationStep('district');
-    setFilteredDistricts(tamilNaduData.map(d => d.district));
-    setShowLocationSuggestions(true);
+    setShowPincodeSuggestions(false);
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -357,7 +355,7 @@ export default function RegisterForm() {
                   <input name="phone" type="tel" value={formData.phone} onChange={handleChange} required className={inputClass} placeholder={t('phone')} />
                 </div>
                 <div className="space-y-1.5 relative" id="location-picker-container">
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wide">Location</label>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wide">Location / Pincode</label>
                   <div className="relative">
                     <input 
                       name="location" 
@@ -367,13 +365,17 @@ export default function RegisterForm() {
                       onFocus={handleLocationFocus}
                       required 
                       className={inputClass} 
-                      placeholder={t('location')}
+                      placeholder="Enter 6-digit Pincode (e.g. 621108)"
                       autoComplete="off"
                     />
                     {formData.location && (
                       <button 
                         type="button" 
-                        onClick={handleClearLocation} 
+                        onClick={() => {
+                          setFormData({ ...formData, location: '' });
+                          setPincodeSuggestions([]);
+                          setShowPincodeSuggestions(false);
+                        }} 
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
                         title="Clear Location"
                       >
@@ -385,70 +387,39 @@ export default function RegisterForm() {
                   </div>
 
                   {/* Suggestions Dropdown */}
-                  {showLocationSuggestions && (
+                  {showPincodeSuggestions && (
                     <div className="absolute left-0 right-0 mt-1.5 bg-white border border-gray-100 rounded-2xl shadow-xl z-50 max-h-60 overflow-y-auto animate-in fade-in slide-in-from-top-1 duration-200">
-                      
-                      {locationStep === 'district' && (
-                        <div className="p-2">
-                          <div className="px-3 py-1.5 text-[10px] font-black uppercase text-gray-400 tracking-wider">
-                            Select Tamil Nadu District
-                          </div>
-                          {filteredDistricts.length === 0 ? (
-                            <div className="px-3 py-3 text-xs text-gray-400 italic">No districts found</div>
-                          ) : (
-                            filteredDistricts.map((d) => (
-                              <button
-                                key={d}
-                                type="button"
-                                onClick={() => handleSelectDistrict(d)}
-                                className="w-full text-left px-3 py-2.5 hover:bg-gray-50 rounded-xl text-sm font-semibold text-gray-700 transition-colors flex items-center justify-between group"
-                              >
-                                <span>{d}</span>
-                                <svg className="w-4 h-4 text-gray-300 group-hover:text-[#9AD872] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/></svg>
-                              </button>
-                            ))
-                          )}
+                      <div className="p-2">
+                        <div className="px-3 py-1.5 text-[10px] font-black uppercase text-gray-400 tracking-wider">
+                          Select Village / Post Office
                         </div>
-                      )}
-
-                      {locationStep === 'town' && (
-                        <div className="p-2">
-                          <div className="px-3 py-2 flex items-center justify-between border-b border-gray-50 mb-1.5">
+                        {fetchingPincode ? (
+                          <div className="px-3 py-3 text-xs text-gray-500 flex items-center gap-2">
+                            <svg className="animate-spin h-4 w-4 text-[#9AD872]" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                            </svg>
+                            Searching villages for pincode...
+                          </div>
+                        ) : pincodeSuggestions.length === 0 ? (
+                          <div className="px-3 py-3 text-xs text-gray-400 italic">No villages found. Type a 6-digit Pincode.</div>
+                        ) : (
+                          pincodeSuggestions.map((postOffice, idx) => (
                             <button
+                              key={idx}
                               type="button"
-                              onClick={() => {
-                                setLocationStep('district');
-                                setFilteredDistricts(tamilNaduData.map(d => d.district));
-                                setFormData({ ...formData, location: '' });
-                                setSelectedDistrict('');
-                              }}
-                              className="text-[10px] font-black uppercase text-[#9AD872] hover:text-[#8bc664] tracking-wider flex items-center gap-1"
+                              onClick={() => handleSelectPincodeVillage(postOffice)}
+                              className="w-full text-left px-3 py-2.5 hover:bg-gray-50 rounded-xl text-sm font-semibold text-gray-700 transition-colors flex items-center justify-between group"
                             >
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7"/></svg>
-                              Back
+                              <div className="flex flex-col">
+                                <span className="font-bold text-gray-800">{postOffice.Name}</span>
+                                <span className="text-[10px] text-gray-400 font-semibold">{postOffice.District}, {postOffice.State}</span>
+                              </div>
+                              <svg className="w-4 h-4 text-gray-300 group-hover:text-[#9AD872] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7"/></svg>
                             </button>
-                            <span className="text-[10px] font-black uppercase text-gray-400 tracking-wider">
-                              In {selectedDistrict}
-                            </span>
-                          </div>
-                          {filteredTowns.length === 0 ? (
-                            <div className="px-3 py-3 text-xs text-gray-400 italic">No towns/villages found</div>
-                          ) : (
-                            filteredTowns.map((t) => (
-                              <button
-                                key={t}
-                                type="button"
-                                onClick={() => handleSelectTown(t)}
-                                className="w-full text-left px-3 py-2.5 hover:bg-gray-50 rounded-xl text-sm font-semibold text-gray-700 transition-colors flex items-center justify-between group"
-                              >
-                                <span>{t}</span>
-                                <svg className="w-4 h-4 text-gray-300 group-hover:text-[#9AD872] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7"/></svg>
-                              </button>
-                            ))
-                          )}
-                        </div>
-                      )}
-
+                          ))
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>

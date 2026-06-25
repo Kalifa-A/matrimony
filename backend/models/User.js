@@ -24,6 +24,7 @@ const UserSchema = new mongoose.Schema({
   resetOtp: { type: String },
   resetOtpExpire: { type: Date },
   otpRequestedAt: { type: Date },
+  otpAttempts: { type: Number, default: 0 },
 
   registrationDate: { type: Date, default: Date.now },
   createdAt: { type: Date, default: Date.now }

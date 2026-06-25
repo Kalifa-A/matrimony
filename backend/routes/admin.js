@@ -311,6 +311,7 @@ router.get('/stats', authenticateAdmin, async (req, res) => {
 
     const successStories = await SuccessStory.countDocuments();
     const unreadMessages = await Message.countDocuments({ isRead: false });
+    const activeAdmins = await Admin.countDocuments();
 
     res.json({
       totalUsers,
@@ -318,7 +319,8 @@ router.get('/stats', authenticateAdmin, async (req, res) => {
       totalInterests,
       mutualMatches,
       successStories,
-      unreadMessages
+      unreadMessages,
+      activeAdmins
     });
   } catch (err) {
     console.error('Admin /stats error details:', err);
@@ -469,6 +471,17 @@ router.patch('/messages/:id', authenticateAdmin, async (req, res) => {
     res.json(message);
   } catch (err) {
     console.error('Admin mark-read error:', err.message);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+// ── DELETE /api/admin/messages (DELETE ALL) ───────────────────────────────
+router.delete('/messages', authenticateAdmin, async (req, res) => {
+  try {
+    await Message.deleteMany({});
+    res.json({ message: 'All messages deleted successfully' });
+  } catch (err) {
+    console.error('Admin delete-all-messages error:', err.message);
     res.status(500).json({ message: 'Server Error' });
   }
 });

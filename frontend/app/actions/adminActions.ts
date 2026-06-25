@@ -8,6 +8,7 @@ export interface AdminStats {
   pendingVerifications: number;
   mutualMatches: number;
   unreadMessages: number;
+  activeAdmins: number;
 }
 
 export interface AdminProfile {
@@ -25,13 +26,19 @@ export interface AdminUser {
   phone: string;
   gender: string;
   age: number;
-  profession: string;
+  profession?: string;
   location: string;
   isAdminApproved: boolean;
   hasPaid: boolean;
   profilePhoto?: string;
   isMarried?: boolean;
   createdAt?: string;
+  maritalStatus?: string;
+  job?: string;
+  education?: string;
+  salary?: string;
+  assets?: string;
+  description?: string;
 }
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000';

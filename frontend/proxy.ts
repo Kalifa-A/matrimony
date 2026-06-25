@@ -1,7 +1,13 @@
 import createMiddleware from 'next-intl/middleware';
 import {routing} from './navigation';
 
-export default createMiddleware(routing);
+const middleware = createMiddleware(routing);
+
+export default middleware;
+
+export function proxy(request: any) {
+  return middleware(request);
+}
 
 export const config = {
   // Match all pathnames except for

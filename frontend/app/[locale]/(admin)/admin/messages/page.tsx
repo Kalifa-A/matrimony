@@ -99,6 +99,25 @@ export default function MessagesPage() {
     }
   };
 
+  const deleteAllMessages = async () => {
+    if (messages.length === 0) return;
+    if (!window.confirm('Are you sure you want to delete ALL messages? This action cannot be undone!')) return;
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/admin/messages`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      if (res.ok) {
+        setMessages([]);
+        toast.success('All messages deleted');
+      } else {
+        toast.error('Failed to delete all messages');
+      }
+    } catch (err) {
+      toast.error('Failed to delete all messages');
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -114,13 +133,22 @@ export default function MessagesPage() {
           <h1 className="text-3xl font-black text-gray-900">Inbox</h1>
           <p className="text-gray-500 font-medium mt-1">Manage contact inquiries and system notifications</p>
         </div>
-        <div className="flex items-center gap-3 bg-white p-2 rounded-2xl border border-gray-100">
+        <div className="flex items-center gap-3 bg-white p-2 rounded-2xl border border-gray-100 flex-wrap">
            <div className="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl text-xs font-bold">
              {messages.filter(m => !m.isRead).length} Unread
            </div>
            <div className="px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-bold">
              {messages.length} Total
            </div>
+           {messages.length > 0 && (
+             <button
+               onClick={deleteAllMessages}
+               className="flex items-center gap-1.5 px-4 py-2 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-xl text-xs font-extrabold transition-all border border-rose-100"
+             >
+               <Trash2 size={14} />
+               Delete All
+             </button>
+           )}
         </div>
       </div>
 

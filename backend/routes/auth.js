@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const User = require('../models/User');
 const Message = require('../models/Message');
 const upload = require('../config/cloudinary');
@@ -303,17 +304,21 @@ router.post('/forgot-password', async (req, res) => {
   email = email?.toLowerCase().trim();
   try {
     const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: 'User with this email does not exist.' });
+    if (!user) {
+      // Prevent user enumeration: return success response even if email doesn't exist
+      return res.json({ message: 'OTP sent to your email.' });
+    }
 
     if (user.otpRequestedAt && (Date.now() - user.otpRequestedAt) < 60000) {
       const remainingSeconds = Math.ceil((60000 - (Date.now() - user.otpRequestedAt)) / 1000);
       return res.status(429).json({ message: `Please wait ${remainingSeconds} seconds before requesting a new OTP.` });
     }
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = crypto.randomInt(100000, 1000000).toString();
     user.resetOtp = otp;
     user.resetOtpExpire = Date.now() + 5 * 60 * 1000;
     user.otpRequestedAt = Date.now();
+    user.otpAttempts = 0; // Reset attempts on request of a new OTP
     await user.save();
 
     const htmlContent = `
@@ -349,14 +354,26 @@ router.post('/verify-otp', async (req, res) => {
   otp = otp?.trim();
   try {
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: 'User not found.' });
-    
-    if (user.resetOtp !== otp) {
+    if (!user || !user.resetOtp) {
       return res.status(400).json({ message: 'Invalid OTP code.' });
     }
     
     if (new Date(user.resetOtpExpire) < new Date()) {
       return res.status(400).json({ message: 'OTP has expired. Please request a new one.' });
+    }
+
+    if (user.otpAttempts >= 5) {
+      user.resetOtp = undefined;
+      user.resetOtpExpire = undefined;
+      user.otpAttempts = 0;
+      await user.save();
+      return res.status(400).json({ message: 'Too many failed attempts. Please request a new OTP.' });
+    }
+    
+    if (user.resetOtp !== otp) {
+      user.otpAttempts += 1;
+      await user.save();
+      return res.status(400).json({ message: 'Invalid OTP code.' });
     }
 
     res.json({ message: 'OTP verified successfully. You can now reset your password.' });
@@ -372,14 +389,26 @@ router.post('/reset-password', async (req, res) => {
   otp = otp?.trim();
   try {
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: 'User not found. Please start again.' });
-
-    if (user.resetOtp !== otp) {
+    if (!user || !user.resetOtp) {
       return res.status(400).json({ message: 'Invalid OTP code. Please start again.' });
     }
 
     if (new Date(user.resetOtpExpire) < new Date()) {
       return res.status(400).json({ message: 'OTP has expired. Please start again.' });
+    }
+
+    if (user.otpAttempts >= 5) {
+      user.resetOtp = undefined;
+      user.resetOtpExpire = undefined;
+      user.otpAttempts = 0;
+      await user.save();
+      return res.status(400).json({ message: 'Too many failed attempts. Please request a new OTP.' });
+    }
+
+    if (user.resetOtp !== otp) {
+      user.otpAttempts += 1;
+      await user.save();
+      return res.status(400).json({ message: 'Invalid OTP code. Please start again.' });
     }
 
     if (!passwordRegex.test(newPassword)) {
@@ -390,6 +419,7 @@ router.post('/reset-password', async (req, res) => {
     user.password = await bcrypt.hash(newPassword, salt);
     user.resetOtp = undefined;
     user.resetOtpExpire = undefined;
+    user.otpAttempts = 0; // Clear attempts on successful reset
     await user.save();
 
     res.json({ message: 'Password reset successful. You can now login with your new password.' });

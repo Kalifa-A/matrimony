@@ -30,58 +30,104 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     router.push('/admin/login');
   };
 
-  const navItems = [
-    { label: 'Dashboard', href: '/admin', icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z' },
-    { label: 'Verifications', href: '/admin/verifications', icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' },
-    { label: 'Interests & Matches', href: '/admin/interests', icon: 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z' },
-    { label: 'Messages', href: '/admin/messages', icon: 'M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z' },
-    { label: 'Admin Profile', href: '/admin/profile', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
+  const navigationGroups = [
+    {
+      title: 'General',
+      items: [
+        { label: 'Dashboard', href: '/admin', icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z' },
+      ]
+    },
+    {
+      title: 'Management',
+      items: [
+        { label: 'Verifications', href: '/admin/verifications', icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' },
+        { label: 'Interests & Matches', href: '/admin/interests', icon: 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z' },
+        { label: 'Messages', href: '/admin/messages', icon: 'M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z' },
+      ]
+    },
+    {
+      title: 'Account',
+      items: [
+        { label: 'Admin Profile', href: '/admin/profile', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
+      ]
+    }
   ];
 
   const isLoginPage = pathname.endsWith('/admin/login');
 
-  if (isLoginPage || isAuthenticated === false) {
+  if (isLoginPage) {
     return <div className="min-h-screen bg-gray-900 font-sans tracking-tight">{children}</div>;
   }
 
-  if (isAuthenticated === null) {
-    return <div className="min-h-screen bg-white font-sans" />;
+  if (isAuthenticated === null || isAuthenticated === false) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#9AD872]"></div>
+      </div>
+    );
   }
 
   return (
     <NotificationProvider>
       <div className="flex min-h-screen bg-white font-sans tracking-tight">
         <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-100 transition-transform duration-300 lg:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} flex flex-col`}>
-          <div className="p-8 flex justify-between items-center">
-            <Link href="/admin" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-[#9AD872] rounded-lg"></div>
-              <span className="text-xl font-black text-gray-900 tracking-tight">Fattah Admin</span>
+          <div className="p-6 border-b border-gray-50 flex justify-between items-center">
+            <Link href="/admin" className="flex items-center gap-2.5 hover:opacity-90 transition-opacity">
+              <img src="/favicon.png" alt="Al Fattah Logo" className="w-8 h-8 object-contain" />
+              <div className="flex flex-col">
+                <span className="text-base font-black text-gray-900 tracking-tight leading-none">
+                  Al <span className="text-[#9AD872]">Fattah</span>
+                </span>
+                <span className="text-[10px] font-bold text-gray-400 mt-1 uppercase tracking-wider">
+                  Admin Portal
+                </span>
+              </div>
             </Link>
-            <button onClick={() => setIsMobileMenuOpen(false)} className="lg:hidden text-gray-400">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            <button onClick={() => setIsMobileMenuOpen(false)} className="lg:hidden text-gray-400 p-1 hover:bg-gray-50 rounded-lg transition-colors">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           </div>
 
-          <nav className="flex-1 px-4 space-y-1">
-            {navItems.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <SidebarLink 
-                  key={item.href}
-                  item={item}
-                  isActive={isActive}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                />
-              );
-            })}
+          <nav className="flex-1 px-4 py-6 space-y-6 overflow-y-auto">
+            {navigationGroups.map((group) => (
+              <div key={group.title} className="space-y-1.5">
+                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-3 block">
+                  {group.title}
+                </span>
+                <div className="space-y-1">
+                  {group.items.map((item) => {
+                    const isActive = item.href === '/admin'
+                      ? (pathname === '/admin' || pathname.endsWith('/admin') || pathname.endsWith('/admin/'))
+                      : pathname.includes(item.href);
+                    return (
+                      <SidebarLink 
+                        key={item.href}
+                        item={item}
+                        isActive={isActive}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </nav>
 
-          <div className="p-6 border-t border-gray-50">
+          <div className="p-6 border-t border-gray-100 bg-gray-50/40">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#9AD872] to-[#7cb756] text-white flex items-center justify-center font-black shadow-sm text-sm">
+                AF
+              </div>
+              <div className="text-left flex-1 min-w-0">
+                <p className="text-xs font-black text-gray-800 truncate">Al Fattah Admin</p>
+                <p className="text-[10px] text-gray-400 font-bold truncate">admin@alfattah.com</p>
+              </div>
+            </div>
             <button 
               onClick={handleSignOut}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-red-400 font-bold text-sm hover:bg-red-50 transition-all"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-red-100 hover:border-red-200 text-red-500 font-bold text-xs hover:bg-red-50/50 active:bg-red-50 transition-all duration-200 shadow-sm"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
               Sign Out
@@ -161,23 +207,26 @@ function SidebarLink({ item, isActive, onClick }: { item: any, isActive: boolean
     <Link
       href={item.href}
       onClick={onClick}
-      className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl font-bold text-sm transition-all ${
+      className={`group flex items-center justify-between px-3 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 ${
         isActive 
-        ? 'bg-[#9AD872] text-white shadow-lg shadow-[#9AD872]/20' 
-        : 'text-gray-400 hover:bg-gray-50 hover:text-gray-600'
+        ? 'bg-gradient-to-r from-[#9AD872]/15 to-[#9AD872]/5 text-[#9AD872] border-l-4 border-[#9AD872] pl-2 shadow-sm' 
+        : 'text-gray-400 hover:bg-gray-50/80 hover:text-gray-700 hover:translate-x-1 border-l-4 border-transparent pl-3'
       }`}
     >
-      <div className="relative">
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-          <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
-        </svg>
-        {item.label === 'Messages' && unread > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px]">
-            {unread}
-          </span>
-        )}
+      <div className="flex items-center gap-2.5">
+        <div className="relative">
+          <svg className="w-5 h-5 transition-transform group-hover:scale-105 duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
+          </svg>
+        </div>
+        <span>{item.label}</span>
       </div>
-      {item.label}
+      
+      {item.label === 'Messages' && unread > 0 && (
+        <span className="bg-red-500 text-white rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center text-[10px] font-black tracking-tighter shadow-sm">
+          {unread}
+        </span>
+      )}
     </Link>
   );
 }

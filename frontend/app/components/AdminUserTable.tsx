@@ -12,6 +12,26 @@ import {
 
 import { useToast } from '@/app/components/ToastProvider';
 
+/* ───────────────────── Detail Field (Modal) ───────────────────── */
+function DetailField({ 
+  label, 
+  value, 
+  isMono = false 
+}: { 
+  label: string; 
+  value?: string | number | null; 
+  isMono?: boolean;
+}) {
+  return (
+    <div className="bg-gray-50/50 border border-gray-100 p-3.5 rounded-2xl">
+      <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block mb-0.5">{label}</span>
+      <span className={`text-sm font-bold text-gray-800 ${isMono ? 'font-mono' : ''}`}>
+        {value || '—'}
+      </span>
+    </div>
+  );
+}
+
 /* ───────────────────── Toggle Switch ───────────────────── */
 function Toggle({
   enabled,
@@ -58,6 +78,7 @@ export default function AdminUserTable({
   const [isPending, startTransition] = useTransition();
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [selectedUserForBiodata, setSelectedUserForBiodata] = useState<AdminUser | null>(null);
 
   // ── Fetch Users ────────────────────────────────────────
   const fetchUsers = async (phone?: string) => {
@@ -238,153 +259,451 @@ export default function AdminUserTable({
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[800px]">
               <thead>
-                <tr className="bg-gray-50/80">
-                  <th className="p-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                    User
+                <tr className="bg-slate-50/50 border-b border-slate-100">
+                  <th className="px-6 py-4 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">
+                    User Details
                   </th>
-                  <th className="p-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                    Phone
+                  <th className="px-6 py-4 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">
+                    Contact
                   </th>
-                  <th className="p-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                    Registered
+                  <th className="px-6 py-4 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">
+                    Registered Date
                   </th>
-                  <th className="p-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                    Status
+                  <th className="px-6 py-4 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">
+                    Account Status
                   </th>
-                  <th className="p-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center">
+                  <th className="px-6 py-4 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest text-center">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
-                {displayedUsers.map((user) => (
-                  <tr
-                    key={user._id}
-                    className="hover:bg-gray-50/50 transition-colors"
-                  >
-                    {/* User Info */}
-                    <td className="p-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#9AD872] to-emerald-400 flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-sm">
-                          {user.name?.[0]?.toUpperCase() || '?'}
+              <tbody className="divide-y divide-slate-50">
+                {displayedUsers.map((user) => {
+                  const avatarGradient = user.gender === 'Male' 
+                    ? 'from-blue-400 to-indigo-500 shadow-blue-500/10' 
+                    : user.gender === 'Female' 
+                    ? 'from-pink-400 to-rose-500 shadow-rose-500/10' 
+                    : 'from-[#9AD872] to-emerald-500 shadow-[#9AD872]/10';
+
+                  return (
+                    <tr
+                      key={user._id}
+                      className="hover:bg-slate-50/40 transition-colors"
+                    >
+                      {/* User Info */}
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${avatarGradient} flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-sm`}>
+                            {user.name?.[0]?.toUpperCase() || '?'}
+                          </div>
+                          <div>
+                            <p 
+                              onClick={() => setSelectedUserForBiodata(user)}
+                              className="font-bold text-gray-900 text-sm hover:text-[#9AD872] cursor-pointer transition-colors"
+                              title="Click to view full biodata"
+                            >
+                              {user.name}
+                            </p>
+                            <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                              {user.gender && (
+                                <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-wider ${
+                                  user.gender === 'Male' ? 'bg-blue-50 text-blue-600' : 'bg-pink-50 text-pink-600'
+                                }`}>
+                                  {user.gender}
+                                </span>
+                              )}
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-50 text-slate-500 rounded-lg text-[9px] font-extrabold border border-slate-100">
+                                <svg className="w-2.5 h-2.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                {user.location || '—'}
+                              </span>
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-bold text-gray-900 text-sm">
-                            {user.name}
-                          </p>
-                          <p className="text-xs text-gray-400">
-                            {user.location || 'No location'} • {user.gender || '—'}
-                          </p>
+                      </td>
+
+                      {/* Phone */}
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-1.5 font-mono text-xs font-semibold text-slate-700 bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-xl w-fit">
+                          <svg className="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                          {user.phone || '—'}
                         </div>
-                      </div>
-                    </td>
+                      </td>
 
-                    {/* Phone */}
-                    <td className="p-4">
-                      <span className="font-mono text-sm text-gray-700 bg-gray-50 px-2 py-1 rounded-lg">
-                        {user.phone || '—'}
-                      </span>
-                    </td>
+                      {/* Date */}
+                      <td className="px-6 py-4 text-xs">
+                        <div className="flex items-center gap-1.5 text-gray-500 font-bold">
+                          <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                          {formatDate(user.createdAt)}
+                        </div>
+                        {user.createdAt && (
+                          <div className="text-[10px] text-gray-400 font-medium ml-5 mt-0.5">
+                            {new Date(user.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                          </div>
+                        )}
+                      </td>
 
-                    {/* Date */}
-                    <td className="p-4 text-sm text-gray-500">
-                      {formatDate(user.createdAt)}
-                    </td>
-
-                    {/* Status Badge */}
-                    <td className="p-4">
-                      {simplifiedStatus ? (
-                        user.isAdminApproved && user.hasPaid ? (
-                          <div className="flex items-center gap-2 bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-xl border border-emerald-100 w-fit">
-                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                            </svg>
-                            <span className="text-xs font-bold uppercase tracking-tight">Verified</span>
+                      {/* Status Badge */}
+                      <td className="px-6 py-4">
+                        {simplifiedStatus ? (
+                          user.isAdminApproved && user.hasPaid ? (
+                            <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-xl border border-emerald-100 w-fit">
+                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4" /></svg>
+                              <span className="text-[10px] font-black uppercase tracking-wider">Verified</span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-1.5 bg-orange-50 text-orange-600 px-3 py-1.5 rounded-xl border border-orange-100 w-fit">
+                              <svg className="w-3.5 h-3.5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                              <span className="text-[10px] font-black uppercase tracking-wider">Pending</span>
+                            </div>
+                          )
+                        ) : onlyVerified ? (
+                          <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-xl border border-emerald-100 w-fit">
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4" /></svg>
+                            <span className="text-[10px] font-black uppercase tracking-wider">Verified</span>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-2 bg-orange-50 text-orange-600 px-3 py-1.5 rounded-xl border border-orange-100 w-fit">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <span className="text-xs font-bold uppercase tracking-tight">Pending</span>
+                          <div className="flex flex-col gap-2 max-w-[140px]">
+                            <div className="flex items-center justify-between gap-3 bg-slate-50/50 p-2 rounded-2xl border border-slate-100/80">
+                              <span className="text-[9px] font-extrabold uppercase text-slate-400 tracking-wider">Verify</span>
+                              <Toggle 
+                                enabled={user.isAdminApproved} 
+                                onToggle={() => handleApproveToggle(user)} 
+                                pending={actionInProgress === user._id + '-approve'} 
+                              />
+                            </div>
+                            <div className="flex items-center justify-between gap-3 bg-slate-50/50 p-2 rounded-2xl border border-slate-100/80">
+                              <span className="text-[9px] font-extrabold uppercase text-slate-400 tracking-wider">Payment</span>
+                              <Toggle 
+                                enabled={user.hasPaid} 
+                                onToggle={() => handlePaymentToggle(user)} 
+                                pending={actionInProgress === user._id + '-payment'} 
+                                colorOn="bg-blue-500"
+                              />
+                            </div>
                           </div>
-                        )
-                      ) : onlyVerified ? (
-                        <div className="flex items-center gap-2 bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-xl border border-emerald-100 w-fit">
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                          </svg>
-                          <span className="text-xs font-bold uppercase tracking-tight">Verified</span>
-                        </div>
-                      ) : (
-                        <div className="flex flex-col gap-2">
-                          <div className="flex items-center justify-between gap-4 bg-gray-50/50 p-2 rounded-xl border border-gray-100">
-                            <span className="text-[10px] font-black uppercase text-gray-400">Verify</span>
-                            <Toggle 
-                              enabled={user.isAdminApproved} 
-                              onToggle={() => handleApproveToggle(user)} 
-                              pending={actionInProgress === user._id + '-approve'} 
-                            />
-                          </div>
-                          <div className="flex items-center justify-between gap-4 bg-gray-50/50 p-2 rounded-xl border border-gray-100">
-                            <span className="text-[10px] font-black uppercase text-gray-400">Payment</span>
-                            <Toggle 
-                              enabled={user.hasPaid} 
-                              onToggle={() => handlePaymentToggle(user)} 
-                              pending={actionInProgress === user._id + '-payment'} 
-                              colorOn="bg-blue-500"
-                            />
-                          </div>
-                        </div>
-                      )}
-                    </td>
+                        )}
+                      </td>
 
-                    {/* Delete */}
-                    <td className="p-4 text-center">
-                      {deleteConfirm === user._id ? (
+                      {/* Actions */}
+                      <td className="px-6 py-4 text-center">
                         <div className="flex items-center justify-center gap-2">
+                          {/* View Biodata Button */}
                           <button
-                            onClick={() => handleDelete(user._id)}
-                            disabled={actionInProgress === user._id + '-delete'}
-                            className="text-[10px] font-black uppercase bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-red-600 transition-all disabled:opacity-50"
+                            onClick={() => setSelectedUserForBiodata(user)}
+                            className="p-2.5 rounded-xl bg-[#9AD872]/15 text-[#5e9637] hover:bg-[#9AD872]/25 hover:text-[#4a772b] hover:scale-105 active:scale-95 transition-all shadow-sm shadow-[#9AD872]/5"
+                            title="View Biodata"
                           >
-                            {actionInProgress === user._id + '-delete'
-                              ? 'Deleting…'
-                              : 'Confirm'}
+                            <svg
+                              width="16"
+                              height="16"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                              strokeWidth="2.5"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
                           </button>
-                          <button
-                            onClick={() => setDeleteConfirm(null)}
-                            className="text-[10px] font-black uppercase bg-gray-100 text-gray-500 px-3 py-1.5 rounded-lg hover:bg-gray-200 transition-all"
-                          >
-                            Cancel
-                          </button>
+
+                          {deleteConfirm === user._id ? (
+                            <div className="flex items-center justify-center gap-1.5">
+                              <button
+                                onClick={() => handleDelete(user._id)}
+                                disabled={actionInProgress === user._id + '-delete'}
+                                className="text-[10px] font-black uppercase bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-red-600 hover:scale-105 active:scale-95 transition-all shadow-sm shadow-red-500/10 disabled:opacity-50"
+                              >
+                                {actionInProgress === user._id + '-delete'
+                                  ? 'Deleting…'
+                                  : 'Confirm'}
+                              </button>
+                              <button
+                                onClick={() => setDeleteConfirm(null)}
+                                className="text-[10px] font-black uppercase bg-gray-100 text-gray-500 px-3 py-1.5 rounded-lg hover:bg-gray-200 transition-all"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => setDeleteConfirm(user._id)}
+                              className="p-2.5 rounded-xl bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-500 hover:scale-105 active:scale-95 transition-all shadow-sm shadow-red-100"
+                              title="Delete user"
+                            >
+                              <svg
+                                width="16"
+                                height="16"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                strokeWidth="2"
+                              >
+                                <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                              </svg>
+                            </button>
+                          )}
                         </div>
-                      ) : (
-                        <button
-                          onClick={() => setDeleteConfirm(user._id)}
-                          className="p-2.5 rounded-xl bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-500 transition-all"
-                          title="Delete user"
-                        >
-                          <svg
-                            width="16"
-                            height="16"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            strokeWidth="2"
-                          >
-                            <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                          </svg>
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         )}
       </div>
+
+      {/* ───────────────────── BIODATA MODAL ───────────────────── */}
+      {selectedUserForBiodata && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm print:hidden animate-in fade-in duration-200">
+          <div className="bg-white rounded-[2rem] shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col border border-gray-100 animate-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="p-6 sm:p-8 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+              <div>
+                <h3 className="text-lg sm:text-xl font-black text-gray-900">Member Biodata</h3>
+                <p className="text-xs text-gray-500">View complete profile details for printing or PDF export.</p>
+              </div>
+              <button 
+                onClick={() => setSelectedUserForBiodata(null)}
+                className="p-2 rounded-xl bg-white hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-all border border-gray-100"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-8">
+              
+              {/* Profile Card Summary */}
+              <div className="flex flex-col sm:flex-row items-center gap-6 bg-gradient-to-br from-[#9AD872]/10 to-emerald-500/5 p-6 rounded-3xl border border-[#9AD872]/20">
+                {selectedUserForBiodata.profilePhoto ? (
+                  <img
+                    src={selectedUserForBiodata.profilePhoto}
+                    alt={selectedUserForBiodata.name}
+                    className="w-24 h-24 sm:w-28 sm:h-28 object-cover rounded-2xl shadow-md border-2 border-white"
+                  />
+                ) : (
+                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-gradient-to-br from-[#9AD872] to-emerald-400 flex items-center justify-center text-white text-3xl font-extrabold shadow-md">
+                    {selectedUserForBiodata.name?.[0]?.toUpperCase() || '?'}
+                  </div>
+                )}
+                
+                <div className="text-center sm:text-left space-y-1.5 flex-1">
+                  <h4 className="text-xl sm:text-2xl font-black text-gray-900">{selectedUserForBiodata.name}</h4>
+                  <div className="flex flex-wrap justify-center sm:justify-start gap-2">
+                    <span className="bg-white border border-gray-100 text-gray-600 px-3 py-1 rounded-xl text-xs font-bold">
+                      {selectedUserForBiodata.age || '—'} Yrs • {selectedUserForBiodata.gender}
+                    </span>
+                    <span className="bg-white border border-gray-100 text-gray-600 px-3 py-1 rounded-xl text-xs font-bold">
+                      {selectedUserForBiodata.maritalStatus || 'Single'}
+                    </span>
+                    <span className="bg-white border border-gray-100 text-gray-600 px-3 py-1 rounded-xl text-xs font-bold">
+                      {selectedUserForBiodata.location || '—'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-400 font-medium">Joined {formatDate(selectedUserForBiodata.createdAt)}</p>
+                </div>
+              </div>
+
+              {/* Personal Details Section */}
+              <div className="space-y-4">
+                <h5 className="text-xs uppercase font-extrabold text-[#5e9637] tracking-widest border-b border-gray-100 pb-2">Personal & Family Background</h5>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <DetailField label="Marital Status" value={selectedUserForBiodata.maritalStatus} />
+                  <DetailField label="Current Location" value={selectedUserForBiodata.location} />
+                  <DetailField label="Gender" value={selectedUserForBiodata.gender} />
+                  <DetailField label="Age" value={selectedUserForBiodata.age ? `${selectedUserForBiodata.age} Years` : null} />
+                </div>
+              </div>
+
+              {/* Education & Career Details Section */}
+              <div className="space-y-4">
+                <h5 className="text-xs uppercase font-extrabold text-[#5e9637] tracking-widest border-b border-gray-100 pb-2">Education & Professional Details</h5>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <DetailField label="Education Qualification" value={selectedUserForBiodata.education} />
+                  <DetailField label="Occupation / Job" value={selectedUserForBiodata.job || selectedUserForBiodata.profession} />
+                  <DetailField label="Monthly/Annual Income" value={selectedUserForBiodata.salary} />
+                  <DetailField label="Assets & Property" value={selectedUserForBiodata.assets} />
+                </div>
+              </div>
+
+              {/* Contact Details Section */}
+              <div className="space-y-4">
+                <h5 className="text-xs uppercase font-extrabold text-[#5e9637] tracking-widest border-b border-gray-100 pb-2">Contact Details</h5>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <DetailField label="Phone / Mobile" value={selectedUserForBiodata.phone} isMono={true} />
+                  <DetailField label="Email Address" value={selectedUserForBiodata.email} />
+                </div>
+              </div>
+
+              {/* About description */}
+              {selectedUserForBiodata.description && (
+                <div className="space-y-3">
+                  <h5 className="text-xs uppercase font-extrabold text-[#5e9637] tracking-widest border-b border-gray-100 pb-2">About / Partner expectations</h5>
+                  <p className="text-sm text-gray-600 leading-relaxed italic bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
+                    "{selectedUserForBiodata.description}"
+                  </p>
+                </div>
+              )}
+
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-6 border-t border-gray-100 bg-gray-50/50 flex justify-end gap-3">
+              <button
+                onClick={() => setSelectedUserForBiodata(null)}
+                className="px-6 py-3 rounded-2xl bg-white text-gray-600 font-bold text-sm hover:bg-gray-100 border border-gray-200 transition-all"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => window.print()}
+                className="px-6 py-3 rounded-2xl bg-[#9AD872] hover:bg-[#8bc964] text-white font-bold text-sm flex items-center gap-2 transition-all shadow-md shadow-[#9AD872]/20"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5"><path strokeLinecap="round" strokeLinejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                Print / Save PDF
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ───────────────────── PRINTABLE BIODATA SHEET ───────────────────── */}
+      {selectedUserForBiodata && (
+        <div id="printable-biodata" className="hidden print:block absolute inset-0 bg-white text-black p-8 z-[9999] w-full font-sans">
+          <div className="max-w-3xl mx-auto border-4 border-double border-gray-300 p-8 rounded-2xl bg-white">
+            
+            {/* Header Banner */}
+            <div className="text-center border-b-2 border-gray-200 pb-6 mb-6">
+              <h1 className="text-3xl font-extrabold text-[#528033] tracking-wide uppercase">Al Fattah Matrimony</h1>
+              <p className="text-[10px] text-gray-400 font-bold tracking-widest mt-1 uppercase">COMMUNITY MUSLIM MATRIMONY BIODATA</p>
+            </div>
+
+            {/* Profile Content Grid */}
+            <div className="grid grid-cols-3 gap-6 mb-6">
+              
+              {/* Info Column (Left 2 cols) */}
+              <div className="col-span-2 space-y-4">
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">Full Name</span>
+                  <p className="text-2xl font-black text-gray-900 leading-tight">{selectedUserForBiodata.name}</p>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">Age</span>
+                    <p className="font-semibold text-gray-800">{selectedUserForBiodata.age || '—'} Years</p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">Gender</span>
+                    <p className="font-semibold text-gray-800">{selectedUserForBiodata.gender || '—'}</p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">Marital Status</span>
+                    <p className="font-semibold text-gray-800">{selectedUserForBiodata.maritalStatus || '—'}</p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">Location</span>
+                    <p className="font-semibold text-gray-800">{selectedUserForBiodata.location || '—'}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Photo Column (Right 1 col) */}
+              <div className="flex flex-col items-center justify-start">
+                {selectedUserForBiodata.profilePhoto ? (
+                  <img
+                    src={selectedUserForBiodata.profilePhoto}
+                    alt={selectedUserForBiodata.name}
+                    className="w-32 h-40 object-cover rounded-xl border border-gray-200"
+                  />
+                ) : (
+                  <div className="w-32 h-40 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 flex flex-col items-center justify-center text-center p-2 text-gray-300">
+                    <svg className="w-10 h-10 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                    <span className="text-[10px] font-semibold uppercase">No Photo</span>
+                  </div>
+                )}
+              </div>
+
+            </div>
+
+            {/* Section: Professional Details */}
+            <div className="mb-6">
+              <h3 className="text-xs uppercase font-extrabold text-[#528033] tracking-widest border-b border-gray-100 pb-1.5 mb-3">Professional & Financial Details</h3>
+              <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">Education</span>
+                  <span className="text-gray-800 font-medium">{selectedUserForBiodata.education || '—'}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">Occupation / Job</span>
+                  <span className="text-gray-800 font-medium">{selectedUserForBiodata.job || selectedUserForBiodata.profession || '—'}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">Monthly/Annual Income</span>
+                  <span className="text-gray-800 font-medium">{selectedUserForBiodata.salary || '—'}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">Assets Details</span>
+                  <span className="text-gray-800 font-medium">{selectedUserForBiodata.assets || '—'}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Section: Contact Details */}
+            <div className="mb-6">
+              <h3 className="text-xs uppercase font-extrabold text-[#528033] tracking-widest border-b border-gray-100 pb-1.5 mb-3">Contact Information</h3>
+              <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">Mobile / Phone</span>
+                  <span className="text-gray-800 font-medium font-mono">{selectedUserForBiodata.phone || '—'}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">Email Address</span>
+                  <span className="text-gray-800 font-medium">{selectedUserForBiodata.email || '—'}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Section: About / Description */}
+            {selectedUserForBiodata.description && (
+              <div className="mb-6">
+                <h3 className="text-xs uppercase font-extrabold text-[#528033] tracking-widest border-b border-gray-100 pb-1.5 mb-2">About / Partner Expectations</h3>
+                <p className="text-sm text-gray-600 leading-relaxed italic bg-gray-50/50 p-4 rounded-xl border border-gray-100">
+                  "{selectedUserForBiodata.description}"
+                </p>
+              </div>
+            )}
+
+            {/* Footer stamp */}
+            <div className="mt-12 text-center text-[10px] text-gray-400 font-medium border-t border-gray-100 pt-4">
+              Generated on {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })} • Al Fattah Matrimony System
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* Printable CSS style tag overrides */}
+      {selectedUserForBiodata && (
+        <style dangerouslySetInnerHTML={{ __html: `
+          @media print {
+            body * {
+              visibility: hidden;
+            }
+            #printable-biodata, #printable-biodata * {
+              visibility: visible;
+            }
+            #printable-biodata {
+              position: absolute;
+              left: 0;
+              top: 0;
+              width: 100%;
+              background: white;
+            }
+          }
+        `}} />
+      )}
     </section>
   );
 }

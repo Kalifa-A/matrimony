@@ -43,7 +43,6 @@ export default function AdminDashboard() {
           </p>
         </div>
         <div className="relative z-10 flex items-center gap-3 bg-white/5 border border-white/10 px-4 py-3 rounded-2xl backdrop-blur-sm self-start md:self-auto">
-          <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse" />
           <div className="text-left">
             <p className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">System Status</p>
             <p className="text-xs font-bold text-white">Online & Operational</p>

@@ -39,6 +39,7 @@ export interface AdminUser {
   salary?: string;
   assets?: string;
   description?: string;
+  isOfflineProfile?: boolean;
 }
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000';
@@ -172,5 +173,21 @@ export async function unmarryUsers(user1Id: string, user2Id: string) {
     body: JSON.stringify({ husbandId: user1Id, wifeId: user2Id })
   });
   if (!res.ok) throw new Error('Failed to unmarry users');
+  return res.json();
+}
+
+export async function createOfflineUser(formData: FormData) {
+  const res = await fetch(`${API}/api/admin/create-offline-user`, {
+    method: 'POST',
+    headers: {
+      ...getAuthHeader()
+    },
+    credentials: 'include',
+    body: formData
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.message || 'Failed to create offline profile');
+  }
   return res.json();
 }

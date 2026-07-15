@@ -19,6 +19,7 @@ const UserSchema = new mongoose.Schema({
   isAdminApproved: { type: Boolean, default: false },
   hasPaid: { type: Boolean, default: false },
   isMarried: { type: Boolean, default: false },
+  isOfflineProfile: { type: Boolean, default: false },
   partner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
   // --- OTP Reset fields ---
   resetOtp: { type: String },

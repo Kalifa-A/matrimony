@@ -8,6 +8,7 @@ const Interest = require('../models/Interest');
 const SuccessStory = require('../models/SuccessStory');
 const Message = require('../models/Message');
 const { setAuthCookie, removeAuthCookie } = require('../utils/auth-cookies');
+const upload = require('../config/cloudinary');
 // ── Simple admin-secret guard for setup only ──────────────────────────────────────────────
 // One-time setup token logic
 const crypto = require('crypto');
@@ -519,6 +520,61 @@ router.post('/subscribe', authenticateAdmin, async (req, res) => {
   } catch (err) {
     console.error('Subscription error:', err.message);
     res.status(500).json({ message: 'Server Error' });
+  }
+});
+
+// ── POST /api/admin/create-offline-user ───────────────────────────────────
+router.post('/create-offline-user', authenticateAdmin, upload.single('profilePhoto'), async (req, res) => {
+  try {
+    const { name, age, maritalStatus, gender, job, location, education, salary, assets, description, phone } = req.body;
+
+    if (!name) {
+      return res.status(400).json({ message: 'Name is required.' });
+    }
+
+    // Generate a unique placeholder email
+    const placeholderEmail = `offline_${Date.now()}_${Math.random().toString(36).substr(2, 5)}@offline.alfattahnikkah.com`;
+    
+    // Generate a secure placeholder password (user will never use it as they can't login)
+    const crypto = require('crypto');
+    const randomPassword = crypto.randomBytes(16).toString('hex') + 'Offline1!';
+    const salt = await bcrypt.genSalt(12);
+    const hashedPassword = await bcrypt.hash(randomPassword, salt);
+
+    const user = new User({
+      name,
+      email: placeholderEmail,
+      password: hashedPassword,
+      age: age ? Number(age) : undefined,
+      maritalStatus: maritalStatus || '',
+      gender: gender || '',
+      job: job || '',
+      location: location || '',
+      education: education || '',
+      salary: salary || '',
+      assets: assets || '',
+      description: description || '',
+      phone: phone || '',
+      profilePhoto: req.file ? req.file.path : '',
+      isOfflineProfile: true,
+      isAdminApproved: true, // Offline profiles created by admin are auto-approved
+      hasPaid: true // Default to true so they are fully functional
+    });
+
+    await user.save();
+
+    res.status(201).json({
+      message: 'Offline profile created successfully.',
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        isOfflineProfile: user.isOfflineProfile
+      }
+    });
+  } catch (err) {
+    console.error('Create offline user error:', err);
+    res.status(500).json({ message: 'Server error.' });
   }
 });
 

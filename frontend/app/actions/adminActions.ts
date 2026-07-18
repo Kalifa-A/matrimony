@@ -40,6 +40,8 @@ export interface AdminUser {
   assets?: string;
   description?: string;
   isOfflineProfile?: boolean;
+  height?: string;
+  childrenCount?: number;
 }
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000';

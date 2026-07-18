@@ -24,6 +24,8 @@ interface UserProfile {
   profilePhoto: string;
   hasPaid: boolean;
   _id: string;
+  height?: string;
+  childrenCount?: number | string;
 }
 
 import { useToast } from '@/app/components/ToastProvider';
@@ -54,7 +56,9 @@ export default function MyAccount() {
     description: "",
     profilePhoto: "",
     hasPaid: false,
-    _id: ""
+    _id: "",
+    height: "",
+    childrenCount: ""
   });
 
   useEffect(() => {
@@ -277,6 +281,11 @@ export default function MyAccount() {
                   <EditableField label="Location" value={profile.location} icon={<MapPin size={16}/>} isEditing={isEditing} onChange={(val) => setProfile({...profile, location: val})} />
                   <EditableField label="Profession" value={profile.job} icon={<Briefcase size={16}/>} isEditing={isEditing} onChange={(val) => setProfile({...profile, job: val})} />
                   <EditableField label="Annual Salary" value={profile.salary} icon={<Banknote size={16}/>} isEditing={isEditing} onChange={(val) => setProfile({...profile, salary: val})} />
+                  <EditableField label="Height" value={profile.height || ''} icon={<ChevronRight size={16}/>} isEditing={isEditing} onChange={(val) => setProfile({...profile, height: val})} />
+                  
+                  {profile.maritalStatus === 'Widowed' && (
+                    <EditableField label="Children Count" value={profile.childrenCount || ''} icon={<User size={16}/>} isEditing={isEditing} type="number" onChange={(val) => setProfile({...profile, childrenCount: val})} />
+                  )}
                   
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 ml-1">
@@ -286,7 +295,14 @@ export default function MyAccount() {
                     {isEditing ? (
                       <select 
                         value={profile.maritalStatus}
-                        onChange={(e) => setProfile({...profile, maritalStatus: e.target.value})}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setProfile(prev => ({
+                            ...prev,
+                            maritalStatus: val,
+                            childrenCount: val === 'Widowed' ? prev.childrenCount : ''
+                          }));
+                        }}
                         className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm font-bold focus:ring-4 focus:ring-[#9AD872]/10 transition-all outline-none cursor-pointer"
                       >
                         <option>Single</option>

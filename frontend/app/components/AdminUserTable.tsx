@@ -81,6 +81,11 @@ export default function AdminUserTable({
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [selectedUserForBiodata, setSelectedUserForBiodata] = useState<AdminUser | null>(null);
 
+  // Location Suggestion States (Pincode API) for Offline Registration Form
+  const [pincodeSuggestions, setPincodeSuggestions] = useState<any[]>([]);
+  const [fetchingPincode, setFetchingPincode] = useState(false);
+  const [showPincodeSuggestions, setShowPincodeSuggestions] = useState(false);
+
   // ── Add Profile State ──────────────────────────────────
   const [showAddModal, setShowAddModal] = useState(false);
   const [formState, setFormState] = useState({
@@ -95,6 +100,8 @@ export default function AdminUserTable({
     salary: '',
     assets: '',
     description: '',
+    height: '',
+    childrenCount: '',
   });
   const [formPhoto, setFormPhoto] = useState<File | null>(null);
   const [formPhotoPreview, setFormPhotoPreview] = useState<string | null>(null);
@@ -127,6 +134,10 @@ export default function AdminUserTable({
       formData.append('salary', formState.salary);
       formData.append('assets', formState.assets);
       formData.append('description', formState.description);
+      if (formState.height) formData.append('height', formState.height);
+      if (formState.maritalStatus === 'Widowed' && formState.childrenCount) {
+        formData.append('childrenCount', formState.childrenCount);
+      }
       if (formPhoto) {
         formData.append('profilePhoto', formPhoto);
       }
@@ -147,7 +158,11 @@ export default function AdminUserTable({
         salary: '',
         assets: '',
         description: '',
+        height: '',
+        childrenCount: '',
       });
+      setPincodeSuggestions([]);
+      setShowPincodeSuggestions(false);
       setFormPhoto(null);
       setFormPhotoPreview(null);
       setShowAddModal(false);
@@ -188,6 +203,73 @@ export default function AdminUserTable({
     }, 400);
     return () => clearTimeout(timeout);
   }, [search]);
+
+  // Click outside handler for admin location suggestions picker
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      const container = document.getElementById('admin-location-picker-container');
+      if (container && !container.contains(e.target as Node)) {
+        setShowPincodeSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
+
+  const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setFormState(prev => ({ ...prev, location: value }));
+
+    if (/^\d{6}$/.test(value)) {
+      setFetchingPincode(true);
+      setShowPincodeSuggestions(true);
+      fetch(`https://api.postalpincode.in/pincode/${value}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data[0] && data[0].Status === 'Success') {
+            setPincodeSuggestions(data[0].PostOffice || []);
+          } else {
+            setPincodeSuggestions([]);
+          }
+        })
+        .catch(err => {
+          console.error('Error fetching pincode details:', err);
+          setPincodeSuggestions([]);
+        })
+        .finally(() => {
+          setFetchingPincode(false);
+        });
+    } else {
+      if (!/^\d+$/.test(value)) {
+        setShowPincodeSuggestions(false);
+      }
+    }
+  };
+
+  const handleLocationFocus = () => {
+    const value = formState.location;
+    if (/^\d{6}$/.test(value)) {
+      setShowPincodeSuggestions(true);
+      if (pincodeSuggestions.length === 0) {
+        setFetchingPincode(true);
+        fetch(`https://api.postalpincode.in/pincode/${value}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data && data[0] && data[0].Status === 'Success') {
+              setPincodeSuggestions(data[0].PostOffice || []);
+            }
+          })
+          .catch(err => console.error(err))
+          .finally(() => setFetchingPincode(false));
+      }
+    }
+  };
+
+  const handleSelectPincodeVillage = (postOffice: any) => {
+    const fullLocation = `${postOffice.Name}, ${postOffice.District}, ${postOffice.State}`;
+    setFormState(prev => ({ ...prev, location: fullLocation }));
+    setShowPincodeSuggestions(false);
+  };
 
   // ── Action handlers ────────────────────────────────────
   const handleApproveToggle = (user: AdminUser) => {
@@ -611,6 +693,10 @@ export default function AdminUserTable({
                   <DetailField label="Current Location" value={selectedUserForBiodata.location} />
                   <DetailField label="Gender" value={selectedUserForBiodata.gender} />
                   <DetailField label="Age" value={selectedUserForBiodata.age ? `${selectedUserForBiodata.age} Years` : null} />
+                  <DetailField label="Height" value={selectedUserForBiodata.height} />
+                  {selectedUserForBiodata.maritalStatus === 'Widowed' && (
+                    <DetailField label="Children Count" value={selectedUserForBiodata.childrenCount} />
+                  )}
                 </div>
               </div>
 
@@ -707,6 +793,16 @@ export default function AdminUserTable({
                     <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">Location</span>
                     <p className="font-semibold text-gray-800">{selectedUserForBiodata.location || '—'}</p>
                   </div>
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">Height</span>
+                    <p className="font-semibold text-gray-800">{selectedUserForBiodata.height || '—'}</p>
+                  </div>
+                  {selectedUserForBiodata.maritalStatus === 'Widowed' && (
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">Children Count</span>
+                      <p className="font-semibold text-gray-800">{selectedUserForBiodata.childrenCount ?? '0'}</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -940,16 +1036,101 @@ export default function AdminUserTable({
                   </select>
                 </div>
 
-                {/* Location */}
+                {/* Children Count (shown only if Widowed) */}
+                {formState.maritalStatus === 'Widowed' && (
+                  <div className="space-y-1.5 animate-fadeIn">
+                    <label className="text-xs uppercase font-extrabold text-gray-500 tracking-wider block">Children Count</label>
+                    <input 
+                      type="number"
+                      min="0"
+                      max="20"
+                      value={formState.childrenCount}
+                      onChange={(e) => setFormState({...formState, childrenCount: e.target.value})}
+                      placeholder="e.g. 2"
+                      className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-[#9AD872]/30 focus:border-[#9AD872] outline-none transition-all"
+                    />
+                  </div>
+                )}
+
+                {/* Height */}
                 <div className="space-y-1.5">
-                  <label className="text-xs uppercase font-extrabold text-gray-500 tracking-wider block">Current Location</label>
+                  <label className="text-xs uppercase font-extrabold text-gray-500 tracking-wider block">Height</label>
                   <input 
                     type="text"
-                    value={formState.location}
-                    onChange={(e) => setFormState({...formState, location: e.target.value})}
-                    placeholder="e.g. Chennai, Tamil Nadu"
+                    value={formState.height}
+                    onChange={(e) => setFormState({...formState, height: e.target.value})}
+                    placeholder="e.g. 5'6&quot; or 168 cm"
                     className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-[#9AD872]/30 focus:border-[#9AD872] outline-none transition-all"
                   />
+                </div>
+
+                {/* Location */}
+                <div className="space-y-1.5 relative" id="admin-location-picker-container">
+                  <label className="text-xs uppercase font-extrabold text-gray-500 tracking-wider block">Current Location / Pincode</label>
+                  <div className="relative">
+                    <input 
+                      type="text"
+                      value={formState.location}
+                      onChange={handleLocationChange}
+                      onFocus={handleLocationFocus}
+                      placeholder="Enter 6-digit Pincode (e.g. 621108)"
+                      autoComplete="off"
+                      className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-[#9AD872]/30 focus:border-[#9AD872] outline-none transition-all"
+                    />
+                    {formState.location && (
+                      <button 
+                        type="button" 
+                        onClick={() => {
+                          setFormState({ ...formState, location: '' });
+                          setPincodeSuggestions([]);
+                          setShowPincodeSuggestions(false);
+                        }} 
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
+                        title="Clear Location"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Suggestions Dropdown */}
+                  {showPincodeSuggestions && (
+                    <div className="absolute left-0 right-0 mt-1.5 bg-white border border-gray-100 rounded-2xl shadow-xl z-50 max-h-60 overflow-y-auto animate-in fade-in slide-in-from-top-1 duration-200">
+                      <div className="p-2">
+                        <div className="px-3 py-1.5 text-[10px] font-black uppercase text-gray-400 tracking-wider">
+                          Select Village / Post Office
+                        </div>
+                        {fetchingPincode ? (
+                          <div className="px-3 py-3 text-xs text-gray-500 flex items-center gap-2">
+                            <svg className="animate-spin h-4 w-4 text-[#9AD872]" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                            </svg>
+                            Searching villages for pincode...
+                          </div>
+                        ) : pincodeSuggestions.length === 0 ? (
+                          <div className="px-3 py-3 text-xs text-gray-400 italic">No villages found. Type a 6-digit Pincode.</div>
+                        ) : (
+                          pincodeSuggestions.map((postOffice, idx) => (
+                            <button
+                              key={idx}
+                              type="button"
+                              onClick={() => handleSelectPincodeVillage(postOffice)}
+                              className="w-full text-left px-3 py-2.5 hover:bg-gray-50 rounded-xl text-sm font-semibold text-gray-700 transition-colors flex items-center justify-between group"
+                            >
+                              <div className="flex flex-col">
+                                <span className="font-bold text-gray-800">{postOffice.Name}</span>
+                                <span className="text-[10px] text-gray-400 font-semibold">{postOffice.District}, {postOffice.State}</span>
+                              </div>
+                              <svg className="w-4 h-4 text-gray-300 group-hover:text-[#9AD872] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7"/></svg>
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Job */}

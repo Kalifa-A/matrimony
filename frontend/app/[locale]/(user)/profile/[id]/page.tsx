@@ -26,6 +26,7 @@ interface UserProfile {
   maritalStatus?: string;
   complexion?: string;
   height?: string;
+  childrenCount?: number | string;
 }
 
 export default function ProfileDetails() {
@@ -309,6 +310,12 @@ export default function ProfileDetails() {
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">{t('nativePlace')}</p>
                     <p className="text-gray-800 font-bold">{profile.location}</p>
                   </div>
+                  {profile.maritalStatus === 'Widowed' && (
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">{t('childrenCount')}</p>
+                      <p className="text-gray-800 font-bold">{profile.childrenCount ?? 0}</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

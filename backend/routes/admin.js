@@ -526,7 +526,7 @@ router.post('/subscribe', authenticateAdmin, async (req, res) => {
 // ── POST /api/admin/create-offline-user ───────────────────────────────────
 router.post('/create-offline-user', authenticateAdmin, upload.single('profilePhoto'), async (req, res) => {
   try {
-    const { name, age, maritalStatus, gender, job, location, education, salary, assets, description, phone } = req.body;
+    const { name, age, maritalStatus, gender, job, location, education, salary, assets, description, phone, height, childrenCount } = req.body;
 
     if (!name) {
       return res.status(400).json({ message: 'Name is required.' });
@@ -558,7 +558,9 @@ router.post('/create-offline-user', authenticateAdmin, upload.single('profilePho
       profilePhoto: req.file ? req.file.path : '',
       isOfflineProfile: true,
       isAdminApproved: true, // Offline profiles created by admin are auto-approved
-      hasPaid: true // Default to true so they are fully functional
+      hasPaid: true, // Default to true so they are fully functional
+      height: height || '',
+      childrenCount: maritalStatus === 'Widowed' && childrenCount ? Number(childrenCount) : 0
     });
 
     await user.save();

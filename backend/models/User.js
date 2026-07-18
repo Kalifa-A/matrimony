@@ -15,6 +15,8 @@ const UserSchema = new mongoose.Schema({
   description: { type: String },
   profilePhoto: { type: String, default: "" },
   gender: { type: String, default: "" },
+  height: { type: String, default: "" },
+  childrenCount: { type: Number, default: 0 },
   // --- Admin-controlled fields ---
   isAdminApproved: { type: Boolean, default: false },
   hasPaid: { type: Boolean, default: false },

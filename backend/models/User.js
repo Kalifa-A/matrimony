@@ -17,6 +17,7 @@ const UserSchema = new mongoose.Schema({
   gender: { type: String, default: "" },
   height: { type: String, default: "" },
   childrenCount: { type: Number, default: 0 },
+  community: { type: String, default: "Tamil Muslim" },
   // --- Admin-controlled fields ---
   isAdminApproved: { type: Boolean, default: false },
   hasPaid: { type: Boolean, default: false },

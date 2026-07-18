@@ -102,6 +102,7 @@ export default function AdminUserTable({
     description: '',
     height: '',
     childrenCount: '',
+    community: 'Tamil Muslim',
   });
   const [formPhoto, setFormPhoto] = useState<File | null>(null);
   const [formPhotoPreview, setFormPhotoPreview] = useState<string | null>(null);
@@ -138,6 +139,7 @@ export default function AdminUserTable({
       if (formState.maritalStatus === 'Widowed' && formState.childrenCount) {
         formData.append('childrenCount', formState.childrenCount);
       }
+      formData.append('community', formState.community);
       if (formPhoto) {
         formData.append('profilePhoto', formPhoto);
       }
@@ -160,6 +162,7 @@ export default function AdminUserTable({
         description: '',
         height: '',
         childrenCount: '',
+        community: 'Tamil Muslim',
       });
       setPincodeSuggestions([]);
       setShowPincodeSuggestions(false);
@@ -431,184 +434,149 @@ export default function AdminUserTable({
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[800px]">
-              <thead>
-                <tr className="bg-slate-50/50 border-b border-slate-100">
-                  <th className="px-6 py-4 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">
-                    User Details
-                  </th>
-                  <th className="px-6 py-4 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">
-                    Contact
-                  </th>
-                  <th className="px-6 py-4 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">
-                    Registered Date
-                  </th>
-                  <th className="px-6 py-4 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">
-                    Account Status
-                  </th>
-                  <th className="px-6 py-4 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest text-center">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-50">
-                {displayedUsers.map((user) => {
-                  const avatarGradient = user.gender === 'Male' 
-                    ? 'from-blue-400 to-indigo-500 shadow-blue-500/10' 
-                    : user.gender === 'Female' 
-                    ? 'from-pink-400 to-rose-500 shadow-rose-500/10' 
-                    : 'from-[#9AD872] to-emerald-500 shadow-[#9AD872]/10';
+          <>
+            {/* Desktop Table View */}
+            <div className="overflow-x-auto hidden md:block">
+              <table className="w-full text-left border-collapse min-w-[800px]">
+                <thead>
+                  <tr className="bg-slate-50/50 border-b border-slate-100">
+                    <th className="px-6 py-4 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">
+                      User Details
+                    </th>
+                    <th className="px-6 py-4 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">
+                      Contact
+                    </th>
+                    <th className="px-6 py-4 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">
+                      Registered Date
+                    </th>
+                    <th className="px-6 py-4 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">
+                      Account Status
+                    </th>
+                    <th className="px-6 py-4 text-[10px] font-extrabold text-slate-500 uppercase tracking-widest text-center">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {displayedUsers.map((user) => {
+                    const avatarGradient = user.gender === 'Male' 
+                      ? 'from-blue-400 to-indigo-500 shadow-blue-500/10' 
+                      : user.gender === 'Female' 
+                      ? 'from-pink-400 to-rose-500 shadow-rose-500/10' 
+                      : 'from-[#9AD872] to-emerald-500 shadow-[#9AD872]/10';
 
-                  return (
-                    <tr
-                      key={user._id}
-                      className="hover:bg-slate-50/40 transition-colors"
-                    >
-                      {/* User Info */}
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${avatarGradient} flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-sm`}>
-                            {user.name?.[0]?.toUpperCase() || '?'}
-                          </div>
-                          <div>
-                            <p 
-                              onClick={() => setSelectedUserForBiodata(user)}
-                              className="font-bold text-gray-900 text-sm hover:text-[#9AD872] cursor-pointer transition-colors"
-                              title="Click to view full biodata"
-                            >
-                              {user.name}
-                            </p>
-                            <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                              {user.isOfflineProfile && (
-                                <span className="px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200">
-                                  Offline Profile
+                    return (
+                      <tr
+                        key={user._id}
+                        className="hover:bg-slate-50/40 transition-colors"
+                      >
+                        {/* User Info */}
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${avatarGradient} flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-sm`}>
+                              {user.name?.[0]?.toUpperCase() || '?'}
+                            </div>
+                            <div>
+                              <p 
+                                onClick={() => setSelectedUserForBiodata(user)}
+                                className="font-bold text-gray-900 text-sm hover:text-[#9AD872] cursor-pointer transition-colors"
+                                title="Click to view full biodata"
+                              >
+                                {user.name}
+                              </p>
+                              <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                                {user.isOfflineProfile && (
+                                  <span className="px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200">
+                                    Offline Profile
+                                  </span>
+                                )}
+                                {user.gender && (
+                                  <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-wider ${
+                                    user.gender === 'Male' ? 'bg-blue-50 text-blue-600' : 'bg-pink-50 text-pink-600'
+                                  }`}>
+                                    {user.gender}
+                                  </span>
+                                )}
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-50 text-slate-500 rounded-lg text-[9px] font-extrabold border border-slate-100">
+                                  <svg className="w-2.5 h-2.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                  {user.location || '—'}
                                 </span>
-                              )}
-                              {user.gender && (
-                                <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-wider ${
-                                  user.gender === 'Male' ? 'bg-blue-50 text-blue-600' : 'bg-pink-50 text-pink-600'
-                                }`}>
-                                  {user.gender}
-                                </span>
-                              )}
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-50 text-slate-500 rounded-lg text-[9px] font-extrabold border border-slate-100">
-                                <svg className="w-2.5 h-2.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                                {user.location || '—'}
-                              </span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </td>
+                        </td>
 
-                      {/* Phone */}
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-1.5 font-mono text-xs font-semibold text-slate-700 bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-xl w-fit">
-                          <svg className="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
-                          {user.phone || '—'}
-                        </div>
-                      </td>
-
-                      {/* Date */}
-                      <td className="px-6 py-4 text-xs">
-                        <div className="flex items-center gap-1.5 text-gray-500 font-bold">
-                          <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                          {formatDate(user.createdAt)}
-                        </div>
-                        {user.createdAt && (
-                          <div className="text-[10px] text-gray-400 font-medium ml-5 mt-0.5">
-                            {new Date(user.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                        {/* Phone */}
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-1.5 font-mono text-xs font-semibold text-slate-700 bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-xl w-fit">
+                            <svg className="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                            {user.phone || '—'}
                           </div>
-                        )}
-                      </td>
+                        </td>
 
-                      {/* Status Badge */}
-                      <td className="px-6 py-4">
-                        {simplifiedStatus ? (
-                          user.isAdminApproved && user.hasPaid ? (
+                        {/* Date */}
+                        <td className="px-6 py-4 text-xs">
+                          <div className="flex items-center gap-1.5 text-gray-500 font-bold">
+                            <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            {formatDate(user.createdAt)}
+                          </div>
+                          {user.createdAt && (
+                            <div className="text-[10px] text-gray-400 font-medium ml-5 mt-0.5">
+                              {new Date(user.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                          )}
+                        </td>
+
+                        {/* Status Badge */}
+                        <td className="px-6 py-4">
+                          {simplifiedStatus ? (
+                            user.isAdminApproved && user.hasPaid ? (
+                              <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-xl border border-emerald-100 w-fit">
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4" /></svg>
+                                <span className="text-[10px] font-black uppercase tracking-wider">Verified</span>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-1.5 bg-orange-50 text-orange-600 px-3 py-1.5 rounded-xl border border-orange-100 w-fit">
+                                <svg className="w-3.5 h-3.5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <span className="text-[10px] font-black uppercase tracking-wider">Pending</span>
+                              </div>
+                            )
+                          ) : onlyVerified ? (
                             <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-xl border border-emerald-100 w-fit">
                               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4" /></svg>
                               <span className="text-[10px] font-black uppercase tracking-wider">Verified</span>
                             </div>
                           ) : (
-                            <div className="flex items-center gap-1.5 bg-orange-50 text-orange-600 px-3 py-1.5 rounded-xl border border-orange-100 w-fit">
-                              <svg className="w-3.5 h-3.5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                              <span className="text-[10px] font-black uppercase tracking-wider">Pending</span>
+                            <div className="flex flex-col gap-2 max-w-[140px]">
+                              <div className="flex items-center justify-between gap-3 bg-slate-50/50 p-2 rounded-2xl border border-slate-100/80">
+                                <span className="text-[9px] font-extrabold uppercase text-slate-400 tracking-wider">Verify</span>
+                                <Toggle 
+                                  enabled={user.isAdminApproved} 
+                                  onToggle={() => handleApproveToggle(user)} 
+                                  pending={actionInProgress === user._id + '-approve'} 
+                                />
+                              </div>
+                              <div className="flex items-center justify-between gap-3 bg-slate-50/50 p-2 rounded-2xl border border-slate-100/80">
+                                <span className="text-[9px] font-extrabold uppercase text-slate-400 tracking-wider">Payment</span>
+                                <Toggle 
+                                  enabled={user.hasPaid} 
+                                  onToggle={() => handlePaymentToggle(user)} 
+                                  pending={actionInProgress === user._id + '-payment'} 
+                                  colorOn="bg-blue-500"
+                                />
+                              </div>
                             </div>
-                          )
-                        ) : onlyVerified ? (
-                          <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-xl border border-emerald-100 w-fit">
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4" /></svg>
-                            <span className="text-[10px] font-black uppercase tracking-wider">Verified</span>
-                          </div>
-                        ) : (
-                          <div className="flex flex-col gap-2 max-w-[140px]">
-                            <div className="flex items-center justify-between gap-3 bg-slate-50/50 p-2 rounded-2xl border border-slate-100/80">
-                              <span className="text-[9px] font-extrabold uppercase text-slate-400 tracking-wider">Verify</span>
-                              <Toggle 
-                                enabled={user.isAdminApproved} 
-                                onToggle={() => handleApproveToggle(user)} 
-                                pending={actionInProgress === user._id + '-approve'} 
-                              />
-                            </div>
-                            <div className="flex items-center justify-between gap-3 bg-slate-50/50 p-2 rounded-2xl border border-slate-100/80">
-                              <span className="text-[9px] font-extrabold uppercase text-slate-400 tracking-wider">Payment</span>
-                              <Toggle 
-                                enabled={user.hasPaid} 
-                                onToggle={() => handlePaymentToggle(user)} 
-                                pending={actionInProgress === user._id + '-payment'} 
-                                colorOn="bg-blue-500"
-                              />
-                            </div>
-                          </div>
-                        )}
-                      </td>
+                          )}
+                        </td>
 
-                      {/* Actions */}
-                      <td className="px-6 py-4 text-center">
-                        <div className="flex items-center justify-center gap-2">
-                          {/* View Biodata Button */}
-                          <button
-                            onClick={() => setSelectedUserForBiodata(user)}
-                            className="p-2.5 rounded-xl bg-[#9AD872]/15 text-[#5e9637] hover:bg-[#9AD872]/25 hover:text-[#4a772b] hover:scale-105 active:scale-95 transition-all shadow-sm shadow-[#9AD872]/5"
-                            title="View Biodata"
-                          >
-                            <svg
-                              width="16"
-                              height="16"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                              strokeWidth="2.5"
-                            >
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                          </button>
-
-                          {deleteConfirm === user._id ? (
-                            <div className="flex items-center justify-center gap-1.5">
-                              <button
-                                onClick={() => handleDelete(user._id)}
-                                disabled={actionInProgress === user._id + '-delete'}
-                                className="text-[10px] font-black uppercase bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-red-600 hover:scale-105 active:scale-95 transition-all shadow-sm shadow-red-500/10 disabled:opacity-50"
-                              >
-                                {actionInProgress === user._id + '-delete'
-                                  ? 'Deleting…'
-                                  : 'Confirm'}
-                              </button>
-                              <button
-                                onClick={() => setDeleteConfirm(null)}
-                                className="text-[10px] font-black uppercase bg-gray-100 text-gray-500 px-3 py-1.5 rounded-lg hover:bg-gray-200 transition-all"
-                              >
-                                Cancel
-                              </button>
-                            </div>
-                          ) : (
+                        {/* Actions */}
+                        <td className="px-6 py-4 text-center">
+                          <div className="flex items-center justify-center gap-2">
+                            {/* View Biodata Button */}
                             <button
-                              onClick={() => setDeleteConfirm(user._id)}
-                              className="p-2.5 rounded-xl bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-500 hover:scale-105 active:scale-95 transition-all shadow-sm shadow-red-100"
-                              title="Delete user"
+                              onClick={() => setSelectedUserForBiodata(user)}
+                              className="p-2.5 rounded-xl bg-[#9AD872]/15 text-[#5e9637] hover:bg-[#9AD872]/25 hover:text-[#4a772b] hover:scale-105 active:scale-95 transition-all shadow-sm shadow-[#9AD872]/5"
+                              title="View Biodata"
                             >
                               <svg
                                 width="16"
@@ -616,20 +584,202 @@ export default function AdminUserTable({
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
-                                strokeWidth="2"
+                                strokeWidth="2.5"
                               >
-                                <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                               </svg>
                             </button>
-                          )}
+
+                            {deleteConfirm === user._id ? (
+                              <div className="flex items-center justify-center gap-1.5">
+                                <button
+                                  onClick={() => handleDelete(user._id)}
+                                  disabled={actionInProgress === user._id + '-delete'}
+                                  className="text-[10px] font-black uppercase bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-red-600 hover:scale-105 active:scale-95 transition-all shadow-sm shadow-red-500/10 disabled:opacity-50"
+                                >
+                                  {actionInProgress === user._id + '-delete'
+                                    ? 'Deleting…'
+                                    : 'Confirm'}
+                                </button>
+                                <button
+                                  onClick={() => setDeleteConfirm(null)}
+                                  className="text-[10px] font-black uppercase bg-gray-100 text-gray-500 px-3 py-1.5 rounded-lg hover:bg-gray-200 transition-all"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => setDeleteConfirm(user._id)}
+                                className="p-2.5 rounded-xl bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-500 hover:scale-105 active:scale-95 transition-all shadow-sm shadow-red-100"
+                                title="Delete user"
+                              >
+                                <svg
+                                  width="16"
+                                  height="16"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                  strokeWidth="2"
+                                >
+                                  <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                </svg>
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Stacked Card View */}
+            <div className="md:hidden divide-y divide-slate-100">
+              {displayedUsers.map((user) => {
+                const avatarGradient = user.gender === 'Male' 
+                  ? 'from-blue-400 to-indigo-500 shadow-blue-500/10' 
+                  : user.gender === 'Female' 
+                  ? 'from-pink-400 to-rose-500 shadow-rose-500/10' 
+                  : 'from-[#9AD872] to-emerald-500 shadow-[#9AD872]/10';
+
+                return (
+                  <div key={user._id} className="p-4 space-y-4 hover:bg-slate-50/20 transition-colors">
+                    {/* User Header */}
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${avatarGradient} flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-sm`}>
+                        {user.name?.[0]?.toUpperCase() || '?'}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p 
+                          onClick={() => setSelectedUserForBiodata(user)}
+                          className="font-bold text-gray-900 text-sm hover:text-[#9AD872] cursor-pointer transition-colors truncate"
+                        >
+                          {user.name}
+                        </p>
+                        <p className="text-[10px] text-gray-400 font-medium">
+                          Joined {formatDate(user.createdAt)}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Badges */}
+                    <div className="flex flex-wrap gap-1.5">
+                      {user.isOfflineProfile && (
+                        <span className="px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-200">
+                          Offline Profile
+                        </span>
+                      )}
+                      {user.gender && (
+                        <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black uppercase tracking-wider ${
+                          user.gender === 'Male' ? 'bg-blue-50 text-blue-600' : 'bg-pink-50 text-pink-600'
+                        }`}>
+                          {user.gender}
+                        </span>
+                      )}
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-50 text-slate-500 rounded-lg text-[9px] font-extrabold border border-slate-100">
+                        <svg className="w-2.5 h-2.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                        {user.location || '—'}
+                      </span>
+                    </div>
+
+                    {/* Contact & Status details */}
+                    <div className="grid grid-cols-2 gap-3 pt-2">
+                      <div className="bg-slate-50 border border-slate-100 px-3 py-2 rounded-xl text-left">
+                        <span className="text-[9px] font-black uppercase text-gray-400 block mb-0.5">Phone</span>
+                        <span className="text-xs font-mono font-bold text-slate-700">{user.phone || '—'}</span>
+                      </div>
+                      <div className="bg-slate-50 border border-slate-100 px-3 py-2 rounded-xl text-left">
+                        <span className="text-[9px] font-black uppercase text-gray-400 block mb-0.5">Status</span>
+                        {user.isAdminApproved && user.hasPaid ? (
+                          <span className="text-[10px] font-black uppercase text-emerald-600">Verified</span>
+                        ) : (
+                          <span className="text-[10px] font-black uppercase text-orange-600">Pending</span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Action Controls & Settings */}
+                    <div className="flex flex-col gap-3 pt-2">
+                      {/* Approvals Toggles */}
+                      {!simplifiedStatus && (
+                        <div className="flex items-center justify-between gap-3 bg-slate-50/50 p-2.5 rounded-2xl border border-slate-100/80 flex-1">
+                          <div className="flex flex-col text-left">
+                            <span className="text-[9px] font-black uppercase text-slate-400 tracking-wider font-sans">Approved</span>
+                            <span className="text-[10px] font-bold text-gray-500">{user.isAdminApproved ? 'Yes' : 'No'}</span>
+                          </div>
+                          <Toggle 
+                            enabled={user.isAdminApproved} 
+                            onToggle={() => handleApproveToggle(user)} 
+                            pending={actionInProgress === user._id + '-approve'} 
+                          />
                         </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                      )}
+
+                      {!simplifiedStatus && (
+                        <div className="flex items-center justify-between gap-3 bg-slate-50/50 p-2.5 rounded-2xl border border-slate-100/80 flex-1">
+                          <div className="flex flex-col text-left">
+                            <span className="text-[9px] font-black uppercase text-slate-400 tracking-wider font-sans">Payment Status</span>
+                            <span className="text-[10px] font-bold text-gray-500">{user.hasPaid ? 'Paid' : 'Unpaid'}</span>
+                          </div>
+                          <Toggle 
+                            enabled={user.hasPaid} 
+                            onToggle={() => handlePaymentToggle(user)} 
+                            pending={actionInProgress === user._id + '-payment'} 
+                            colorOn="bg-blue-500"
+                          />
+                        </div>
+                      )}
+
+                      {/* Action Buttons */}
+                      <div className="flex items-center justify-end gap-2.5 pt-1">
+                        <button
+                          onClick={() => setSelectedUserForBiodata(user)}
+                          className="p-3 rounded-xl bg-[#9AD872]/15 text-[#5e9637] hover:bg-[#9AD872]/25 hover:text-[#4a772b] flex-1 flex items-center justify-center gap-1.5 transition-all text-xs font-bold shadow-sm shadow-[#9AD872]/5"
+                        >
+                          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                          <span>View Biodata</span>
+                        </button>
+
+                        {deleteConfirm === user._id ? (
+                          <div className="flex items-center gap-1.5 flex-1">
+                            <button
+                              onClick={() => handleDelete(user._id)}
+                              disabled={actionInProgress === user._id + '-delete'}
+                              className="text-[10px] font-black uppercase bg-red-500 text-white py-3 px-3 rounded-xl hover:bg-red-600 transition-all flex-1"
+                            >
+                              {actionInProgress === user._id + '-delete' ? 'Deleting…' : 'Delete'}
+                            </button>
+                            <button
+                              onClick={() => setDeleteConfirm(null)}
+                              className="text-[10px] font-black uppercase bg-gray-100 text-gray-500 py-3 px-3 rounded-xl hover:bg-gray-200 transition-all"
+                            >
+                              X
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => setDeleteConfirm(user._id)}
+                            className="p-3 rounded-xl bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-500 transition-all shadow-sm"
+                            title="Delete user"
+                          >
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                              <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
         )}
       </div>
 
@@ -694,6 +844,7 @@ export default function AdminUserTable({
                   <DetailField label="Gender" value={selectedUserForBiodata.gender} />
                   <DetailField label="Age" value={selectedUserForBiodata.age ? `${selectedUserForBiodata.age} Years` : null} />
                   <DetailField label="Height" value={selectedUserForBiodata.height} />
+                  <DetailField label="Community" value={selectedUserForBiodata.community || 'Tamil Muslim'} />
                   {selectedUserForBiodata.maritalStatus === 'Widowed' && (
                     <DetailField label="Children Count" value={selectedUserForBiodata.childrenCount} />
                   )}
@@ -757,128 +908,132 @@ export default function AdminUserTable({
 
       {/* ───────────────────── PRINTABLE BIODATA SHEET ───────────────────── */}
       {selectedUserForBiodata && (
-        <div id="printable-biodata" className="hidden print:block absolute inset-0 bg-white text-black p-8 z-[9999] w-full font-sans">
-          <div className="max-w-3xl mx-auto border-4 border-double border-gray-300 p-8 rounded-2xl bg-white">
-            
-            {/* Header Banner */}
-            <div className="text-center border-b-2 border-gray-200 pb-6 mb-6">
-              <h1 className="text-3xl font-extrabold text-[#528033] tracking-wide uppercase">Al Fattah Matrimony</h1>
-              <p className="text-[10px] text-gray-400 font-bold tracking-widest mt-1 uppercase">COMMUNITY MUSLIM MATRIMONY BIODATA</p>
+        <div id="printable-biodata" className="hidden print:block absolute inset-0 bg-white text-gray-800 z-[9999] w-[210mm] min-h-[297mm] font-sans border border-gray-200 rounded-[2rem] overflow-hidden p-0 relative shadow-lg">
+          {/* Header Block */}
+          <div className="bg-[#0b5e28] text-white p-8 relative">
+            <div className="flex items-center gap-6 border-b border-white/20 pb-5">
+              <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center p-1 shrink-0 shadow-md">
+                <img src="/favicon.png" alt="Logo" className="w-12 h-12 object-contain" />
+              </div>
+              <div className="text-left space-y-1">
+                <h1 className="text-3xl font-serif font-black tracking-wide text-white uppercase">Al Fattah Matrimony</h1>
+                <p className="text-[10px] font-bold text-emerald-100/90 tracking-widest font-sans">
+                  alfattahnikkah.com | Find Your Righteous Life Partner
+                </p>
+              </div>
             </div>
+            <div className="text-center pt-4">
+              <h2 className="text-base font-black uppercase tracking-[0.25em] text-white">
+                {selectedUserForBiodata.gender === 'Male' ? 'Groom Profile' : 'Bride Profile'}
+              </h2>
+            </div>
+          </div>
 
-            {/* Profile Content Grid */}
-            <div className="grid grid-cols-3 gap-6 mb-6">
-              
-              {/* Info Column (Left 2 cols) */}
-              <div className="col-span-2 space-y-4">
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">Full Name</span>
-                  <p className="text-2xl font-black text-gray-900 leading-tight">{selectedUserForBiodata.name}</p>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">Age</span>
-                    <p className="font-semibold text-gray-800">{selectedUserForBiodata.age || '—'} Years</p>
-                  </div>
-                  <div>
-                    <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">Gender</span>
-                    <p className="font-semibold text-gray-800">{selectedUserForBiodata.gender || '—'}</p>
-                  </div>
-                  <div>
-                    <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">Marital Status</span>
-                    <p className="font-semibold text-gray-800">{selectedUserForBiodata.maritalStatus || '—'}</p>
-                  </div>
-                  <div>
-                    <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">Location</span>
-                    <p className="font-semibold text-gray-800">{selectedUserForBiodata.location || '—'}</p>
-                  </div>
-                  <div>
-                    <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">Height</span>
-                    <p className="font-semibold text-gray-800">{selectedUserForBiodata.height || '—'}</p>
-                  </div>
+          {/* Watermark Diagonal Overlay */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden z-0 opacity-[0.025]">
+            <span className="text-gray-900 text-6xl font-black uppercase tracking-[0.25em] -rotate-45 whitespace-nowrap">
+              Al Fattah Matrimony
+            </span>
+          </div>
+
+          {/* Body content */}
+          <div className="p-8 space-y-8 relative z-10">
+            {/* PERSONAL DETAILS */}
+            <div className="space-y-3">
+              <div className="bg-[#e2efda] py-2 px-4 rounded-lg">
+                <h3 className="text-xs font-black uppercase tracking-wider text-[#0b5e28]">PERSONAL DETAILS</h3>
+              </div>
+              <div className="grid grid-cols-12 gap-y-3.5 gap-x-4 py-2 px-2 text-xs">
+                <div className={selectedUserForBiodata.profilePhoto ? "col-span-8 grid grid-cols-8 gap-y-3.5 gap-x-4" : "col-span-12 grid grid-cols-12 gap-y-3.5 gap-x-4"}>
+                  <div className="col-span-3 text-slate-500 font-bold uppercase tracking-wider">Full Name:</div>
+                  <div className="col-span-5 font-black text-gray-800 text-sm uppercase">{selectedUserForBiodata.name}</div>
+                  
+                  <div className="col-span-3 text-slate-500 font-bold uppercase tracking-wider">Age:</div>
+                  <div className="col-span-5 font-bold text-gray-700 text-sm">{selectedUserForBiodata.age || '—'} Years</div>
+                  
+                  <div className="col-span-3 text-slate-500 font-bold uppercase tracking-wider">Height:</div>
+                  <div className="col-span-5 font-bold text-gray-700 text-sm">{selectedUserForBiodata.height || '—'}</div>
+                  
+                  <div className="col-span-3 text-slate-500 font-bold uppercase tracking-wider">Community:</div>
+                  <div className="col-span-5 font-bold text-gray-700 text-sm">{selectedUserForBiodata.community || 'Tamil Muslim'}</div>
+
+                  <div className="col-span-3 text-slate-500 font-bold uppercase tracking-wider">Marital Status:</div>
+                  <div className="col-span-5 font-bold text-gray-700 text-sm">{selectedUserForBiodata.maritalStatus || '—'}</div>
+
                   {selectedUserForBiodata.maritalStatus === 'Widowed' && (
-                    <div>
-                      <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">Children Count</span>
-                      <p className="font-semibold text-gray-800">{selectedUserForBiodata.childrenCount ?? '0'}</p>
-                    </div>
+                    <>
+                      <div className="col-span-3 text-slate-500 font-bold uppercase tracking-wider">Children Count:</div>
+                      <div className="col-span-5 font-bold text-gray-700 text-sm">{selectedUserForBiodata.childrenCount ?? '0'}</div>
+                    </>
                   )}
                 </div>
-              </div>
-
-              {/* Photo Column (Right 1 col) */}
-              <div className="flex flex-col items-center justify-start">
-                {selectedUserForBiodata.profilePhoto ? (
-                  <img
-                    src={selectedUserForBiodata.profilePhoto}
-                    alt={selectedUserForBiodata.name}
-                    className="w-32 h-40 object-cover rounded-xl border border-gray-200"
-                  />
-                ) : (
-                  <div className="w-32 h-40 rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 flex flex-col items-center justify-center text-center p-2 text-gray-300">
-                    <svg className="w-10 h-10 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                    <span className="text-[10px] font-semibold uppercase">No Photo</span>
+                {selectedUserForBiodata.profilePhoto && (
+                  <div className="col-span-4 flex justify-end items-start">
+                    <img 
+                      src={selectedUserForBiodata.profilePhoto} 
+                      alt={selectedUserForBiodata.name} 
+                      className="w-32 h-40 object-cover rounded-xl border border-slate-200 p-1 bg-white shadow-sm" 
+                    />
                   </div>
                 )}
               </div>
-
             </div>
 
-            {/* Section: Professional Details */}
-            <div className="mb-6">
-              <h3 className="text-xs uppercase font-extrabold text-[#528033] tracking-widest border-b border-gray-100 pb-1.5 mb-3">Professional & Financial Details</h3>
-              <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">Education</span>
-                  <span className="text-gray-800 font-medium">{selectedUserForBiodata.education || '—'}</span>
-                </div>
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">Occupation / Job</span>
-                  <span className="text-gray-800 font-medium">{selectedUserForBiodata.job || selectedUserForBiodata.profession || '—'}</span>
-                </div>
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">Monthly/Annual Income</span>
-                  <span className="text-gray-800 font-medium">{selectedUserForBiodata.salary || '—'}</span>
-                </div>
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">Assets Details</span>
-                  <span className="text-gray-800 font-medium">{selectedUserForBiodata.assets || '—'}</span>
-                </div>
+            {/* EDUCATION & CAREER */}
+            <div className="space-y-3">
+              <div className="bg-[#e2efda] py-2 px-4 rounded-lg">
+                <h3 className="text-xs font-black uppercase tracking-wider text-[#0b5e28]">EDUCATION & CAREER</h3>
+              </div>
+              <div className="grid grid-cols-12 gap-y-3.5 gap-x-4 py-2 px-2 text-xs">
+                <div className="col-span-3 text-slate-500 font-bold uppercase tracking-wider">Education:</div>
+                <div className="col-span-9 font-bold text-gray-700 text-sm">{selectedUserForBiodata.education || '—'}</div>
+                
+                <div className="col-span-3 text-slate-500 font-bold uppercase tracking-wider">Occupation:</div>
+                <div className="col-span-9 font-bold text-gray-700 text-sm">{selectedUserForBiodata.job || selectedUserForBiodata.profession || '—'}</div>
+                
+                <div className="col-span-3 text-slate-500 font-bold uppercase tracking-wider">Income:</div>
+                <div className="col-span-9 font-bold text-gray-700 text-sm">{selectedUserForBiodata.salary || '—'}</div>
               </div>
             </div>
 
-            {/* Section: Contact Details */}
-            <div className="mb-6">
-              <h3 className="text-xs uppercase font-extrabold text-[#528033] tracking-widest border-b border-gray-100 pb-1.5 mb-3">Contact Information</h3>
-              <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">Mobile / Phone</span>
-                  <span className="text-gray-800 font-medium font-mono">{selectedUserForBiodata.phone || '—'}</span>
-                </div>
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider block">Email Address</span>
-                  <span className="text-gray-800 font-medium">
-                    {selectedUserForBiodata.isOfflineProfile ? "Admin Managed (No Login)" : selectedUserForBiodata.email || '—'}
-                  </span>
-                </div>
+            {/* FAMILY DETAILS & ASSETS */}
+            <div className="space-y-3">
+              <div className="bg-[#e2efda] py-2 px-4 rounded-lg">
+                <h3 className="text-xs font-black uppercase tracking-wider text-[#0b5e28]">FAMILY DETAILS & ASSETS</h3>
+              </div>
+              <div className="grid grid-cols-12 gap-y-3.5 gap-x-4 py-2 px-2 text-xs">
+                <div className="col-span-3 text-slate-500 font-bold uppercase tracking-wider">Assets & Property:</div>
+                <div className="col-span-9 font-bold text-gray-700 text-sm">{selectedUserForBiodata.assets || '—'}</div>
+                
+                <div className="col-span-3 text-slate-500 font-bold uppercase tracking-wider">Expectations:</div>
+                <div className="col-span-9 font-bold text-gray-700 text-sm leading-relaxed">{selectedUserForBiodata.description || '—'}</div>
               </div>
             </div>
 
-            {/* Section: About / Description */}
-            {selectedUserForBiodata.description && (
-              <div className="mb-6">
-                <h3 className="text-xs uppercase font-extrabold text-[#528033] tracking-widest border-b border-gray-100 pb-1.5 mb-2">About / Partner Expectations</h3>
-                <p className="text-sm text-gray-600 leading-relaxed italic bg-gray-50/50 p-4 rounded-xl border border-gray-100">
-                  &ldquo;{selectedUserForBiodata.description}&rdquo;
-                </p>
+            {/* ADDRESS & CONTACT */}
+            <div className="space-y-3">
+              <div className="bg-[#e2efda] py-2 px-4 rounded-lg">
+                <h3 className="text-xs font-black uppercase tracking-wider text-[#0b5e28]">ADDRESS & CONTACT</h3>
               </div>
-            )}
-
-            {/* Footer stamp */}
-            <div className="mt-12 text-center text-[10px] text-gray-400 font-medium border-t border-gray-100 pt-4">
-              Generated on {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })} • Al Fattah Matrimony System
+              <div className="grid grid-cols-12 gap-y-3.5 gap-x-4 py-2 px-2 text-xs">
+                <div className="col-span-3 text-slate-500 font-bold uppercase tracking-wider">Full Address:</div>
+                <div className="col-span-9 font-bold text-gray-700 text-sm">{selectedUserForBiodata.location || '—'}</div>
+                
+                <div className="col-span-3 text-slate-500 font-bold uppercase tracking-wider">Phone / WhatsApp:</div>
+                <div className="col-span-9 font-bold text-gray-700 text-sm font-mono">{selectedUserForBiodata.phone || '—'}</div>
+                
+                <div className="col-span-3 text-slate-500 font-bold uppercase tracking-wider">Email Address:</div>
+                <div className="col-span-9 font-bold text-gray-700 text-sm">
+                  {selectedUserForBiodata.isOfflineProfile ? "Admin Managed (No Login)" : selectedUserForBiodata.email || '—'}
+                </div>
+              </div>
             </div>
+          </div>
 
+          {/* Footer Block */}
+          <div className="bg-[#0b5e28] text-white py-3 px-8 flex justify-between items-center text-[10px] font-bold tracking-wider font-sans uppercase">
+            <span>© Al Fattah Matrimony | alfattahnikkah.com</span>
+            <span>Page 1 of 1</span>
           </div>
         </div>
       )}
@@ -1022,17 +1177,37 @@ export default function AdminUserTable({
                   />
                 </div>
 
-                {/* Marital Status */}
+                 {/* Marital Status */}
                 <div className="space-y-1.5">
                   <label className="text-xs uppercase font-extrabold text-gray-500 tracking-wider block">Marital Status</label>
                   <select 
                     value={formState.maritalStatus}
-                    onChange={(e) => setFormState({...formState, maritalStatus: e.target.value})}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setFormState(prev => ({
+                        ...prev,
+                        maritalStatus: val,
+                        childrenCount: val === 'Widowed' ? prev.childrenCount : ''
+                      }));
+                    }}
                     className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-[#9AD872]/30 focus:border-[#9AD872] outline-none transition-all"
                   >
                     <option value="Single">Single</option>
                     <option value="Divorced">Divorced</option>
                     <option value="Widowed">Widowed</option>
+                  </select>
+                </div>
+
+                {/* Community */}
+                <div className="space-y-1.5">
+                  <label className="text-xs uppercase font-extrabold text-gray-500 tracking-wider block">Community</label>
+                  <select 
+                    value={formState.community}
+                    onChange={(e) => setFormState({...formState, community: e.target.value})}
+                    className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-2.5 text-sm focus:bg-white focus:ring-2 focus:ring-[#9AD872]/30 focus:border-[#9AD872] outline-none transition-all"
+                  >
+                    <option value="Tamil Muslim">Tamil Muslim</option>
+                    <option value="Urdu Muslim">Urdu Muslim</option>
                   </select>
                 </div>
 
@@ -1222,6 +1397,10 @@ export default function AdminUserTable({
       {/* Printable CSS style tag overrides */}
       {selectedUserForBiodata && (
         <style dangerouslySetInnerHTML={{ __html: `
+          @page {
+            size: A4 portrait;
+            margin: 10mm;
+          }
           @media print {
             body * {
               visibility: hidden;
@@ -1235,6 +1414,10 @@ export default function AdminUserTable({
               top: 0;
               width: 100%;
               background: white;
+              padding: 0;
+              margin: 0;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
             }
           }
         `}} />

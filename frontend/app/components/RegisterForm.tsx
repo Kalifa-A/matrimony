@@ -26,7 +26,10 @@ export default function RegisterForm() {
     name: '',
     age: '',
     maritalStatus: 'Single',
+    childrenCount: '',
     gender: 'Male',
+    height: '',
+    community: 'Tamil Muslim',
     // professional
     education: '',
     job: '',
@@ -140,7 +143,7 @@ export default function RegisterForm() {
 
   const validateStep = (): boolean => {
     if (step === 1) {
-      return !!formData.name && !!formData.age && !!formData.gender;
+      return !!formData.name && !!formData.age && !!formData.gender && !!formData.height;
     }
     if (step === 2) {
       return !!formData.education && !!formData.job && !!formData.salary && !!formData.assets;
@@ -314,6 +317,70 @@ export default function RegisterForm() {
                     </div>
                   </div>
                 </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wide">Marital Status</label>
+                  <div className="relative">
+                    <select 
+                      name="maritalStatus" 
+                      value={formData.maritalStatus} 
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setFormData(prev => ({
+                          ...prev,
+                          maritalStatus: val,
+                          childrenCount: val === 'Widowed' ? prev.childrenCount : ''
+                        }));
+                      }} 
+                      className={`${inputClass} appearance-none pr-10`}
+                    >
+                      <option value="Single">Single</option>
+                      <option value="Divorced">Divorced</option>
+                      <option value="Widowed">Widowed</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"/></svg>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wide">Community</label>
+                  <div className="relative">
+                    <select name="community" value={formData.community} onChange={handleChange} className={`${inputClass} appearance-none pr-10`}>
+                      <option value="Tamil Muslim">Tamil Muslim</option>
+                      <option value="Urdu Muslim">Urdu Muslim</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"/></svg>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-1.5 col-span-2">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wide">Height</label>
+                  <input 
+                    name="height" 
+                    type="text" 
+                    value={formData.height} 
+                    onChange={handleChange} 
+                    required 
+                    className={inputClass} 
+                    placeholder="e.g. 5'6&quot; or 168 cm" 
+                  />
+                </div>
+                {formData.maritalStatus === 'Widowed' && (
+                  <div className="space-y-1.5 col-span-2 animate-fadeIn">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wide">Children Count</label>
+                    <input 
+                      name="childrenCount" 
+                      type="number" 
+                      min="0"
+                      max="20"
+                      value={formData.childrenCount} 
+                      onChange={handleChange} 
+                      className={inputClass} 
+                      placeholder="e.g. 2" 
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>

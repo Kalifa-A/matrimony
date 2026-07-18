@@ -5,7 +5,7 @@ import {
   User, Mail, Phone, MapPin, GraduationCap, 
   Briefcase, Banknote, Heart, Sparkles, 
   ShieldCheck, Camera, Edit3, Save, X, ChevronRight,
-  Flower2
+  Flower2, Award
 } from 'lucide-react';
 
 interface UserProfile {
@@ -26,6 +26,7 @@ interface UserProfile {
   _id: string;
   height?: string;
   childrenCount?: number | string;
+  community?: string;
 }
 
 import { useToast } from '@/app/components/ToastProvider';
@@ -58,7 +59,8 @@ export default function MyAccount() {
     hasPaid: false,
     _id: "",
     height: "",
-    childrenCount: ""
+    childrenCount: "",
+    community: ""
   });
 
   useEffect(() => {
@@ -334,6 +336,27 @@ export default function MyAccount() {
                     ) : (
                       <div className="p-4 rounded-2xl border border-gray-50 bg-gray-50/20 font-black text-gray-800 text-sm">
                          {profile.gender || "Not Specified"}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 ml-1">
+                       <Award size={16} className="text-emerald-500"/>
+                       <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Community</label>
+                    </div>
+                    {isEditing ? (
+                      <select 
+                        value={profile.community || 'Tamil Muslim'}
+                        onChange={(e) => setProfile({...profile, community: e.target.value})}
+                        className="w-full bg-gray-50 border-none rounded-2xl p-4 text-sm font-bold focus:ring-4 focus:ring-[#9AD872]/10 transition-all outline-none cursor-pointer"
+                      >
+                        <option>Tamil Muslim</option>
+                        <option>Urdu Muslim</option>
+                      </select>
+                    ) : (
+                      <div className="p-4 rounded-2xl border border-gray-50 bg-gray-50/20 font-black text-gray-800 text-sm">
+                         {profile.community || "Tamil Muslim"}
                       </div>
                     )}
                   </div>

@@ -27,6 +27,7 @@ interface UserProfile {
   complexion?: string;
   height?: string;
   childrenCount?: number | string;
+  community?: string;
 }
 
 export default function ProfileDetails() {
@@ -309,6 +310,10 @@ export default function ProfileDetails() {
                   <div>
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">{t('nativePlace')}</p>
                     <p className="text-gray-800 font-bold">{profile.location}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-1">Community</p>
+                    <p className="text-gray-800 font-bold">{profile.community || "Tamil Muslim"}</p>
                   </div>
                   {profile.maritalStatus === 'Widowed' && (
                     <div>

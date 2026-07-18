@@ -24,7 +24,10 @@ const registerSchema = Joi.object({
   salary: Joi.string().max(50).optional(),
   assets: Joi.string().max(200).optional(),
   description: Joi.string().max(500).optional(),
-  phone: Joi.string().pattern(/^[0-9+\-\s()]+$/).max(20).optional()
+  phone: Joi.string().pattern(/^[0-9+\-\s()]+$/).max(20).optional(),
+  height: Joi.string().max(50).optional().allow(''),
+  childrenCount: Joi.number().integer().min(0).max(20).optional().allow(''),
+  community: Joi.string().valid('Tamil Muslim', 'Urdu Muslim').optional().allow('')
 });
 
 const loginSchema = Joi.object({
@@ -44,7 +47,7 @@ router.post('/register', upload.single('profilePhoto'), async (req, res) => {
     const { error } = registerSchema.validate(req.body);
     if (error) return res.status(400).json({ message: error.details[0].message });
 
-    let { name, email, password, age, maritalStatus, gender, job, location, education, salary, assets, description, phone } = req.body;
+    let { name, email, password, age, maritalStatus, gender, job, location, education, salary, assets, description, phone, height, childrenCount, community } = req.body;
     email = email.toLowerCase().trim();
 
     if (!passwordRegex.test(password)) {
@@ -71,7 +74,10 @@ router.post('/register', upload.single('profilePhoto'), async (req, res) => {
       assets,
       description,
       phone,
-      profilePhoto: req.file ? req.file.path : ''
+      profilePhoto: req.file ? req.file.path : '',
+      height: height || '',
+      childrenCount: maritalStatus === 'Widowed' ? (Number(childrenCount) || 0) : 0,
+      community: community || 'Tamil Muslim'
     });
 
     await user.save();

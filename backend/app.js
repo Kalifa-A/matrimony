@@ -92,12 +92,14 @@ app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', authLimiter);
 app.use('/api/admin/login', authLimiter);
 
+
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/interests', require('./routes/interests'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/contact', require('./routes/contact'));
 app.use('/api/seo', require('./routes/seo'));
+
 
 
 // Error handling middleware

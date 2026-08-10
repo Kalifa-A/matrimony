@@ -30,6 +30,7 @@ export default function RegisterForm() {
     gender: 'Male',
     height: '',
     community: 'Tamil Muslim',
+    customCommunity: '',
     // professional
     education: '',
     job: '',
@@ -143,6 +144,9 @@ export default function RegisterForm() {
 
   const validateStep = (): boolean => {
     if (step === 1) {
+      if (formData.community === 'others' && !formData.customCommunity.trim()) {
+        return false;
+      }
       return !!formData.name && !!formData.age && !!formData.gender && !!formData.height;
     }
     if (step === 2) {
@@ -174,7 +178,13 @@ export default function RegisterForm() {
     try {
       const dataToSend = new FormData();
       Object.entries(formData).forEach(([key, value]) => {
-        if (key !== 'confirmPassword') dataToSend.append(key, value as string);
+        if (key === 'confirmPassword' || key === 'customCommunity') return;
+        if (key === 'community') {
+          const finalCommunity = value === 'others' ? (formData.customCommunity.trim() || 'Others') : value;
+          dataToSend.append('community', finalCommunity as string);
+        } else {
+          dataToSend.append(key, value as string);
+        }
       });
       if (selectedFile) dataToSend.append('profilePhoto', selectedFile);
 
@@ -348,12 +358,28 @@ export default function RegisterForm() {
                     <select name="community" value={formData.community} onChange={handleChange} className={`${inputClass} appearance-none pr-10`}>
                       <option value="Tamil Muslim">Tamil Muslim</option>
                       <option value="Urdu Muslim">Urdu Muslim</option>
+                      <option value="Malayalam Muslim">Malayalam Muslim</option>
+                      <option value="others">Others</option>
                     </select>
                     <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"/></svg>
                     </div>
                   </div>
                 </div>
+                {formData.community === 'others' && (
+                  <div className="space-y-1.5 col-span-2 animate-fadeIn">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wide">Specify Community Name</label>
+                    <input 
+                      name="customCommunity" 
+                      type="text" 
+                      value={formData.customCommunity} 
+                      onChange={handleChange} 
+                      required 
+                      className={inputClass} 
+                      placeholder="e.g. Dekkani Muslim, Kannada Muslim, etc." 
+                    />
+                  </div>
+                )}
                 <div className="space-y-1.5 col-span-2">
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wide">Height</label>
                   <input 

@@ -11,7 +11,6 @@ const allowedOrigins = [
   'http://localhost:3000',
   'https://alfattahnikkah.com',
   'https://www.alfattahnikkah.com',
-  'https://matrimony-rose-delta.vercel.app'
 ].filter(Boolean);
 
 const io = new Server(server, { 

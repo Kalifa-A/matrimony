@@ -27,7 +27,7 @@ const registerSchema = Joi.object({
   phone: Joi.string().pattern(/^[0-9+\-\s()]+$/).max(20).optional(),
   height: Joi.string().max(50).optional().allow(''),
   childrenCount: Joi.number().integer().min(0).max(20).optional().allow(''),
-  community: Joi.string().valid('Tamil Muslim', 'Urdu Muslim').optional().allow('')
+  community: Joi.string().max(100).optional().allow('')
 });
 
 const loginSchema = Joi.object({
